@@ -1,25 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { HashRouter as Router, Routes, Route  } from 'react-router-dom';
+import HeaderComponent from './components/Header'; // Import the header component
+import LandingPage from './pages/LandingPage'; // Import the landing page component
+import AboutPage from './pages/AboutPage'
+import Footer from './components/Footer'; // Import the footer component
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+        <HeaderComponent /> {/* Include the header component */}
+        <Routes>
+          <Route path="/" element={<LandingPage/>} exact ></Route>
+          <Route path="/about" element={<AboutPage/>} exact ></Route>
+        </Routes>
+        <Footer /> {/* Include the footer component */}
+    </Router>
   );
-}
+};
 
 export default App;
