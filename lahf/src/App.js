@@ -6,15 +6,16 @@ import AboutPage from './pages/AboutPage'
 import Footer from './components/Footer'; // Import the footer component
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+const Companyname = 'LAHF';
 const App = () => {
   return (
     <Router>
-        <HeaderComponent /> {/* Include the header component */}
+        <HeaderComponent Companyname={Companyname} /> {/* Include the header component */}
         <Routes>
-          <Route path="/" element={<LandingPage/>} exact ></Route>
-          <Route path="/about" element={<AboutPage/>} exact ></Route>
+          <Route path="/" element={<LandingPage Companyname={Companyname}/>} exact ></Route>
+          <Route path="/about" element={<AboutPage Companyname={Companyname}/>} exact ></Route>
         </Routes>
-        <Footer /> {/* Include the footer component */}
+        <Footer Companyname={Companyname} /> {/* Include the footer component */}
     </Router>
   );
 };
