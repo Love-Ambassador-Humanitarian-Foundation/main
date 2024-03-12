@@ -23,8 +23,4 @@ jobs:
         run: npm run build
 
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@releases/v3
-        with:
-          GITHUB_TOKEN: ${{ secrets.GH_PAGES_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: ./build  # Adjust this to the folder where your built files are located
+        run: npm run deploy  # Adjust this to the folder where your built files are located
