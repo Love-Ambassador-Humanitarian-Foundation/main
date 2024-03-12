@@ -146,6 +146,24 @@ const LandingPage = ({Companyname}) => {
             </Swiper>
         </Col>
       </Row>
+      <div className='mt-5 mb-5'>
+        <h5 className="text-center text-dark fw-bold">Our Services</h5>
+        <Row className='mt-5 mb-5'>
+        <Col className='col-4 align-self-center'>
+            <Card style={{ width: '18rem', marginLeft: '90px', border:'0px' }}>
+                <Card.Body>
+                    <Card.Title>
+                        <h3 className="text-center text-dark fw-bold">You Can Help in different ways</h3>
+                    </Card.Title>
+                    <Card.Text>
+                        supports persons who are unable to help themselves.
+                    </Card.Text>
+                    <Button to='/about' text='Read More' icon={<ArrowRightOutlined style={{ color: '#ec3237' }} />}></Button>
+                </Card.Body>
+            </Card>
+        </Col>
+        </Row>
+      </div>
       
         <div className='m-0 p-0 mb-2' style={{height:'50vh', width:'100%'}}>
             <div style={{

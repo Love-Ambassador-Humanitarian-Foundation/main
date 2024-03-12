@@ -39,7 +39,7 @@ const HeaderComponent = ({Companyname}) => {
                     <span className="navbar-title"> {Companyname}</span>
                 </Navbar.Brand>
                 {isMobile ? (
-                    <div className='d-flex justify-content-space-between'>
+                    <div className='d-flex justify-content-between mr-auto'>
                         <IconButton onClick={() => setIsMenuOpen(true)}style={{'color':'green'}} className='seedling-menu' icon={<FontAwesomeIcon icon={faSeedling} />} />
                         {isMenuOpen ?
                             (<IconButton onClick={() => setIsMenuOpen(false)} className='close-menu' icon={<CloseOutlined />} />)
@@ -51,9 +51,9 @@ const HeaderComponent = ({Companyname}) => {
                 ) : (
                     <>
                     <Nav className="ms-auto navbar-nav-links"  activeKey="/home">
-                        <NavLink to="/" text="Home" className='active' />
-                        <NavLink to="/about" text="About" />
-                        <NavLink to="/contact" text="Contact" />
+                        <NavLink to="/" text="Home" className='active'/>
+                        <NavLink to="/about" text="About"/>
+                        <NavLink to="/contact" text="Contact"/>
                         <NavLink to ="/login" text="Login" />
                         <Dropdown items={[{'name':'Action','to':'/action'},
                                         {'name':'Action','to':'/action'},
