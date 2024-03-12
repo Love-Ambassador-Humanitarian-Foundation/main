@@ -5,9 +5,11 @@ import LandingPage from './pages/LandingPage'; // Import the landing page compon
 import AboutPage from './pages/AboutPage'
 import Footer from './components/Footer'; // Import the footer component
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
 
 const Companyname = 'LAHF';
 const App = () => {
+  
   return (
     <Router>
         <HeaderComponent Companyname={Companyname} /> {/* Include the header component */}

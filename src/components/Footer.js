@@ -19,20 +19,20 @@ const Footer = ({Companyname}) => {
                     <Col className="col-6 col-md-2 mb-3">
                         <h4 className='text-dark'>Contact Info</h4>
                         <Nav className='flex-column'>
-                            <NavLink to="/about" text="Home" className='text-dark' />
-                            <NavLink to="/about" text="Features" className='text-dark' />
-                            <NavLink to="/about" text="Pricing" className='text-dark'/>
-                            <NavLink to="/about" text="About" className='text-dark'/>
+                            <NavLink to="/about" text="Home" className='text-dark' style={{margin: '0px', padding:'0px'}} />
+                            <NavLink to="/about" text="Features" className='text-dark m-0' />
+                            <NavLink to="/about" text="Pricing" className='text-dark m-0'/>
+                            <NavLink to="/about" text="About" className='text-dark m-0'/>
                         </Nav>
                     </Col>
 
                     <div class="col-6 col-md-2 mb-3">
                         <h4 className='text-dark'>Our Support </h4>
-                        <Nav className='flex-column'>
-                            <NavLink to="/about" text="Policies" className='text-dark'/>
-                            <NavLink to="/about" text="Volunteer" className='text-dark'/>
-                            <NavLink to="/about" text="Contact us" className='text-dark'/>
-                            <NavLink to="/about" text="Partnership" className='text-dark'/>
+                        <Nav className='flex-column p-0'>
+                            <NavLink to="/about" text="Policies" className='text-dark m-0'/>
+                            <NavLink to="/about" text="Volunteer" className='text-dark  m-0'/>
+                            <NavLink to="/about" text="Contact us" className='text-dark  m-0'/>
+                            <NavLink to="/about" text="Partnership" className='text-dark  m-0'/>
                         </Nav>
                     </div>
 
@@ -51,16 +51,16 @@ const Footer = ({Companyname}) => {
                         <p className='text-dark'> Monthly digest of what's new and exciting from us.</p>
                         <div class="d-flex flex-column flex-sm-row w-100 gap-2">
                             <label for="newsletter1" class="visually-hidden text-dark">Email address</label>
-                            <input id="newsletter1" type="text" class="form-control" placeholder="Email address" />
+                            <input id="newsletter1" type="text" className="form-control" style={{borderColor:'#d7d7e9'}} placeholder="Email address" />
                             <Button to="/subscribe" text="Subscribe" className='text-dark border ' style={{border:'1px dotted #34356b', width:'155px', alignSelf:'center'}} icon={<MailOutlined style={{ color: '#ec3237' }} />} />
                         </div>
                         </form>
                     </div>
                 </Row>
 
-                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center py-4 my-4 border-top">
-                    <p className='text-dark'>© 2022 {Companyname}, Inc. All rights reserved.</p>
-                    <ul class="list-unstyled d-flex">
+                <div className="d-flex flex-column flex-sm-row justify-content-between align-items-center border-top">
+                    <p className='text-dark  ms-auto'>© 2022 {Companyname}, Inc. All rights reserved.</p>
+                    <ul class="list-unstyled d-flex ">
                         <li class="ms-3"><a class="link-dark" href="/"><svg class="bi" width="24" height="24"></svg></a></li>
                         <li class="ms-3"><a class="link-dark" href="/"><svg class="bi" width="24" height="24"></svg></a></li>
                         <li class="ms-3"><a class="link-dark" href="/"><svg class="bi" width="24" height="24"></svg></a></li>

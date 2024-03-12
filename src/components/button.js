@@ -87,17 +87,6 @@ const NavLink = ({ text, className, to }) => {
 
     setIsActive(!isActive);
   };
-  const handleMouseEnter = (e) => {
-    e.target.style.backgroundColor = '#34356b';
-    e.target.style.color = 'white';
-  }
-  const handleMouseLeave = (e) => {
-    if (e.target.classList.contains('active')) {
-      console.log(e.target.className);
-      e.target.style.backgroundColor = 'transparent';
-      e.target.style.color = 'black';
-    }    
-  }
 
   // Define the base style for the button
   const baseStyle = {
@@ -128,8 +117,6 @@ const NavLink = ({ text, className, to }) => {
             className={`btn nav-link ${className} ${isActive ? 'active' : ''}`}
             
             onClick={toggleActive}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
         >
             {text}
         </Link>
@@ -162,7 +149,6 @@ const IconButton = (props) => {
     display: 'flex',
     color: 'black',
     alignItems: 'center',
-    justifyContent: 'space-between',
     padding: '4px 12px', // Adjust padding as needed
     textDecoration: 'none', // Remove text decoration for Links
   };
