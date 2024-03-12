@@ -1,10 +1,7 @@
-import React, {useState} from 'react';
-import { Navbar, Nav,Container, NavDropdown,Row , Col} from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import {Nav,Container,Row , Col} from 'react-bootstrap';
 import {Button, NavLink} from './button';
-import {Dropdown} from './DropDown';
-import {HeartFilled, MailOutlined} from '@ant-design/icons'; // Import HeartOutlined icon from Ant Design
-import Logo from '../assets/logo.jpg'
+import {MailOutlined} from '@ant-design/icons'; // Import HeartOutlined icon from Ant Design
 const Footer = ({Companyname}) => {
     const style ={
         backgroundColor: '#d7d7e9',
@@ -64,9 +61,9 @@ const Footer = ({Companyname}) => {
                 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center py-4 my-4 border-top">
                     <p className='text-dark'>© 2022 {Companyname}, Inc. All rights reserved.</p>
                     <ul class="list-unstyled d-flex">
-                        <li class="ms-3"><a class="link-dark" href="#"><svg class="bi" width="24" height="24"></svg></a></li>
-                        <li class="ms-3"><a class="link-dark" href="#"><svg class="bi" width="24" height="24"></svg></a></li>
-                        <li class="ms-3"><a class="link-dark" href="#"><svg class="bi" width="24" height="24"></svg></a></li>
+                        <li class="ms-3"><a class="link-dark" href="/"><svg class="bi" width="24" height="24"></svg></a></li>
+                        <li class="ms-3"><a class="link-dark" href="/"><svg class="bi" width="24" height="24"></svg></a></li>
+                        <li class="ms-3"><a class="link-dark" href="/"><svg class="bi" width="24" height="24"></svg></a></li>
                     </ul>
                 </div>
             </footer>
