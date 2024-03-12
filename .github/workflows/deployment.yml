@@ -24,6 +24,6 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
-          GITHUB_TOKEN: ${{ secrets.ORG_GH_PAGES_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAGES_TOKEN }}
           BRANCH: gh-pages
           FOLDER: ./build  # Adjust this to the folder where your built files are located
