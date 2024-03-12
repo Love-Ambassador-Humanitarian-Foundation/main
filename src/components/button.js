@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 const Button = (props) => {
   const { to, classname, style, text, onClick, icon } = props;
   const [isHovered, setIsHovered] = useState(false);
+  console.log(classname);
 
   // Handle mouse enter event
   const handleMouseEnter = () => {
@@ -139,6 +140,7 @@ const NavLink = ({ text, className, to }) => {
 const IconButton = (props) => {
   const { to, classname, style, onClick, icon, animation,hover } = props;
   const [isHovered, setIsHovered] = useState(false);
+  console.log(classname,animation,hover);
 
   // Handle mouse enter event
   const handleMouseEnter = () => {

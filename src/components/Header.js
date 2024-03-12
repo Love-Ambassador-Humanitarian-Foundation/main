@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Navbar, Nav,Container, NavDropdown } from 'react-bootstrap';
+import { Navbar, Nav,Container} from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faBars, faTimes, faHeart, faSeedling} from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+import {faSeedling} from '@fortawesome/free-solid-svg-icons';
 import {Button, NavLink,IconButton} from './button';
 import {Dropdown} from './DropDown';
 import {HeartFilled, CloseOutlined, MenuOutlined } from '@ant-design/icons'; // Import HeartOutlined icon from Ant Design

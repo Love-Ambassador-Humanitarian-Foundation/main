@@ -2,11 +2,10 @@ import React from 'react';
 import { Container, Card, Row, Col } from 'react-bootstrap';
 import LandingPageImg from '../assets/landingimg.jpg';
 import VolunteerImg from '../assets/volunteerimg.jpg';
-import { HeartFilled, BookFilled, ArrowRightOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
+import { HeartFilled, BookFilled, ArrowRightOutlined, PlusOutlined} from '@ant-design/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faBars, faTimes, faHeart, faSeedling,faPeopleArrows,faUsersViewfinder,faHandHoldingDollar} from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
-import {Button, NavLink,IconButton} from '../components/button';
+import {faSeedling,faPeopleArrows,faUsersViewfinder,faHandHoldingDollar} from '@fortawesome/free-solid-svg-icons';
+import {Button, IconButton} from '../components/button';
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
 
@@ -16,7 +15,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 // import required modules
-import { Navigation, Pagination, Mousewheel, Keyboard, Autoplay } from 'swiper/modules';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
 const LandingPage = ({Companyname}) => {
     const slide_inner_item_style = {
