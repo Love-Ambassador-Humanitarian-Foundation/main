@@ -1,0 +1,30 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+
+      - name: Build application
+        run: npm run build
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.ORG_GH_PAGES_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: ./build  # Adjust this to the folder where your built files are located
