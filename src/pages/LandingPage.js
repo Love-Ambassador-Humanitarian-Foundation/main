@@ -138,6 +138,7 @@ const LandingPage = ({Companyname}) => {
             }}>
 
             </div>
+            
             <Container className="py-5" style={{ zIndex: '1', position: 'absolute', top: '200px', left: '50%', transform: 'translate(-50%, -50%)' }}>
                 <div className="mt-5 mb-5"></div>
                 <h1 className="text-center text-white mb-4 mt-5">Welcome to Our {Companyname}</h1>

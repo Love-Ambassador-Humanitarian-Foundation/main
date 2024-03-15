@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState} from 'react';
 import { Row, Col, Card, Pagination, Modal } from 'antd';
 import img1 from '../assets/landing.jpg';
 import CustomAccordion from '../components/Accordion';
@@ -6,6 +6,7 @@ import CustomAccordion from '../components/Accordion';
 const { Meta } = Card;
 
 const AboutPage = () => {
+    
     // Dummy data for team members
     const teamMembers = [
         { name: 'John Doe', position: 'CEO', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
@@ -50,25 +51,26 @@ const AboutPage = () => {
 
     // Hide modal
     const handleCancel = () => {
-        setVisible(false);
+          setVisible(false);
+      };
+      const images = [
+        { img: img1 },
+        { img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80' },
+        { img: img1 },
+        { img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80' }
+    ];
+    
+    const [image, setImage] = useState(images.length > 0 ? images[0].img : '');
+    
+    const switchImage = (index) => {
+        if (images.length > index) {
+            setImage(images[index].img);
+            console.log(image);
+        } else {
+            console.error(`Index ${index} is out of bounds for images array`);
+        }
     };
-    const images = [
-      { img: img1 },
-      { img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80' },
-      { img: img1 },
-      { img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80' }
-  ];
-  
-  const [image, setImage] = useState(images.length > 0 ? images[0].img : '');
-  
-  const switchImage = (index) => {
-      if (images.length > index) {
-          setImage(images[index].img);
-          console.log(image);
-      } else {
-          console.error(`Index ${index} is out of bounds for images array`);
-      }
-  };
+      
 
     return (
         <div className="container py-5">
@@ -159,8 +161,7 @@ const AboutPage = () => {
             </div>
             <hr />
             <div className='mt-5 mb-5'>
-                <h5 className="text-center text-dark fw-bold">About the Foundation</h5>
-                <h2 className="mb-4 text-center">Activities</h2>
+                <h5 className="text-center text-dark fw-bold">Activities</h5>
                 <Row className='mt-5 mb-5'>
                 
                     <Col className='col-12 col-sm-12 col-md-6 col-lg-6'>
