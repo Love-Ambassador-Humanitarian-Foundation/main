@@ -10,11 +10,11 @@ const Timeline = ({ data, onMediaClick }) => {
     //};
 
     return (
-        <div style={{ overflowX: 'auto' }}>
+        <div style={{ overflowX: 'auto'}}>
             <AntTimeline mode="left">
                 {data.map((event, index) => (
                     <AntTimeline.Item key={index}>
-                        <div style={{ marginBottom: '20px' }}>
+                        <div style={{ marginBottom: '20px', marginTop:'20px' }}>
                             <h3>{event.title}</h3>
                             <p>{event.date}</p>
                             <p>{event.description}</p>
