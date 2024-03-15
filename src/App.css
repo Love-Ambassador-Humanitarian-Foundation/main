@@ -41,3 +41,55 @@
   border-color: 1px solid #34356b !important;
   box-shadow: 0 0 0 1px #34356b;
 }
+
+.ant-btn {
+  border-color: #34356b;
+  background-color: #34356b;
+  cursor: pointer;
+}
+
+/* Styles for the button on hover ant-btn-primary */
+.ant-btn:hover {
+  color: black  !important;
+  background-color: white !important;
+  border-color: #34356b !important;
+}
+
+/* Styles for the button icon on hover */
+.ant-btn:hover .anticon,
+.ant-btn:focus .anticon,
+.ant-btn:active .anticon {
+  color: black !important; /* Change icon color to black on hover, focus, and active */
+}
+
+/* Styles for the input border on hover */
+.ant-input:hover,
+.ant-input:focus,
+.ant-input:active {
+  box-shadow: none !important;
+  border-color: #34356b !important;
+}
+
+.ant-pagination-item:hover,
+.ant-pagination-next:hover,
+.ant-pagination-previous:hover {
+  background-color: #34356b !important;
+}
+.ant-pagination-item-active {
+  border-color: #34356b !important;
+}
+.ant-pagination-item-active a {
+  color: black !important; /* Change text color of active pagination item to black */
+}
+.ant-pagination-item-ellipsis {
+  color: #ab9cff !important; /* Change color of ellipsis to match background */
+}
+.ant-pagination-item-link-icon {
+  color: #34356b !important; /* Change color of pagination icon */
+}
+.ant-timeline-item-head,
+.ant-timeline-item-head-blue{
+  color: #34356b !important; 
+  border-color: #34356b !important; 
+}
+

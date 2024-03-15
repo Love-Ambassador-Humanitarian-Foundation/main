@@ -99,6 +99,7 @@ const LandingPage = ({Companyname}) => {
     const images = [
         { img: img1 },
         { img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80' },
+        { img: img1 },
         { img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80' }
     ];
     
@@ -147,6 +148,7 @@ const LandingPage = ({Companyname}) => {
                 <Button to='/about' text='Learn More' icon={<BookFilled style={{ color: '#ec3237' }} />}></Button>
                 </div>
             </Container>
+            <h5 className="text-center text-dark fw-bold mt-4">Activities</h5>
             <Row className='row m-2' style={{backgroundColor: 'whitesmoke'}}>
                 
                 {isMobile ? (
@@ -322,16 +324,17 @@ const LandingPage = ({Companyname}) => {
                 
             </Row>
             <div className='mt-5 mb-5'>
-                <h5 className="text-center text-dark fw-bold">Our Services</h5>
+                <h5 className="text-center text-dark fw-bold">About the Foundation</h5>
                 <Row className='mt-5 mb-5'>
                 
                     <Col className='col-12 col-sm-12 col-md-6 col-lg-6'>
                         <CustomAccordion
                             onClick={(e) => switchImage(e)}
                             items={[
-                                { title: 'Item 1', content: 'Content for item 1' },
-                                { title: 'Item 2', content: 'Content for item 2' },
-                                { title: 'Item 3', content: 'Content for item 3' },
+                                { title: 'History', content: 'Content for item 1' },
+                                { title: 'Slogan/Motto', content: 'Content for item 3' },
+                                { title: 'Services', content: 'Content for item 2' },
+                                { title: 'Values', content: 'Content for item 3' },
                             ]}
                         />
 

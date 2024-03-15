@@ -56,6 +56,7 @@ const HeaderComponent = ({ Companyname }) => {
                         </Nav>
                         <NavLink to="/" text="Home" className="active m-2" />
                             <NavLink to="/about" text="About" className="m-2" />
+                            <NavLink to="/events" text="Events" className="m-2" />
                             <NavLink to="/contact" text="Contact" className="m-2" />
                             <NavLink to="/login" text="Login" className="m-2" />
                         <Button to="/signup" text="Contribute" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
