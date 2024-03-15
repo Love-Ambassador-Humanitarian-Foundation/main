@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Row, Col } from 'react-bootstrap';
+import { Modal, Card as AntCard} from 'antd';
 import LandingPageImg from '../assets/landingimg.jpg';
 import VolunteerImg from '../assets/volunteerimg.jpg';
 import { HeartFilled, BookFilled, ArrowRightOutlined, PlusOutlined} from '@ant-design/icons';
@@ -22,6 +23,9 @@ import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
 const LandingPage = ({Companyname}) => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    // Modal state
+    const [visible, setVisible] = useState(false);
+    const [currentactivitiy, setCurrentActivity] = useState(null);
     const slide_inner_item_style = {
         background: '#fff',
         borderRadius: '4px',
@@ -96,11 +100,21 @@ const LandingPage = ({Companyname}) => {
       SetImgHeight(imgHeight);
       setIsMobile(window.innerWidth < 768);
     };
+    
     const images = [
         { img: img1 },
         { img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80' },
         { img: img1 },
         { img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80' }
+    ];
+    const activities = [
+        { title: 'Donations', description: '$400K+', color:'#044a18' },
+        { title: 'Funds', description: 'N1m+',color:'green'  },
+        { title: 'Volunteers', description: '29',color:'orange'  },
+        { title: 'Communities', description: '3',color:'#04364a'  },
+        { title: 'Seminars', description: '7',color:'red'  },
+        { title: 'Branches', description: '1',color:'orangered'  }
+        // Add more achievements as needed
     ];
     
     const [image, setImage] = useState(images.length > 0 ? images[0].img : '');
@@ -113,6 +127,16 @@ const LandingPage = ({Companyname}) => {
             console.error(`Index ${index} is out of bounds for images array`);
         }
     };
+    // Show modal with achievement details
+    const showModal = (activity) => {
+        setCurrentActivity(activity);
+        setVisible(true);
+    };
+
+    // Hide modal
+    const handleCancel = () => {
+          setVisible(false);
+      };
     
     useEffect(() => {
         setHeights();
@@ -149,6 +173,37 @@ const LandingPage = ({Companyname}) => {
                 <Button to='/about' text='Learn More' icon={<BookFilled style={{ color: '#ec3237' }} />}></Button>
                 </div>
             </Container>
+            <div className="row mt-3">
+                <div className="col" style={{alignContent:'center'}}>
+                    <Row className='p-1 m-0 ms-auto'>
+                        {activities.map((activity, index) => (
+                            <Col key={index} xs={6} sm={4} md={3} lg={2} className='mb-2'>
+                                <AntCard
+                                    hoverable
+                                    onClick={() => showModal(activity)}
+                                    style={{padding:'0px',borderRadius:'0%'}}
+                                >
+                                    <Card.Body className='p-0'>
+                                        <Card.Title>
+                                            <h6 className="text-dark fw-bold">{activity.title}</h6>
+                                        </Card.Title>
+                                        <h2 className="fw-bold" style={{'color':activity.color}}>{activity.description}</h2>
+                                    </Card.Body>
+                                </AntCard>
+                            </Col>
+                        ))}
+                    </Row>
+                    <Modal
+                        title={currentactivitiy ? currentactivitiy.title : ''}
+                        visible={visible}
+                        onCancel={handleCancel}
+                        footer={null}
+                    >
+                        {currentactivitiy ? <p>{currentactivitiy.description}</p> : null}
+                    </Modal>
+                </div>
+            </div>
+            
             <h5 className="text-center text-dark fw-bold mt-4">Activities</h5>
             <Row className='row m-2' style={{backgroundColor: 'whitesmoke'}}>
                 

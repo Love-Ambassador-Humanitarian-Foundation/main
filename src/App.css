@@ -36,13 +36,17 @@
     transform: rotate(360deg);
   }
 }
+
 .form-control:hover,
-.form-control:focus {
-  border-color: 1px solid #34356b !important;
-  box-shadow: 0 0 0 1px #34356b;
+.form-control:focus,
+.form-control:active {
+  box-shadow: none !important;
+  border-color: #34356b !important;
 }
 
+
 .ant-btn {
+  color:black;
   border-color: #34356b;
   background-color: #34356b;
   cursor: pointer;
@@ -63,6 +67,7 @@
 }
 
 /* Styles for the input border on hover */
+.ant-input-outlined,
 .ant-input:hover,
 .ant-input:focus,
 .ant-input:active {

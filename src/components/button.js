@@ -58,7 +58,7 @@ const Button = (props) => {
       ) : (
         <BtnComponent
           className='btn'
-          style={buttonStyle}
+          style={{ border: '0px', color:'black',...buttonStyle}} // Include border style inline
           onClick={onClick}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}

@@ -51,7 +51,7 @@ const HeaderComponent = ({ Companyname }) => {
                             onClose={onClose}
                             open={isMenuOpen}
                             key={'left'}
-                            width={'90%'}
+                            width={'70%'}
                         >
                             <NavLink to="/" text="Home" className="active m-2" />
                             

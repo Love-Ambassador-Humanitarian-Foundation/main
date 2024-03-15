@@ -9,8 +9,8 @@ const AboutPage = () => {
     
     // Dummy data for team members
     const teamMembers = [
-        { name: 'John Doe', position: 'CEO', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
-        { name: 'Jane Smith', position: 'CTO', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
+        { name: 'Mr Ifeanyi Onyenoro', position: 'Co-Founder', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
+        { name: 'Mrs Esther Onyenoro', position: 'Co-Founder', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
         { name: 'Alice Johnson', position: 'Lead Developer', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
         { name: 'Bob Brown', position: 'Designer', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
         // Add more team members as needed

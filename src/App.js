@@ -4,6 +4,7 @@ import HeaderComponent from './components/Header'; // Import the header componen
 import LandingPage from './pages/LandingPage'; // Import the landing page component
 import AboutPage from './pages/AboutPage';
 import EventsPage from './pages/Events';
+import ContactUsPage from './pages/ContactUsPage';
 import Footer from './components/Footer'; // Import the footer component
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -18,6 +19,7 @@ const App = () => {
           <Route path="/" element={<LandingPage Companyname={Companyname}/>} exact ></Route>
           <Route path="/about" element={<AboutPage Companyname={Companyname}/>} exact ></Route>
           <Route path="/events" element={<EventsPage Companyname={Companyname}/>} exact ></Route>
+          <Route path="/contact" element={<ContactUsPage Companyname={Companyname}/>} exact ></Route>
         </Routes>
         <Footer Companyname={Companyname} /> {/* Include the footer component */}
     </Router>
