@@ -51,29 +51,30 @@ const Footer = ({Companyname}) => {
                         <form>
                         <h5 className='text-dark'>Subscribe to our newsletter</h5>
                         <p className='text-dark'> Monthly digest of what's new and exciting from us.</p>
-                        <div class="d-flex flex-column flex-sm-row w-100 gap-2">
+                        <div className="d-flex flex-column flex-sm-row w-100 gap-2">
                             <label for="newsletter1" class="visually-hidden text-dark">Email address</label>
                             <input id="newsletter1" type="text" className="form-control" style={{borderColor:'#d7d7e9'}} placeholder="Email address" />
                             <Button to="/subscribe" text="Subscribe" className='text-dark border ' style={{border:'1px dotted #34356b', width:'155px', alignSelf:'center'}} icon={<MailOutlined style={{ color: '#ec3237' }} />} />
+                            <p className="d-flex flex-row m-auto mt-4" style={{alignItems:'center', margin:'20px' }}>
+                                <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">
+                                    <TwitterOutlined style={{ cursor:'pointer', fontSize: '24px', marginRight: '10px', color:'#1DA1F2' }} />
+                                </a>
+                                <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
+                                    <InstagramOutlined style={{ cursor:'pointer', fontSize: '24px', marginRight: '10px', color:'#E4405F' }} />
+                                </a>
+                                <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">
+                                    <FacebookOutlined style={{ cursor:'pointer', fontSize: '24px', marginRight: '10px', color:'#1877F2' }} />
+                                </a>
+                                <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer">
+                                    <WhatsAppOutlined style={{ cursor:'pointer', fontSize: '24px', marginRight: '10px', color:'#25D366' }} />
+                                </a>
+                                <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer">
+                                    <LinkedinOutlined style={{ cursor:'pointer', fontSize: '24px', marginRight: '10px', color:'#0077B5' }} />
+                                </a>
+                            </p>
                         </div>
                         </form>
-                        <p style={{ display: 'flex', alignItems: 'center', margin:'20px' }}>
-                            <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">
-                                <TwitterOutlined style={{ cursor:'pointer', fontSize: '24px', marginRight: '10px', color:'#1DA1F2' }} />
-                            </a>
-                            <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
-                                <InstagramOutlined style={{ cursor:'pointer', fontSize: '24px', marginRight: '10px', color:'#E4405F' }} />
-                            </a>
-                            <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">
-                                <FacebookOutlined style={{ cursor:'pointer', fontSize: '24px', marginRight: '10px', color:'#1877F2' }} />
-                            </a>
-                            <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer">
-                                <WhatsAppOutlined style={{ cursor:'pointer', fontSize: '24px', marginRight: '10px', color:'#25D366' }} />
-                            </a>
-                            <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer">
-                                <LinkedinOutlined style={{ cursor:'pointer', fontSize: '24px', marginRight: '10px', color:'#0077B5' }} />
-                            </a>
-                        </p>
+                        
 
                     </div>
                 </Row>
