@@ -21,9 +21,13 @@ jobs:
 
       - name: Build application
         run: npm run build
-        
-      - name: Deploy application
-        run: npm run deploy
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.ORG_GH_PAGES_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: ./build
       
 
       
