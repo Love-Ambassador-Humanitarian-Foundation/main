@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { Card, Button } from 'react-bootstrap';
-import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
+import { Card, Button as Btn} from 'react-bootstrap';
+import { Button} from './button';
+import { PlusOutlined, MinusOutlined, LoginOutlined} from '@ant-design/icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {faHandHoldingDollar} from '@fortawesome/free-solid-svg-icons';
 
-const CustomAccordion = ({ items, onClick }) => {
+const CustomAccordion = ({ items, onClick,isloggedIn }) => {
   const [activeIndex, setActiveIndex] = useState(null);
 
   const toggleAccordion = (index) => {
@@ -15,28 +18,62 @@ const CustomAccordion = ({ items, onClick }) => {
       {items.map((item, index) => (
         <Card key={index} className="mb-2 m-2">
           <Card.Header onClick={() => toggleAccordion(index)} style={{cursor:'pointer'}} className="d-flex justify-content-between align-items-center m-1">
-            <Button
+            <Btn
               variant="link"
               className="text-dark text-decoration-none"
               onClick={() => toggleAccordion(index)}
               aria-expanded={activeIndex === index}
             >
               {item.title}
-            </Button>
-            <Button
+            </Btn>
+            <Btn
               variant="link"
               className="text-dark text-decoration-none"
               onClick={() => toggleAccordion(index)}
               aria-expanded={activeIndex === index}
             >
               {activeIndex === index ? <MinusOutlined /> : <PlusOutlined />}
-            </Button>
+            </Btn>
           </Card.Header>
           <Card.Body
             className={activeIndex === index ? 'show' : 'collapse'}
             aria-expanded={activeIndex === index}
           >
-            {item.content}
+            {item.content.includes('Not Ongoing')?
+            <span >
+              <p style={{'color':'red'}}>Not Ongoing:</p>
+              {item.content.replace('Not Ongoing:', '')}
+              {(item.title.includes('Fund')||item.title.includes('Donation'))?
+              <Button to="/payment" text="Contribute" style={{width:'30%', marginLeft:'auto'}} icon={<FontAwesomeIcon icon={faHandHoldingDollar} size='xl' style={{ color: 'green' }} />} />
+              :
+              <>
+                {isloggedIn? 
+                  <></>
+                  :
+                  <Button to="/login" text="Log In" style={{width:'30%', marginLeft:'auto'}} icon={<LoginOutlined style={{ color: '#ec3237' }} />} />
+                }
+              </>
+              }
+            </span>
+            
+            :
+            <span >
+              <p style={{'color':'green'}}>Ongoing:</p>
+              {item.content.replace('Ongoing:', '')}
+              {(item.title.includes('Fund')||item.title.includes('Donation'))?
+              <Button to="/payment" text="Contribute" style={{width:'30%', marginLeft:'auto'}} icon={<FontAwesomeIcon icon={faHandHoldingDollar} size='xl' style={{ color: 'green' }} />} />
+              :
+              <>
+                {isloggedIn? 
+                  <></>
+                  :
+                  <Button to="/login" text="Log In" style={{width:'30%', marginLeft:'auto'}} icon={<LoginOutlined style={{ color: '#ec3237' }} />} />
+                }
+              </>
+              }
+            </span>
+            }
+            
           </Card.Body>
         </Card>
       ))}

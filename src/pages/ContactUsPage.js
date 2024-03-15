@@ -1,13 +1,13 @@
 import React from 'react';
-import { Container, Row, Col, Form} from 'react-bootstrap';
-import {Button} from '../components/button';
-import { SendOutlined} from '@ant-design/icons';
+import { Container, Row, Col, Form } from 'react-bootstrap';
+import { Button } from '../components/button';
+import { SendOutlined, TwitterOutlined, InstagramOutlined, FacebookOutlined, WhatsAppOutlined, LinkedinOutlined } from '@ant-design/icons'; // Import social icons from Ant Design
 
-const ContactUsPage = () => {
+const ContactUsPage = ({address}) => {
     return (
         <Container className="py-5">
-            <h2 className="text-center mb-5 mt-5">Contact Us</h2>
-            <Row>
+            <h2 className="text-center mb-2 mt-5">Contact Us</h2>
+            <Row style={{marginLeft:'1px', marginRight:'1px'}}>
                 <Col md={6}>
                     <h4>Send us a message</h4>
                     <Form>
@@ -30,15 +30,31 @@ const ContactUsPage = () => {
                     </Form>
                 </Col>
                 <Col md={6}>
-                    <h4>Contact Information</h4>
+                    <h4 className='mt-4'>Contact Information</h4>
                     <p>
                         <strong>Address:</strong> Your Address Here<br />
                         <strong>Email:</strong> info@example.com<br />
                         <strong>Phone:</strong> +1 (123) 456-7890<br />
                     </p>
-                    <p>
-                        Feel free to contact us for any inquiries or assistance. Our team will be happy to help you.
+                    <p style={{ display: 'flex', alignItems: 'center' }}>
+                        <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">
+                            <TwitterOutlined style={{ cursor:'pointer', fontSize: '24px', marginRight: '10px', color:'#1DA1F2' }} />
+                        </a>
+                        <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
+                            <InstagramOutlined style={{ cursor:'pointer', fontSize: '24px', marginRight: '10px', color:'#E4405F' }} />
+                        </a>
+                        <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">
+                            <FacebookOutlined style={{ cursor:'pointer', fontSize: '24px', marginRight: '10px', color:'#1877F2' }} />
+                        </a>
+                        <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer">
+                            <WhatsAppOutlined style={{ cursor:'pointer', fontSize: '24px', marginRight: '10px', color:'#25D366' }} />
+                        </a>
+                        <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer">
+                            <LinkedinOutlined style={{ cursor:'pointer', fontSize: '24px', marginRight: '10px', color:'#0077B5' }} />
+                        </a>
                     </p>
+
+
                 </Col>
             </Row>
         </Container>

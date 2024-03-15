@@ -36,11 +36,16 @@
     transform: rotate(360deg);
   }
 }
-
+.form-control {
+  border: 1.5px solid transparent !important;
+  background-color: whitesmoke !important;
+  border-radius: 0%;
+}
 .form-control:hover,
 .form-control:focus,
 .form-control:active {
   box-shadow: none !important;
+  background-color: whitesmoke !important;
   border-color: #34356b !important;
 }
 

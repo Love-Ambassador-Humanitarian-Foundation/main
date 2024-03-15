@@ -2,6 +2,8 @@ import React from 'react';
 import {Nav,Container,Row , Col} from 'react-bootstrap';
 import {Button, NavLink} from './button';
 import {MailOutlined} from '@ant-design/icons'; // Import HeartOutlined icon from Ant Design
+import {TwitterOutlined, InstagramOutlined, FacebookOutlined, WhatsAppOutlined, LinkedinOutlined } from '@ant-design/icons'; // Import social icons from Ant Design
+
 const Footer = ({Companyname}) => {
     const style ={
         backgroundColor: '#d7d7e9',
@@ -55,6 +57,24 @@ const Footer = ({Companyname}) => {
                             <Button to="/subscribe" text="Subscribe" className='text-dark border ' style={{border:'1px dotted #34356b', width:'155px', alignSelf:'center'}} icon={<MailOutlined style={{ color: '#ec3237' }} />} />
                         </div>
                         </form>
+                        <p style={{ display: 'flex', alignItems: 'center', margin:'20px' }}>
+                            <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">
+                                <TwitterOutlined style={{ cursor:'pointer', fontSize: '24px', marginRight: '10px', color:'#1DA1F2' }} />
+                            </a>
+                            <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
+                                <InstagramOutlined style={{ cursor:'pointer', fontSize: '24px', marginRight: '10px', color:'#E4405F' }} />
+                            </a>
+                            <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">
+                                <FacebookOutlined style={{ cursor:'pointer', fontSize: '24px', marginRight: '10px', color:'#1877F2' }} />
+                            </a>
+                            <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer">
+                                <WhatsAppOutlined style={{ cursor:'pointer', fontSize: '24px', marginRight: '10px', color:'#25D366' }} />
+                            </a>
+                            <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer">
+                                <LinkedinOutlined style={{ cursor:'pointer', fontSize: '24px', marginRight: '10px', color:'#0077B5' }} />
+                            </a>
+                        </p>
+
                     </div>
                 </Row>
 

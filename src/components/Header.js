@@ -6,7 +6,7 @@ import { Drawer} from 'antd';
 import Logo from '../assets/logo.jpg';
 import './Header.css';
 
-const HeaderComponent = ({ Companyname }) => {
+const HeaderComponent = ({ Companyname,isloggedIn }) => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const showDrawer = () => {
@@ -58,7 +58,11 @@ const HeaderComponent = ({ Companyname }) => {
                             <NavLink to="/about" text="About" className="m-2" />
                             <NavLink to="/events" text="Events" className="m-2" />
                             <NavLink to="/contact" text="Contact" className="m-2" />
-                            <NavLink to="/login" text="Login" className="m-2" />
+                            
+                            {isloggedIn?
+                            <NavLink to="/logout" text="Logout" className="m-2" />
+                            :
+                            <NavLink to="/login" text="Login" className="m-2" />}
                             <Button to="/signup" text="Contribute" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
                         </Drawer>
 
@@ -78,7 +82,10 @@ const HeaderComponent = ({ Companyname }) => {
                         <NavLink to="/about" text="About" className="m-2" />
                         <NavLink to="/events" text="Events" className="m-2" />
                         <NavLink to="/contact" text="Contact" className="m-2" />
-                        <NavLink to="/login" text="Login" className="m-2" />
+                        {isloggedIn?
+                            <NavLink to="/logout" text="Logout" className="m-2" />
+                            :
+                            <NavLink to="/login" text="Login" className="m-2" />}
                         <Button to="/signup" text="Contribute" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
                     </Container>
                 )}

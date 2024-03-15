@@ -5,7 +5,7 @@ import CustomAccordion from '../components/Accordion';
 
 const { Meta } = Card;
 
-const AboutPage = () => {
+const AboutPage = ({isloggedIn}) => {
     
     // Dummy data for team members
     const teamMembers = [
@@ -23,6 +23,14 @@ const AboutPage = () => {
         { title: 'Award 3', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
         // Add more achievements as needed
     ];
+    const items = [
+        { title: 'Fundraising', content: 'Ongoing: mama davis orphanage' },
+        { title: 'Volunteering', content: 'Ongoing: Join Us as as volunteeer' },
+        { title: 'Donation', content: 'Not Ongoing: ...' },
+        { title: 'Seminars', content: 'Not Ongoing: Location -> 32 badagri road, bla bla' },
+        { title: 'Awareness', content: 'Not Ongoing: Facebook link' },
+        { title: 'Branches', content: 'Ongoing: 64 branches: (1.Lagos), (2.Lagos), (3.Lagos),' },
+    ]
 
     // Paginate team members
     const pageSize = 4; // Number of team members per page
@@ -74,7 +82,7 @@ const AboutPage = () => {
 
     return (
         <div className="container py-5">
-            <div className="row align-items-center">
+            <div className="row align-items-center mt-4">
                 <div className="col-xs-12 col-md-6">
                     <img src={img1} alt="About Us" className="img-fluid mt-2" width={'100%'} />
                 </div>
@@ -167,14 +175,8 @@ const AboutPage = () => {
                     <Col className='col-12 col-sm-12 col-md-6 col-lg-6'>
                         <CustomAccordion
                             onClick={(e) => switchImage(e)}
-                            items={[
-                                { title: 'Fundraising', content: 'Content for item 1' },
-                                { title: 'Volunteering', content: 'Content for item 3' },
-                                { title: 'Donation', content: 'Content for item 2' },
-                                { title: 'Seminars', content: 'Content for item 3' },
-                                { title: 'Awareness', content: 'Content for item 2' },
-                                { title: 'Communities', content: 'Content for item 3' },
-                            ]}
+                            items={items}
+                            isloggedIn={isloggedIn}
                         />
 
                     </Col>
@@ -182,6 +184,7 @@ const AboutPage = () => {
                         <img src={image} className='img-fluid' alt='Services' height={'300px'} width={'100%'} style={{maxHeight:'300px', maxWidth:'100%'}}/>
                     </Col>
                 </Row>
+                
             </div>
         </div>
     );
