@@ -2,10 +2,11 @@ import React, { useState} from 'react';
 import { Row, Col, Card, Pagination, Modal } from 'antd';
 import img1 from '../assets/landing.jpg';
 import CustomAccordion from '../components/Accordion';
-
+import HeaderComponent from '../components/Header';
+import Footer from '../components/Footer';
 const { Meta } = Card;
 
-const AboutPage = ({isloggedIn}) => {
+const AboutPage = ({Companyname,isloggedIn}) => {
     
     // Dummy data for team members
     const teamMembers = [
@@ -81,7 +82,9 @@ const AboutPage = ({isloggedIn}) => {
       
 
     return (
-        <div className="container py-5">
+        <>
+            <HeaderComponent Companyname={Companyname} isloggedIn={isloggedIn} /> {/* Include the header component */}
+            <div className="container py-5">
             <div className="row align-items-center mt-4">
                 <div className="col-xs-12 col-md-6">
                     <img src={img1} alt="About Us" className="img-fluid mt-2" width={'100%'} />
@@ -186,7 +189,10 @@ const AboutPage = ({isloggedIn}) => {
                 </Row>
                 
             </div>
-        </div>
+            </div>
+            <Footer Companyname={Companyname} /> {/* Include the footer component */}
+        </>
+        
     );
 };
 

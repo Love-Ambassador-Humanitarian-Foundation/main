@@ -25,9 +25,9 @@ const SignUpPage = () => {
 
     return (
         <Container className="py-5">
-            <Row className="justify-content-center mt-4">
-                <Col md={6} style={{ maxWidth: '380px' }}>
-                    <h2 className="text-center mb-4">Sign Up</h2>
+            <Row className="justify-content-center mt-4 " >
+                <Col md={6} style={{ maxWidth: '380px',backgroundColor:'#ececec' }}>
+                    <h2 className="text-center mb-4 mt-3">Sign Up</h2>
                     {error && <Alert variant="danger">{error}</Alert>}
                     <Form onSubmit={handleSubmit} className="d-flex flex-column w-100">
                         <Form.Group controlId="formTitle" style={{ margin: '10px' }}>

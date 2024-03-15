@@ -8,6 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faSeedling,faPeopleArrows,faUsersViewfinder,faHandHoldingDollar} from '@fortawesome/free-solid-svg-icons';
 import {Button, IconButton} from '../components/button';
 import CustomAccordion from '../components/Accordion';
+import HeaderComponent from '../components/Header';
+import Footer from '../components/Footer';
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
 import img1 from '../assets/landing.jpg';
@@ -21,7 +23,7 @@ import 'swiper/css/pagination';
 // import required modules
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
-const LandingPage = ({Companyname}) => {
+const LandingPage = ({Companyname, isloggedIn}) => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     // Modal state
     const [visible, setVisible] = useState(false);
@@ -152,6 +154,8 @@ const LandingPage = ({Companyname}) => {
       }, []);
     return (
         <>
+            <HeaderComponent Companyname={Companyname} isloggedIn={isloggedIn} /> {/* Include the header component */}
+        
             <div style={{
                 backgroundImage: `url(${LandingPageImg})`,
                 backgroundSize: 'cover',
@@ -440,6 +444,7 @@ const LandingPage = ({Companyname}) => {
 
     
             </div>  
+        <Footer Companyname={Companyname} /> {/* Include the footer component */}
     </>
   );
 };

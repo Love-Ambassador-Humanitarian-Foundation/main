@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Row, Col, Input, Modal } from 'antd';
 import Timeline from '../components/Timeline';
-
+import HeaderComponent from '../components/Header';
+import Footer from '../components/Footer';
 const { Search } = Input;
 
-const EventPage = () => {
+const EventPage = ({Companyname, isloggedIn}) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedMedia, setSelectedMedia] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
@@ -56,42 +57,47 @@ const EventPage = () => {
     });
 
     return (
-        <div className="container py-5">
-            <h2 className="text-center mb-2 mt-5">Events</h2>
-            <Row justify="center" className="mb-3">
-                <Col span={24} xs={24} lg={12}>
-                    {/* Search input */}
-                    <Search
-                        placeholder="Search events"
-                        enterButton
-                        allowClear
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </Col>
-            </Row>
-            {/* Timeline with filtered data */}
-            <Timeline data={filteredData} onMediaClick={handleMediaClick} />
-            {/* Modal for displaying selected media */}
-            <Modal
-                visible={modalVisible}
-                onCancel={handleCloseModal}
-                footer={null}
-                closable={false}
-                centered
-                width={800} // Adjust modal width as needed
-            >
-                {/* Render image or video based on selectedMedia */}
-                {selectedMedia && selectedMedia.type === 'image' && (
-                    <img src={selectedMedia.src} alt={selectedMedia.alt} style={{ width: '100%', height: '70vh' }} />
-                )}
-                {selectedMedia && selectedMedia.type === 'video' && (
-                    <video controls style={{ width: '100%' }}>
-                        <source src={selectedMedia.src} type="video/mp4" />
-                        Your browser does not support the video tag.
-                    </video>
-                )}
-            </Modal>
-        </div>
+        <>
+            <HeaderComponent Companyname={Companyname} isloggedIn={isloggedIn} /> {/* Include the header component */}
+            <div className="container py-5">
+                <h2 className="text-center mb-2 mt-5">Events</h2>
+                <Row justify="center" className="mb-3">
+                    <Col span={24} xs={24} lg={12}>
+                        {/* Search input */}
+                        <Search
+                            placeholder="Search events"
+                            enterButton
+                            allowClear
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </Col>
+                </Row>
+                {/* Timeline with filtered data */}
+                <Timeline data={filteredData} onMediaClick={handleMediaClick} />
+                {/* Modal for displaying selected media */}
+                <Modal
+                    visible={modalVisible}
+                    onCancel={handleCloseModal}
+                    footer={null}
+                    closable={false}
+                    centered
+                    width={800} // Adjust modal width as needed
+                >
+                    {/* Render image or video based on selectedMedia */}
+                    {selectedMedia && selectedMedia.type === 'image' && (
+                        <img src={selectedMedia.src} alt={selectedMedia.alt} style={{ width: '100%', height: '70vh' }} />
+                    )}
+                    {selectedMedia && selectedMedia.type === 'video' && (
+                        <video controls style={{ width: '100%' }}>
+                            <source src={selectedMedia.src} type="video/mp4" />
+                            Your browser does not support the video tag.
+                        </video>
+                    )}
+                </Modal>
+            </div>
+            <Footer Companyname={Companyname} /> {/* Include the footer component */}
+        </>
+        
     );
 };
 
