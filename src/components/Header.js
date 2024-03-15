@@ -39,9 +39,9 @@ const HeaderComponent = ({ Companyname,isloggedIn }) => {
                         </Navbar.Brand>
                         <div className="d-flex justify-content-between align-items-center m-1" style={{marginLeft: 'auto'}}>
                             {isMenuOpen ? (
-                                <IconButton onClick={onClose} className="close-menu ms-0" icon={<CloseOutlined />} />
+                                <IconButton hover={false} onClick={onClose} className="close-menu ms-0" icon={<CloseOutlined />} />
                             ) : (
-                                <IconButton onClick={showDrawer} className="open-menu ms-0" icon={<MenuOutlined />} />
+                                <IconButton hover={false} onClick={showDrawer} className="open-menu ms-0" icon={<MenuOutlined />} />
                             )}
                         </div>
                         <Drawer

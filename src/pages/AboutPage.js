@@ -24,9 +24,9 @@ const AboutPage = ({isloggedIn}) => {
         // Add more achievements as needed
     ];
     const items = [
-        { title: 'Fundraising', content: 'Ongoing: mama davis orphanage' },
+        { title: 'Fundraising', content: 'Ongoing: mama davis orphanage',link:'/payment' },
         { title: 'Volunteering', content: 'Ongoing: Join Us as as volunteeer' },
-        { title: 'Donation', content: 'Not Ongoing: ...' },
+        { title: 'Donation', content: 'Not Ongoing: ...',link:'/payment' },
         { title: 'Seminars', content: 'Not Ongoing: Location -> 32 badagri road, bla bla' },
         { title: 'Awareness', content: 'Not Ongoing: Facebook link' },
         { title: 'Branches', content: 'Ongoing: 64 branches: (1.Lagos), (2.Lagos), (3.Lagos),' },

@@ -51,7 +51,7 @@ const Footer = ({Companyname}) => {
                         <form>
                         <h5 className='text-dark'>Subscribe to our newsletter</h5>
                         <p className='text-dark'> Monthly digest of what's new and exciting from us.</p>
-                        <div className="d-flex flex-column flex-sm-row w-100 gap-2">
+                        <div className="d-flex flex-column w-100 gap-2">
                             <label for="newsletter1" class="visually-hidden text-dark">Email address</label>
                             <input id="newsletter1" type="text" className="form-control" style={{borderColor:'#d7d7e9'}} placeholder="Email address" />
                             <Button to="/subscribe" text="Subscribe" className='text-dark border ' style={{border:'1px dotted #34356b', width:'155px', alignSelf:'center'}} icon={<MailOutlined style={{ color: '#ec3237' }} />} />
@@ -80,7 +80,7 @@ const Footer = ({Companyname}) => {
                 </Row>
 
                 <div className="d-flex flex-column flex-sm-row justify-content-between align-items-center border-top">
-                    <p className='text-dark  ms-auto'>© 2022 {Companyname}, Inc. All rights reserved.</p>
+                    <p className='text-dark'>© 2022 {Companyname}, Inc. All rights reserved.</p>
                     <ul class="list-unstyled d-flex ">
                         <li class="ms-3"><a class="link-dark" href="/"><svg class="bi" width="24" height="24"></svg></a></li>
                         <li class="ms-3"><a class="link-dark" href="/"><svg class="bi" width="24" height="24"></svg></a></li>

@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Button as BtnComponent, Nav } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-const Button = (props) => {
-  const { to, classname, style, text, onClick, icon } = props;
+const Button = ({ to, props, classname, style, text, onClick, icon }) => {
   const [isHovered, setIsHovered] = useState(false);
   console.log(classname);
 
@@ -46,9 +45,10 @@ const Button = (props) => {
     <>
       {to ? (
         <Link
-          to={to}
+          to={{ pathname: to, state: { item: { customProp: props } } }}
           className='btn'
           style={buttonStyle}
+          onClick={onClick}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >

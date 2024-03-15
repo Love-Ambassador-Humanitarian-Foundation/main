@@ -2,6 +2,7 @@ import React, { useState} from 'react';
 import { Container, Row, Col, Form, Alert } from 'react-bootstrap';
 
 import { Button} from '../components/button';
+import { Link } from 'react-router-dom';
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -15,10 +16,10 @@ const LoginPage = () => {
     return (
         <Container className="py-5">
             <Row className="justify-content-center mt-4">
-                <Col md={6} style={{maxWidth:'600px'}}>
+                <Col md={6} style={{maxWidth:'380px'}}>
                     <h2 className="text-center mb-4">Login</h2>
                     {error && <Alert variant="danger">{error}</Alert>}
-                    <Form onSubmit={handleSubmit}>
+                    <Form onSubmit={handleSubmit} className="d-flex flex-column w-100">
                         <Form.Group controlId="formBasicEmail" style={{margin:'10px'}}>
                             <Form.Label>Email address</Form.Label>
                             <Form.Control
@@ -40,9 +41,11 @@ const LoginPage = () => {
                                 required
                             />
                         </Form.Group>
+                        <div style={{margin:'10px'}}>
+                            Not yet joined?, <Link to='/signup' className='text-danger'>Sign up</Link>
+                        </div>
 
-                        
-                        <Button  text="Login"  style={{margin:'20px'}} />
+                        <Button  text="Login"  style={{margin:'20px', alignSelf: 'center' }} />
                     </Form>
                 </Col>
             </Row>

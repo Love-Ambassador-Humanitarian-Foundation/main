@@ -12,7 +12,7 @@ const CustomAccordion = ({ items, onClick,isloggedIn }) => {
     onClick(index);
     setActiveIndex(activeIndex === index ? null : index);
   };
-
+  
   return (
     <div>
       {items.map((item, index) => (
@@ -44,13 +44,13 @@ const CustomAccordion = ({ items, onClick,isloggedIn }) => {
               <p style={{'color':'red'}}>Not Ongoing:</p>
               {item.content.replace('Not Ongoing:', '')}
               {(item.title.includes('Fund')||item.title.includes('Donation'))?
-              <Button to="/payment" text="Contribute" style={{width:'30%', marginLeft:'auto'}} icon={<FontAwesomeIcon icon={faHandHoldingDollar} size='xl' style={{ color: 'green' }} />} />
+              <Button to={`${item.link}/${item.title}-${item.content.replace('Not Ongoing:', '')}`} text="Contribute" style={{width:'140px', maxWidth:'140px', marginLeft:'auto'}} icon={<FontAwesomeIcon icon={faHandHoldingDollar} size='xl' style={{ color: 'green' }} />} />
               :
               <>
                 {isloggedIn? 
                   <></>
                   :
-                  <Button to="/login" text="Log In" style={{width:'30%', marginLeft:'auto'}} icon={<LoginOutlined style={{ color: '#ec3237' }} />} />
+                  <Button to="/login" text="Log In" style={{width:'140px', maxWidth:'140px', marginLeft:'auto'}} icon={<LoginOutlined style={{ color: '#ec3237' }} />} />
                 }
               </>
               }
@@ -61,13 +61,13 @@ const CustomAccordion = ({ items, onClick,isloggedIn }) => {
               <p style={{'color':'green'}}>Ongoing:</p>
               {item.content.replace('Ongoing:', '')}
               {(item.title.includes('Fund')||item.title.includes('Donation'))?
-              <Button to="/payment" text="Contribute" style={{width:'30%', marginLeft:'auto'}} icon={<FontAwesomeIcon icon={faHandHoldingDollar} size='xl' style={{ color: 'green' }} />} />
+              <Button to={`${item.link}/${item.title}-${item.content.replace('Ongoing:', '')}`}  text="Contribute" style={{width:'140px', maxWidth:'140px', marginLeft:'auto'}} icon={<FontAwesomeIcon icon={faHandHoldingDollar} size='xl' style={{ color: 'green' }} />} />
               :
               <>
                 {isloggedIn? 
                   <></>
                   :
-                  <Button to="/login" text="Log In" style={{width:'30%', marginLeft:'auto'}} icon={<LoginOutlined style={{ color: '#ec3237' }} />} />
+                  <Button to="/login" text="Log In" style={{width:'140px', maxWidth:'140px', marginLeft:'auto'}} icon={<LoginOutlined style={{ color: '#ec3237' }} />} />
                 }
               </>
               }
