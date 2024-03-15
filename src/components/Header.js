@@ -3,9 +3,9 @@ import { Navbar, Nav, Container } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSeedling } from '@fortawesome/free-solid-svg-icons';
 import { Button, NavLink, IconButton } from './button';
-import { Dropdown } from './DropDown';
 import { HeartFilled, CloseOutlined, MenuOutlined } from '@ant-design/icons';
 import Logo from '../assets/logo.jpg';
+import Sidebar from './Sidebar';
 import './Header.css';
 
 const HeaderComponent = ({ Companyname }) => {
@@ -34,7 +34,7 @@ const HeaderComponent = ({ Companyname }) => {
                             <span className="navbar-title"> {Companyname}</span>
                         </Navbar.Brand>
                         <div className="d-flex justify-content-between align-items-center m-1" style={{marginLeft: 'auto'}}>
-                            <IconButton onClick={() => setIsMenuOpen(true)} style={{ color: 'green', marginRight: '0' }} className="seedling-menu" icon={<FontAwesomeIcon icon={faSeedling} />} />
+                            <IconButton onClick={() => (setIsMenuOpen(true))} style={{ color: 'green', marginRight: '0' }} className="seedling-menu" icon={<FontAwesomeIcon icon={faSeedling} />} />
                             {isMenuOpen ? (
                                 <IconButton onClick={() => setIsMenuOpen(false)} className="close-menu ms-0" icon={<CloseOutlined />} />
                             ) : (
@@ -42,7 +42,8 @@ const HeaderComponent = ({ Companyname }) => {
                             )}
                         </div>
 
-                        
+                        {/* Sidebar */}
+                        <Sidebar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
                     </Container>
                 ) : (
                     <Container>

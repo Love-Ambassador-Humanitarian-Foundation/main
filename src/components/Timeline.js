@@ -1,13 +1,13 @@
 import React from 'react';
-import { Timeline as AntTimeline, Image, Modal,Grid } from 'antd';
+import { Timeline as AntTimeline, Image, Grid } from 'antd';
 
 const { useBreakpoint } = Grid;
 
 const Timeline = ({ data, onMediaClick }) => {
     const screens = useBreakpoint();
-    const handleClick = (media) => {
-        onMediaClick(media);
-    };
+    //const handleClick = (media) => {
+    //    onMediaClick(media);
+    //};
 
     return (
         <div style={{ overflowX: 'auto' }}>

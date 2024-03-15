@@ -26,7 +26,7 @@ const AboutPage = () => {
     // Paginate team members
     const pageSize = 4; // Number of team members per page
     const totalMembers = teamMembers.length;
-    const totalPages = Math.ceil(totalMembers / pageSize);
+    //const totalPages = Math.ceil(totalMembers / pageSize);
     const [currentPage, setCurrentPage] = useState(1);
 
     const handlePageChange = (page) => {
