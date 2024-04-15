@@ -15,7 +15,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 const URL = 'http://loveahfoundation.org';
-const API_URL = 'http://127.0.0.1:8000';
+const API_URL = URL; //'http://127.0.0.1:8000';
 const Companyname = 'LAHF';
 const App = () => {
   const [isloggedIn, SetLoggedIn] = useState(true);
