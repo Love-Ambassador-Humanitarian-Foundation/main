@@ -1,5 +1,5 @@
 {
-  "homepage": "https://love-ambassador-humanitarian-foundation.github.io/main/",
+  "homepage": "https://loveahfoundation.org",
   "name": "lahf",
   "version": "0.1.0",
   "private": true,
@@ -10,6 +10,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "antd": "^5.14.0",
+    "axios": "^1.6.8",
     "bootstrap": "^5.3.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.0",

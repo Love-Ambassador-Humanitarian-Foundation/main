@@ -14,6 +14,8 @@ import NotFound from './pages/NotFound';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
+const URL = 'http://loveahfoundation.org';
+const API_URL = 'http://127.0.0.1:8000';
 const Companyname = 'LAHF';
 const App = () => {
   const [isloggedIn, SetLoggedIn] = useState(true);
@@ -37,22 +39,22 @@ const App = () => {
   return (
     <Router>
         <Routes>
-          <Route path="/" element={<LandingPage Companyname={Companyname} isloggedIn={isloggedIn}/>} exact ></Route>
-          <Route path="/about" element={<AboutPage Companyname={Companyname} isloggedIn={isloggedIn}/>} exact ></Route>
-          <Route path="/events" element={<EventsPage Companyname={Companyname} isloggedIn={isloggedIn}/>} exact ></Route>
+          <Route path="/" element={<LandingPage API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
+          <Route path="/about" element={<AboutPage API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
+          <Route path="/events" element={<EventsPage API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
           <Route path="/contact" element={<ContactUsPage/>} exact ></Route>
           <Route path="/login" element={<LoginPage/>} exact ></Route>
           <Route path="/signup" element={<SignUpPage/>} exact ></Route>
-          <Route path="/profile/:user" element={<Profile Companyname={Companyname} isloggedIn={isloggedIn}/>} exact ></Route>
+          <Route path="/profile/:user" element={<Profile API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
           <Route path="/payment/:variable" element={<PaymentPage/>} ></Route>
-          <Route path="/admin/dashboard" element={<Dashboard Companyname={Companyname} isloggedIn={isloggedIn}/>} ></Route>
+          <Route path="/admin/dashboard" element={<Dashboard API_URL={API_URL} isloggedIn={isloggedIn}/>} ></Route>
           <Route path="/admin/users/:id" component={Users} ></Route>
-          <Route path="/admin/about" element={<Dashboard Companyname={Companyname} isloggedIn={isloggedIn}/>}  ></Route>
+          <Route path="/admin/about" element={<Dashboard API_URL={API_URL} isloggedIn={isloggedIn}/>}  ></Route>
           <Route path="/admin/achievement/:id" component={Users}  ></Route>
-          <Route path="/admin/activities/:id" element={<Dashboard Companyname={Companyname} isloggedIn={isloggedIn}/>}  ></Route>
+          <Route path="/admin/activities/:id" element={<Dashboard API_URL={API_URL} isloggedIn={isloggedIn}/>}  ></Route>
           <Route path="/admin/branches/:id" component={Users}  ></Route>
           <Route path="/admin/payments/:id" component={Users}  ></Route>
-          <Route path="/admin/reportlog/:id" element={<Dashboard Companyname={Companyname} isloggedIn={isloggedIn}/>}  ></Route>
+          <Route path="/admin/reportlog/:id" element={<Dashboard API_URL={API_URL} isloggedIn={isloggedIn}/>}  ></Route>
           <Route path="/admin/events/:id" component={Users}  ></Route>
           {/* <Redirect from="/" to="/" /> */}
           

@@ -1,13 +1,17 @@
-import React, { useState} from 'react';
+import React, { useState, useEffect} from 'react';
 import { Row, Col, Card, Pagination, Modal } from 'antd';
 import img1 from '../assets/landing.jpg';
 import CustomAccordion from '../components/Accordion';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
+import LoadingSpinner from '../components/LoadingSpinner';
+import axios from 'axios';
 const { Meta } = Card;
 
-const AboutPage = ({Companyname,isloggedIn}) => {
-    
+const AboutPage = ({API_URL,isloggedIn}) => {
+    const [data, setData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
     // Dummy data for team members
     const teamMembers = [
         { name: 'Mr Ifeanyi Onyenoro', position: 'Co-Founder', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
@@ -79,11 +83,36 @@ const AboutPage = ({Companyname,isloggedIn}) => {
             console.error(`Index ${index} is out of bounds for images array`);
         }
     };
+    useEffect(() => {
+        const fetchData = async (API_URL) => {
+            try {
+              const response = await axios.get(API_URL+'/api/about');
+              setData(response.data.response);
+              setIsLoading(false);
+              console.log(response.data);
+            } catch (error) {
+              setError(error.message);
+              setIsLoading(false);
+              console.log(error);
+            }
+          };
+    
+        // Cleanup function to remove the event listener when the component unmounts
+        fetchData(API_URL);
+        
+      }, []);
+      if (isLoading) {
+            return <LoadingSpinner/>;
+      }
+    
+      if (error) {
+            return <div>Error: {error}</div>;
+      }
       
 
     return (
         <>
-            <HeaderComponent Companyname={Companyname} isloggedIn={isloggedIn} /> {/* Include the header component */}
+            <HeaderComponent Companyname={data.name} isloggedIn={isloggedIn} /> {/* Include the header component */}
             <div className="container py-5">
             <div className="row align-items-center mt-4">
                 <div className="col-xs-12 col-md-6">
@@ -109,7 +138,7 @@ const AboutPage = ({Companyname,isloggedIn}) => {
                 <div className="col">
                     <h2 className="mb-4 text-center">Our Mission</h2>
                     <p className="text-center">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris non ipsum libero. Proin euismod metus nec sapien ultricies, ac consectetur ligula tristique.
+                        {data.about}.
                     </p>
                 </div>
             </div>
@@ -190,7 +219,7 @@ const AboutPage = ({Companyname,isloggedIn}) => {
                 
             </div>
             </div>
-            <Footer Companyname={Companyname} /> {/* Include the footer component */}
+            <Footer Companyname={data.name} /> {/* Include the footer component */}
         </>
         
     );

@@ -10,6 +10,8 @@ import {Button, IconButton} from '../components/button';
 import CustomAccordion from '../components/Accordion';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
+import LoadingSpinner from '../components/LoadingSpinner';
+import axios from 'axios';
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
 import img1 from '../assets/landing.jpg';
@@ -23,7 +25,10 @@ import 'swiper/css/pagination';
 // import required modules
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
-const LandingPage = ({Companyname, isloggedIn}) => {
+const LandingPage = ({API_URL, isloggedIn}) => {
+    const [data, setData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     // Modal state
     const [visible, setVisible] = useState(false);
@@ -145,16 +150,37 @@ const LandingPage = ({Companyname, isloggedIn}) => {
     
         window.addEventListener('resize', setHeights);
         window.addEventListener('load', setHeights);
+        const fetchData = async (API_URL) => {
+            try {
+              const response = await axios.get(API_URL+'/api/');
+              setData(response.data.response);
+              setIsLoading(false);
+              console.log(response.data);
+            } catch (error) {
+              setError(error.message);
+              setIsLoading(false);
+              console.log(error);
+            }
+          };
     
         // Cleanup function to remove the event listener when the component unmounts
+        fetchData(API_URL);
         return () => {
           window.removeEventListener('resize', setHeights);
           window.removeEventListener('load', setHeights);
         };
+        
       }, []);
+      if (isLoading) {
+            return <LoadingSpinner/>;
+      }
+    
+      if (error) {
+            return <div>Error: {error}</div>;
+      }
     return (
         <>
-            <HeaderComponent Companyname={Companyname} isloggedIn={isloggedIn} /> {/* Include the header component */}
+            <HeaderComponent Companyname={data.name} isloggedIn={isloggedIn} /> {/* Include the header component */}
         
             <div style={{
                 backgroundImage: `url(${LandingPageImg})`,
@@ -169,12 +195,12 @@ const LandingPage = ({Companyname, isloggedIn}) => {
             
             <Container className="py-5" style={{ zIndex: '1', position: 'absolute', top: '200px', left: '50%', transform: 'translate(-50%, -50%)' }}>
                 <div className="mt-5 mb-5"></div>
-                <h1 className="text-center text-white mb-4 mt-5">Welcome to Our {Companyname}</h1>
+                <h1 className="text-center text-white mb-4 mt-5">Welcome to Our {data.name}</h1>
                 <p className="text-center text-white mb-5">This is where we strive to create positive change and <br />support humanitarian causes around the globe.</p>
                 <div className="d-flex justify-content-center">
-                <Button to="/signup" text="Contribute" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
-                <span className="mx-3"></span>
-                <Button to='/about' text='Learn More' icon={<BookFilled style={{ color: '#ec3237' }} />}></Button>
+                    <Button to="/signup" text="Contribute" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
+                    <span className="mx-3"></span>
+                    <Button to='/about' text='Learn More' icon={<BookFilled style={{ color: '#ec3237' }} />}></Button>
                 </div>
             </Container>
             <div className="row mt-3">
@@ -444,7 +470,7 @@ const LandingPage = ({Companyname, isloggedIn}) => {
 
     
             </div>  
-        <Footer Companyname={Companyname} /> {/* Include the footer component */}
+        <Footer Companyname={data.name} /> {/* Include the footer component */}
     </>
   );
 };
