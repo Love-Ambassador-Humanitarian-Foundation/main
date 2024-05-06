@@ -3,6 +3,7 @@ import { Navbar, Nav, Container } from 'react-bootstrap';
 import { Button, NavLink, IconButton } from './button';
 import { Link } from 'react-router-dom';
 import { HeartFilled, CloseOutlined, MenuOutlined,UserOutlined } from '@ant-design/icons';
+
 import { Drawer,Avatar,Dropdown, Menu } from 'antd';
 import Logo from '../assets/logo.jpg';
 import './Header.css';
@@ -26,7 +27,7 @@ const HeaderComponent = ({ Companyname,isloggedIn }) => {
             <Menu.Item key="1"><Link to={`/profile/${userid}`} style={{textDecoration:'none'}}>Account</Link></Menu.Item>
             <Menu.Item key="2">email</Menu.Item>
             <Menu.Item key="3">usertype:{isAdmin?<>Admin</>:<></>}</Menu.Item>
-            <Menu.Item key="4"><Link to='/admin/dashboard' style={{textDecoration:'none'}}>View Dashboard</Link></Menu.Item>
+            <Menu.Item key="4"><Link to='/admin/1233244' style={{textDecoration:'none'}}>View Dashboard</Link></Menu.Item>
             <Menu.Item key="5">Activity Log</Menu.Item>
             <Menu.Item key="6">{isloggedIn?
                             <Link to="/logout" text="Logout" style={{textDecoration:'none'}}>Logout</Link>
@@ -78,17 +79,32 @@ const HeaderComponent = ({ Companyname,isloggedIn }) => {
                         >
                             <NavLink to="/" text="Home" className="active m-2" />
                             
-                            <NavLink to="/about" text="About" className="m-2" />
+                            <NavLink to="/about" text="About" className="m-2"/>
                             <NavLink to="/events" text="Events" className="m-2" />
                             <NavLink to="/contact" text="Contact" className="m-2" />
-                            
-                            <Dropdown overlay={profileMenu} placement="bottomLeft" trigger={['click']}>
-                                <Avatar size={30} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
-                            </Dropdown>
+                            <Nav.Item className='nav-link'>
+                                <Link
+                                    
+                                    style={{
+                                        borderRadius: '4px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        padding: '16px 6px', // Adjust padding as needed
+                                        textDecoration: 'none', // Remove text decoration for Links
+                                      }}
+                                    className={`btn`}
+                                    
+                                >
+                                    <Dropdown overlay={profileMenu} placement="bottomLeft" trigger={['click']}>
+                                        <Avatar size={30} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
+                                    </Dropdown>
+                                </Link>
+                            </Nav.Item>
+                              
                             <Button to="/contribute" text="Contribute" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
                         </Drawer>
 
-                        
                     </Container>
                 ) : (
                     <Container>

@@ -119,7 +119,7 @@ const PaymentPage = ({Companyname, isloggedIn}) => {
                                     checked={saveDetails}
                                     onChange={(e) => setSaveDetails(e.target.checked)}
                                 />
-                                <Link to='/about' className='text-success'>View Account Details</Link>
+                                <Link to='/about#accountdetails' className='text-success'>View Account Details</Link>
                             </Form.Group>
 
                             <Button text="Pay Now" style={{ margin: '20px', alignSelf: 'center' }} onClick={(e)=>(handleSubmit(e))} />

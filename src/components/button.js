@@ -71,7 +71,7 @@ const Button = ({ to, props, classname, style, text, onClick, icon }) => {
   );
 };
 
-const NavLink = ({ text, className, to }) => {
+const NavLink = ({ text, className, to, fwicon}) => {
     const [isActive, setIsActive] = useState(true);
 
   // Toggle active state
@@ -110,15 +110,18 @@ const NavLink = ({ text, className, to }) => {
     ...(className === 'active' && activeStyle)
   };
     return (
-        <Nav.Item className='nav-link'>
-        <Link
-            to={to}
-            style={linkStyle}
-            className={`btn nav-link ${className} ${isActive ? 'active' : ''}`}
-            
-            onClick={toggleActive}
-        >
-            {text}
+        <Nav.Item className='nav-link d-flex justify-content-left align-items-center'>
+          
+          {fwicon}
+          <Link
+              to={to}
+              style={linkStyle}
+              className={`btn nav-link ${className} ${isActive ? 'active' : ''}`}
+              
+              onClick={toggleActive}
+          >
+              
+              {text}
         </Link>
         </Nav.Item>
     );

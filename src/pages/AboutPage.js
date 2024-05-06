@@ -5,11 +5,14 @@ import CustomAccordion from '../components/Accordion';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 const { Meta } = Card;
 const { Text } = Typography;
 
 const AboutPage = ({API_URL,isloggedIn}) => {
+    const location = useLocation();
+    
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -102,25 +105,21 @@ const AboutPage = ({API_URL,isloggedIn}) => {
           console.log(error);
         }
       };
-
-    useEffect(() => {
-        // Cleanup function to remove the event listener when the component unmounts
-    fetchData(API_URL);
-    window.addEventListener('load', () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const scrollToAccountDetails = urlParams.get('scrollToAccountDetails');
-        console.log(scrollToAccountDetails+'====================',urlParams);
-        if (scrollToAccountDetails === 'true') {
-            const accountDetails = document.getElementById('accountdetails');
+    
+    function scrolltotop(hash){
+        if (hash === '#accountdetails'){
+            const accountDetails = document.getElementById(hash.replace('#',''));
             if (accountDetails) {
-                accountDetails.scrollIntoView({ behavior: 'smooth' });
+                accountDetails.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
             }
         }
-    });
-    
-    
-    
-    }, [API_URL]);
+    }
+    scrolltotop(location.hash);
+
+    useEffect(() => {
+        fetchData(API_URL);
+    }, []);
+
     if (isLoading) {
         return <LoadingSpinner/>;
     }
@@ -130,7 +129,7 @@ const AboutPage = ({API_URL,isloggedIn}) => {
     }
       
     return (
-        <>
+        <div id='about'>
             <HeaderComponent Companyname={data.name} isloggedIn={isloggedIn} /> {/* Include the header component */}
             <div className="container py-5">
             <div className="row align-items-center mt-4">
@@ -219,9 +218,9 @@ const AboutPage = ({API_URL,isloggedIn}) => {
                 </div>
             </div>
             <hr />
-            <div className='mt-5 mb-5'>
+            <div className='mt-5 mb-3'>
                 <h5 className="text-center text-dark fw-bold">Activities</h5>
-                <Row className='mt-5 mb-5'>
+                <Row className='mt-5 mb-2'>
                 
                     <Col className='col-12 col-sm-12 col-md-6 col-lg-6'>
                         <CustomAccordion
@@ -235,28 +234,34 @@ const AboutPage = ({API_URL,isloggedIn}) => {
                         <img src={image} className='img-fluid' alt='Services' height={'300px'} width={'100%'} style={{maxHeight:'300px', maxWidth:'100%'}}/>
                     </Col>
                 </Row>
+                
             </div>
-            <h5 id='accountdetails' className="text-center text-dark fw-bold">Account Details</h5>
-            <Row justify="center" align="middle" style={{display: 'flex',alignItems: 'flex-start'}}>
-                {bankaccounts.map((account, index) => (
-                    <Col xs={24} sm={12} md={12} lg={12} xl={12} style={{flex:1,marginBottom: 8}} className='p-1'>
-                        <Card hoverable >
-                            <div className='d-flex flex-column justify-content-left'>
-                                {account.currency ? <Text strong>Currency: {account.currency}</Text> : null}
-                                {account.number ? <Text strong>Account Number: {account.number}</Text> : null}
-                                {account.sortcode ? <Text strong>Sort Code: {account.sortcode}</Text> : null}
-                                {account.iban ? <Text strong>IBAN: {account.iban}</Text> : null}
-                                {account.swiftbic ? <Text strong>SWIFT: {account.swiftbic}</Text> : null}
-                                {account.bankname ? <Text strong>Bank Name: {account.bankname}</Text> : null}
-                                {account.holdername ? <Text strong>Account Holder's Name: {account.holdername}</Text> : null}
-                            </div>
-                        </Card>
-                    </Col>
-                ))}
-            </Row>
+            
+            <div id='accountdetails'>
+                <h5 className="text-center text-dark fw-bold">Account Details</h5>
+                <Row justify="center" align="middle" style={{display: 'flex',alignItems: 'flex-start'}}>
+                
+                    {bankaccounts.map((account, index) => (
+                        <Col key={index} xs={24} sm={12} md={12} lg={12} xl={12} style={{flex:1,marginBottom: 8}} className='p-1'>
+                            <Card hoverable >
+                                <div className='d-flex flex-column justify-content-left'>
+                                    {account.currency ? <Text strong>Currency: {account.currency}</Text> : null}
+                                    {account.number ? <Text strong>Account Number: {account.number}</Text> : null}
+                                    {account.sortcode ? <Text strong>Sort Code: {account.sortcode}</Text> : null}
+                                    {account.iban ? <Text strong>IBAN: {account.iban}</Text> : null}
+                                    {account.swiftbic ? <Text strong>SWIFT: {account.swiftbic}</Text> : null}
+                                    {account.bankname ? <Text strong>Bank Name: {account.bankname}</Text> : null}
+                                    {account.holdername ? <Text strong>Account Holder's Name: {account.holdername}</Text> : null}
+                                </div>
+                            </Card>
+                        </Col>
+                    ))}
+                </Row>
+            </div>
+            
             </div>
             <Footer Companyname={data.name} /> {/* Include the footer component */}
-        </>
+        </div>
         
     );
 };

@@ -73,7 +73,7 @@ const ContributePage = ({Companyname, isloggedIn}) => {
                     <h2 className="mb-4 text-center">Contribute</h2>
                     <Row justify="center" align="middle" style={{display: 'flex',alignItems: 'flex-start'}}>
                         {options.map((option, index) => (
-                            <Col xs={24} sm={12} md={12} lg={12} xl={12} style={{flex:1,marginBottom: 8}}>
+                            <Col key={index} xs={24} sm={12} md={12} lg={12} xl={12} style={{flex:1,marginBottom: 8}}>
                                 <Link to={option.url}style={{ textDecoration: 'none' }}>
                                     <Card hoverable onClick={() => showModal(option)}>
                                         <Meta title={option.title} description={option.description} />

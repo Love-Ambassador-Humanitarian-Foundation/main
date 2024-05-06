@@ -1,27 +1,89 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import HeaderComponent from '../components/AdminHeader';
-import Footer from '../components/Footer';
-//import { SearchOutlined} from '@ant-design/icons';
-import { Input } from 'antd';
+import { HomeOutlined, EditOutlined, SaveOutlined, UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
+import { Layout, Menu, theme,Breadcrumb } from 'antd';
+const { Header, Content, Sider, Footer } = Layout;
+const items = [UserOutlined, VideoCameraOutlined, UploadOutlined, UserOutlined].map(
+  (icon, index) => ({
+    key: String(index + 1),
+    icon: React.createElement(icon),
+    label: `nav ${index + 1}`,
+  }),
+);
+const Dashboard = ({Companyname, isloggedIn}) => {
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const {
+    token: { colorBgContainer, borderRadiusXS },
+  } = theme.useToken();
+  useEffect(() => {
+    const handleResize = () => {
+        setIsMobile(window.innerWidth < 768);
+    };
 
-const { Search } = Input;
+    window.addEventListener('resize', handleResize);
 
-const Dashboard = ({ Companyname, isloggedIn }) => {
-    return (
-        <>
-            <HeaderComponent Companyname={Companyname} isloggedIn={isloggedIn} />
+    return () => {
+        window.removeEventListener('resize', handleResize);
+    };
+}, []);
+  return (
+    <Layout >
+        
+        <HeaderComponent Companyname={Companyname} isloggedIn={isloggedIn} style={{
+            padding: 0,
+            background: colorBgContainer,
+          }} />
+        {isMobile? null
+            : 
+            <Sider
+                breakpoint="md"
+                collapsedWidth="0"
+                onBreakpoint={(broken) => {
+                console.log(broken);
+                }}
+                onCollapse={(collapsed, type) => {
+                console.log(collapsed, type);
+                }}
+                style={{marginTop:'70px', height:'calc(100vh - 70px)'}}
+            >
+                <div className="demo-logo-vertical" />
+                <Menu theme="dark" mode="inline" defaultSelectedKeys={['4']} items={items} />
+            </Sider>}
             
-            <div className="dashboard-content container py-5">
-                <div className='mt-5'>
-                    <Search placeholder="Search" className="search-bar me-4" /> {/* prefix={<SearchOutlined />}*/}
+        <Layout style={{marginTop:'70px',}} className='mb-0'>
+            <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{backgroundColor: '#d7d7e9',borderRadius: borderRadiusXS }}>
+                    <Breadcrumb
+                        items={[
+                            {href: '/',title: <HomeOutlined />,},
+                            {title: (<><UserOutlined /><span>dfsvdff</span></>),},
+                        ]}
+                    />
+                    <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
                 </div>
-                {/* Add your dashboard content here */}
-                <h1>Welcome to the Dashboard</h1>
-                <p>This is the main content of your dashboard.</p>
+            <Content className='m-2'>
+            <div
+                style={{
+                padding: 24,
+                minHeight: 360,
+                background: colorBgContainer,
+                borderRadius: borderRadiusXS,
+                height:'calc(100vh - 140px)'
+                }}
+            >
+                content
             </div>
-            <Footer Companyname={Companyname} /> {/* Include the footer component */}
-        </>
-    );
+            </Content>
+            
+            
+        </Layout>
+        <Footer
+            
+            style={{ position: 'absolute', bottom: 0, width: '100%', textAlign: 'center' }}
+            >
+            {Companyname} ©2018 Created by Ant UED
+        </Footer>
+          
+    </Layout>
+  );
 };
-
 export default Dashboard;

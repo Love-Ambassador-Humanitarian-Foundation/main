@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Badge, Avatar,Dropdown, Menu} from 'antd';
-import { MailOutlined, BellOutlined, UserOutlined} from '@ant-design/icons';
-import {NavLink} from './button';
+import { Drawer,Badge, Avatar,Dropdown, Menu} from 'antd';
+import { UsergroupAddOutlined,HeartFilled, MailOutlined, BellOutlined, CloseOutlined,LogoutOutlined, LoginOutlined, MenuOutlined,UserOutlined,InfoCircleOutlined,InteractionOutlined, DashboardOutlined,StarOutlined,BranchesOutlined,ProfileOutlined,DollarOutlined } from '@ant-design/icons';
+import { Button, NavLink, IconButton } from './button';
 import Logo from '../assets/logo.jpg';
 import { Link } from 'react-router-dom';
 import { Navbar, Nav, Container } from 'react-bootstrap';
@@ -11,6 +11,15 @@ import './Header.css';
 
 const HeaderComponent = ({ Companyname, isloggedIn }) => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    //const [isAdmin, SetAdmin] = useState(false);
+    const isAdmin = true;
+    const showDrawer = () => {
+        setIsMenuOpen(true);
+    };
+    const onClose = () => {
+        setIsMenuOpen(false);
+    };
     const userdetails={
         "email":'oscarchiagoziem@gmail.com'
     }
@@ -59,7 +68,7 @@ const HeaderComponent = ({ Companyname, isloggedIn }) => {
     return (
         <Navbar bg="white" expand="lg" fixed="top" className="m-0 p-0">
             {isMobile ? (
-                <Container>
+                <Container fluid>
                     <Navbar.Brand href="/" className="">
                         <img src={Logo} width="70" height="60" className="navbar-logo" alt="Lahf Logo" />{' '}
                         <span className="navbar-title"> {Companyname}</span>
@@ -80,43 +89,79 @@ const HeaderComponent = ({ Companyname, isloggedIn }) => {
                             
                             <Avatar size={30} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
                         </Dropdown>
+                        {isMenuOpen ? (
+                                <IconButton hover={false} onClick={onClose} className="close-menu ms-0" icon={<CloseOutlined />} />
+                            ) : (
+                                <IconButton hover={false} onClick={showDrawer} className="open-menu ms-0" icon={<MenuOutlined />} />
+                            )}
                     </div>
+                    <Drawer
+                            title="Basic Drawer"
+                            placement={'left'}
+                            closable={false}
+                            onClose={onClose}
+                            open={isMenuOpen}
+                            key={'left'}
+                            width={'70%'}
+                        >
+                            <NavLink to="/admin/:243535" text="Dashboard" className="active m-2 mt-1" fwicon={<DashboardOutlined style={{fontSize:'20px', cursor:'pointer'}} />}  />
+                            
+                            <NavLink to="/admin/profiles" text="Profiles" className="m-2" fwicon={<Badge count={1} className="me-3">
+                                                                                                    <UsergroupAddOutlined style={{ fontSize: '20px', cursor:'pointer' }} />
+                                                                                                    </Badge>} />
+                            <NavLink to="/admin/about" text="About" className="m-2" fwicon={<InfoCircleOutlined style={{fontSize:'20px', cursor:'pointer'}} />} />
+                            <NavLink to="/admin/achievements" text="Achievements" className="m-2" fwicon={<StarOutlined style={{fontSize:'20px', cursor:'pointer'}} />} />
+                            <NavLink to="/admin/events" text="Events" className="m-2" fwicon={<InteractionOutlined style={{fontSize:'20px', cursor:'pointer'}} />} />
+                            <NavLink to="/admin/payments" text="Payments" className="m-2" fwicon={<Badge count={1} className="me-3">
+                                                                                                    <DollarOutlined style={{fontSize:'20px', cursor:'pointer'}} />
+                                                                                                    </Badge>} />
+                            <NavLink to="/admin/reports" text="Reports" className="m-2" fwicon={<ProfileOutlined style={{fontSize:'20px', cursor:'pointer'}} />} />
+                            <NavLink to="/admin/branches" text="Branches" className="m-2" fwicon={<BranchesOutlined style={{fontSize:'20px', cursor:'pointer'}} />} />
+                            <NavLink to="/admin/profile" text="Profile" className="m-2" fwicon={<UserOutlined style={{fontSize:'20px', cursor:'pointer'}} />} />
+                            <NavLink to="/admin/mails" text="Mails" className="m-2" fwicon={<Badge count={1} className="me-3">
+                                                                                                <MailOutlined style={{ fontSize: '20px', cursor:'pointer' }} />
+                                                                                            </Badge>} />
+                            {isloggedIn? 
+                            <Button to="/logout" text="Sign Up" icon={<LogoutOutlined style={{ color: '#ec3237' }} />} />
+                            :
+                            <Button to="/login" text="Sign Up" icon={<LoginOutlined style={{ color: '#ec3237' }} />} />
+                            }
+                    </Drawer>
                     
                 </Container>
             ) : (
-                <Container>
+                <Container fluid>
                     <Navbar.Brand href="#home" className="">
                         <img src={Logo} width="70" height="60" className="navbar-logo" alt="Lahf Logo" />{' '}
                         <span className="navbar-title"> {Companyname}</span>
                     </Navbar.Brand>
                     <Nav className="ms-auto navbar-nav-links d-flex justify-content-between align-items-center" activeKey="/home">
-                        <NavLink to="/" text="Home" className="active m-2 text-success" />
+                        
                         
                         {isloggedIn ? (
-                            <>
-                                <div className="d-flex align-items-center m-2">
-                                    <Dropdown overlay={mailMenu} placement="bottomLeft" trigger={['click']}>
-                                        <Badge count={1} className="me-4">
-                                            <MailOutlined style={{ fontSize: '20px', cursor:'pointer' }} />
-                                        </Badge>
-                                    </Dropdown>
-                                    <Dropdown overlay={notificationMenu} placement="bottomLeft" trigger={['click']}>
-                                        <Badge count={2} className="me-4">
-                                            <BellOutlined style={{ fontSize: '20px', cursor:'pointer' }}/>
-                                        </Badge>
-                                    </Dropdown>
+                            <div className="d-flex align-items-center" style={{ marginLeft: 'auto' }}>
+                                <NavLink to="/" text="Home" className="active m-2 text-success" />
+                                <Dropdown overlay={mailMenu} placement="bottomLeft" trigger={['click']}>
+                                    <Badge count={1} className="me-4">
+                                        <MailOutlined style={{ fontSize: '20px', cursor:'pointer' }} />
+                                    </Badge>
+                                </Dropdown>
+                                <Dropdown overlay={notificationMenu} placement="bottomLeft" trigger={['click']}>
+                                    <Badge count={2} className="me-4">
+                                        <BellOutlined style={{ fontSize: '20px', cursor:'pointer' }}/>
+                                    </Badge>
+                                </Dropdown>
+                                
+                                <Dropdown overlay={profileMenu} placement="bottomLeft" trigger={['click']}>
                                     
-                                    <Dropdown overlay={profileMenu} placement="bottomLeft" trigger={['click']}>
-                                        
-                                        <Avatar size={30} icon={<UserOutlined />} className="me-2" style={{ fontSize: '20px', cursor:'pointer' }} />
-                                    </Dropdown>
-                                </div>
-                            </>
+                                    <Avatar size={30} icon={<UserOutlined />} className="me-2" style={{ fontSize: '20px', cursor:'pointer' }} />
+                                </Dropdown>
+                            </div>
                         ) : (
-                            <>
+                            <div className="d-flex align-items-center " style={{ marginLeft: 'auto' }}>
                                 <NavLink to="/login" text="Login" className="m-2" />
                                 <NavLink to="/signup" text="Signup" className="m-2" />
-                            </>
+                            </div>
                         )}
                     </Nav>
                     

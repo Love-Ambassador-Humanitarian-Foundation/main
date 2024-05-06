@@ -49,7 +49,7 @@ const App = () => {
           <Route path="/signup" element={<SignUpPage/>} exact ></Route>
           <Route path="/profile/:userid" element={<Profile API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
           <Route path="/payment/:variable" element={<PaymentPage/>} ></Route>
-          <Route path="/admin/dashboard" element={<Dashboard API_URL={API_URL} isloggedIn={isloggedIn}/>} ></Route>
+          <Route path="/admin/:id" element={<Dashboard API_URL={API_URL} isloggedIn={isloggedIn}/>} ></Route>
           <Route path="/admin/users/:id" component={Users} ></Route>
           <Route path="/admin/about" element={<Dashboard API_URL={API_URL} isloggedIn={isloggedIn}/>}  ></Route>
           <Route path="/admin/achievement/:id" component={Users}  ></Route>
