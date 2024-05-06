@@ -71,7 +71,7 @@ const Button = ({ to, props, classname, style, text, onClick, icon }) => {
   );
 };
 
-const NavLink = ({ text, className, to, fwicon}) => {
+const NavLink = ({ text, className, to, fwicon, light}) => {
     const [isActive, setIsActive] = useState(true);
 
   // Toggle active state
@@ -112,7 +112,7 @@ const NavLink = ({ text, className, to, fwicon}) => {
     return (
         <Nav.Item className='nav-link d-flex justify-content-left align-items-center'>
           
-          {fwicon}
+          <span className={light ?'text-white':'text-dark'}>{fwicon}</span>
           <Link
               to={to}
               style={linkStyle}

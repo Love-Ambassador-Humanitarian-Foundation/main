@@ -9,7 +9,7 @@ import './Header.css';
 
 // Existing imports...
 
-const HeaderComponent = ({ Companyname, isloggedIn }) => {
+const HeaderComponent = ({ Companyname, isloggedIn, items }) => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     //const [isAdmin, SetAdmin] = useState(false);
@@ -104,23 +104,9 @@ const HeaderComponent = ({ Companyname, isloggedIn }) => {
                             key={'left'}
                             width={'70%'}
                         >
-                            <NavLink to="/admin/:243535" text="Dashboard" className="active m-2 mt-1" fwicon={<DashboardOutlined style={{fontSize:'20px', cursor:'pointer'}} />}  />
-                            
-                            <NavLink to="/admin/profiles" text="Profiles" className="m-2" fwicon={<Badge count={1} className="me-3">
-                                                                                                    <UsergroupAddOutlined style={{ fontSize: '20px', cursor:'pointer' }} />
-                                                                                                    </Badge>} />
-                            <NavLink to="/admin/about" text="About" className="m-2" fwicon={<InfoCircleOutlined style={{fontSize:'20px', cursor:'pointer'}} />} />
-                            <NavLink to="/admin/achievements" text="Achievements" className="m-2" fwicon={<StarOutlined style={{fontSize:'20px', cursor:'pointer'}} />} />
-                            <NavLink to="/admin/events" text="Events" className="m-2" fwicon={<InteractionOutlined style={{fontSize:'20px', cursor:'pointer'}} />} />
-                            <NavLink to="/admin/payments" text="Payments" className="m-2" fwicon={<Badge count={1} className="me-3">
-                                                                                                    <DollarOutlined style={{fontSize:'20px', cursor:'pointer'}} />
-                                                                                                    </Badge>} />
-                            <NavLink to="/admin/reports" text="Reports" className="m-2" fwicon={<ProfileOutlined style={{fontSize:'20px', cursor:'pointer'}} />} />
-                            <NavLink to="/admin/branches" text="Branches" className="m-2" fwicon={<BranchesOutlined style={{fontSize:'20px', cursor:'pointer'}} />} />
-                            <NavLink to="/admin/profile" text="Profile" className="m-2" fwicon={<UserOutlined style={{fontSize:'20px', cursor:'pointer'}} />} />
-                            <NavLink to="/admin/mails" text="Mails" className="m-2" fwicon={<Badge count={1} className="me-3">
-                                                                                                <MailOutlined style={{ fontSize: '20px', cursor:'pointer' }} />
-                                                                                            </Badge>} />
+                            {items.map((item, index) => (
+                            <NavLink key={index} to={item.url} text={item.label} className="m-2 text-decoration-none" fwicon={item.icon} />
+                            ))}
                             {isloggedIn? 
                             <Button to="/logout" text="Sign Up" icon={<LogoutOutlined style={{ color: '#ec3237' }} />} />
                             :
