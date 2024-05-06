@@ -116,7 +116,7 @@ const LandingPage = ({API_URL, isloggedIn}) => {
     ];
     const activities = [
         { title: 'Donations', description: '$400K+', color:'#044a18' },
-        { title: 'Funds', description: 'N1m+',color:'green'  },
+        { title: 'Partners', description: '1k',color:'green'  },
         { title: 'Volunteers', description: '29',color:'orange'  },
         { title: 'Communities', description: '3',color:'#04364a'  },
         { title: 'Seminars', description: '7',color:'red'  },
@@ -170,7 +170,7 @@ const LandingPage = ({API_URL, isloggedIn}) => {
           window.removeEventListener('load', setHeights);
         };
         
-      }, []);
+      }, [API_URL]);
       if (isLoading) {
             return <LoadingSpinner/>;
       }

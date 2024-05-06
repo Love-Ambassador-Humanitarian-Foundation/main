@@ -10,6 +10,7 @@ import Profile from './pages/Profile';
 import PaymentPage from './pages/Payment';
 import Dashboard from './pages/AdminDashboard';
 import Users from './pages/AdminUsers';
+import ContributePage from './pages/Contribute';
 import NotFound from './pages/NotFound';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -42,10 +43,11 @@ const App = () => {
           <Route path="/" element={<LandingPage API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
           <Route path="/about" element={<AboutPage API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
           <Route path="/events" element={<EventsPage API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
+          <Route path="/contribute" element={<ContributePage API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
           <Route path="/contact" element={<ContactUsPage/>} exact ></Route>
           <Route path="/login" element={<LoginPage/>} exact ></Route>
           <Route path="/signup" element={<SignUpPage/>} exact ></Route>
-          <Route path="/profile/:user" element={<Profile API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
+          <Route path="/profile/:userid" element={<Profile API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
           <Route path="/payment/:variable" element={<PaymentPage/>} ></Route>
           <Route path="/admin/dashboard" element={<Dashboard API_URL={API_URL} isloggedIn={isloggedIn}/>} ></Route>
           <Route path="/admin/users/:id" component={Users} ></Route>

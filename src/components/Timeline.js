@@ -1,13 +1,26 @@
-import React from 'react';
-import { Timeline as AntTimeline, Image, Grid } from 'antd';
+import React, { useState } from 'react';
+import { Timeline as AntTimeline, Image, Grid ,Modal} from 'antd';
+import videoplayimg from '../assets/videoplayimg.png';
 
 const { useBreakpoint } = Grid;
 
-const Timeline = ({ data, onMediaClick }) => {
+const Timeline = ({ data}) => {
     const screens = useBreakpoint();
-    //const handleClick = (media) => {
-    //    onMediaClick(media);
-    //};
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedMedia, setSelectedMedia] = useState(null);
+    // Function to handle opening the modal when an image or video is clicked
+    const handleMediaClick = (media) => {
+        setSelectedMedia(media);
+        setModalVisible(true);
+    };
+
+    // Function to handle closing the modal
+    const handleCloseModal = () => {
+        setSelectedMedia(null);
+        setModalVisible(false);
+    };
+
+
 
     return (
         <div style={{ overflowX: 'auto'}}>
@@ -20,20 +33,38 @@ const Timeline = ({ data, onMediaClick }) => {
                             <p>{event.description}</p>
                             <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                                 {event.media.map((media, mediaIndex) => (
+                                    <>
                                     <div key={mediaIndex} style={{ cursor: 'pointer', marginRight: '10px', marginBottom: '10px' }}>
                                         {media.type === 'image' && (
-                                            <Image src={media.src} alt={media.alt} width={screens.xs ? 100 : 180} height={screens.xs ? 100:180} />
+                                            <Image src={media.src} alt={media.alt} width={screens.xs ? 100 : 180} height={screens.xs ? 100:180}/>
                                         )}
                                         {media.type === 'video' && (
-                                            <div>
-                                                <video controls poster="path_to_thumbnail_image" width={screens.xs ? 100 : 180} height={screens.xs ? 100:180}>
-                                                    <source src={media.src} type="video/mp4" />
-                                                    Your browser does not support the video tag.
-                                                </video>
-                                            </div>
+                                            <img src={videoplayimg} alt={media.alt} width={screens.xs ? 100 : 180} height={screens.xs ? 100:180} onClick={()=> handleMediaClick(media)} />
                                         )}
                                     </div>
+                                    <Modal
+                                        visible={modalVisible}
+                                        onCancel={handleCloseModal}
+                                        footer={null}
+                                        closable={false}
+                                        centered
+                                        width={800} // Adjust modal width as needed
+                                        destroyOnClose
+                                    >
+                                        {/* Render image or video based on selectedMedia */}
+                                        {selectedMedia && selectedMedia.type === 'image' && (
+                                            <img src={selectedMedia.src} alt={selectedMedia.alt} style={{ width: '100%', height: '70vh' }} />
+                                        )}
+                                        {selectedMedia && selectedMedia.type === 'video' && (
+                                            <video controls style={{ width: '100%' }}>
+                                                <source src={selectedMedia.src} type="video/mp4" />
+                                            </video>
+                                        )}
+                                    </Modal>
+                                    </>
+                                    
                                 ))}
+
                             </div>
                         </div>
                     </AntTimeline.Item>

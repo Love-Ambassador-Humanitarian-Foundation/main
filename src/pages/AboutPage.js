@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react';
-import { Row, Col, Card, Pagination, Modal } from 'antd';
+import { Row, Col, Card, Pagination, Modal,Typography } from 'antd';
 import img1 from '../assets/landing.jpg';
 import CustomAccordion from '../components/Accordion';
 import HeaderComponent from '../components/Header';
@@ -7,6 +7,7 @@ import Footer from '../components/Footer';
 import LoadingSpinner from '../components/LoadingSpinner';
 import axios from 'axios';
 const { Meta } = Card;
+const { Text } = Typography;
 
 const AboutPage = ({API_URL,isloggedIn}) => {
     const [data, setData] = useState(null);
@@ -18,7 +19,9 @@ const AboutPage = ({API_URL,isloggedIn}) => {
         { name: 'Mrs Esther Onyenoro', position: 'Co-Founder', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
         { name: 'Alice Johnson', position: 'Lead Developer', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
         { name: 'Bob Brown', position: 'Designer', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
-        // Add more team members as needed
+        { name: 'Bob Brown', position: 'Designer', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
+        { name: 'Bob Brown', position: 'Designer', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
+        { name: 'Bob Brown', position: 'Designer', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
     ];
 
     // Dummy data for achievements
@@ -35,6 +38,10 @@ const AboutPage = ({API_URL,isloggedIn}) => {
         { title: 'Seminars', content: 'Not Ongoing: Location -> 32 badagri road, bla bla' },
         { title: 'Awareness', content: 'Not Ongoing: Facebook link' },
         { title: 'Branches', content: 'Ongoing: 64 branches: (1.Lagos), (2.Lagos), (3.Lagos),' },
+    ];
+    const bankaccounts =[
+        {currency: 'NGN', number: '1234567890', sortcode: '00-00-00',bankname:'Access Bank', holdername:'John Doe'},
+        {currency: 'USD', number: '0987654321', sortcode: '11-11-11',bankname:'Guaranty Trust Bank', holdername:'David John'}
     ]
 
     // Paginate team members
@@ -83,33 +90,45 @@ const AboutPage = ({API_URL,isloggedIn}) => {
             console.error(`Index ${index} is out of bounds for images array`);
         }
     };
-    useEffect(() => {
-        const fetchData = async (API_URL) => {
-            try {
-              const response = await axios.get(API_URL+'/api/about');
-              setData(response.data.response);
-              setIsLoading(false);
-              console.log(response.data);
-            } catch (error) {
-              setError(error.message);
-              setIsLoading(false);
-              console.log(error);
-            }
-          };
-    
-        // Cleanup function to remove the event listener when the component unmounts
-        fetchData(API_URL);
-        
-      }, []);
-      if (isLoading) {
-            return <LoadingSpinner/>;
-      }
-    
-      if (error) {
-            return <div>Error: {error}</div>;
-      }
-      
+    const fetchData = async (API_URL) => {
+        try {
+          const response = await axios.get(API_URL+'/api/about');
+          setData(response.data.response);
+          setIsLoading(false);
+          console.log(response.data);
+        } catch (error) {
+          setError(error.message);
+          setIsLoading(false);
+          console.log(error);
+        }
+      };
 
+    useEffect(() => {
+        // Cleanup function to remove the event listener when the component unmounts
+    fetchData(API_URL);
+    window.addEventListener('load', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const scrollToAccountDetails = urlParams.get('scrollToAccountDetails');
+        console.log(scrollToAccountDetails+'====================',urlParams);
+        if (scrollToAccountDetails === 'true') {
+            const accountDetails = document.getElementById('accountdetails');
+            if (accountDetails) {
+                accountDetails.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    });
+    
+    
+    
+    }, [API_URL]);
+    if (isLoading) {
+        return <LoadingSpinner/>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
+      
     return (
         <>
             <HeaderComponent Companyname={data.name} isloggedIn={isloggedIn} /> {/* Include the header component */}
@@ -138,7 +157,7 @@ const AboutPage = ({API_URL,isloggedIn}) => {
                 <div className="col">
                     <h2 className="mb-4 text-center">Our Mission</h2>
                     <p className="text-center">
-                        {data.about}.
+                        {data.about}
                     </p>
                 </div>
             </div>
@@ -216,8 +235,25 @@ const AboutPage = ({API_URL,isloggedIn}) => {
                         <img src={image} className='img-fluid' alt='Services' height={'300px'} width={'100%'} style={{maxHeight:'300px', maxWidth:'100%'}}/>
                     </Col>
                 </Row>
-                
             </div>
+            <h5 id='accountdetails' className="text-center text-dark fw-bold">Account Details</h5>
+            <Row justify="center" align="middle" style={{display: 'flex',alignItems: 'flex-start'}}>
+                {bankaccounts.map((account, index) => (
+                    <Col xs={24} sm={12} md={12} lg={12} xl={12} style={{flex:1,marginBottom: 8}} className='p-1'>
+                        <Card hoverable >
+                            <div className='d-flex flex-column justify-content-left'>
+                                {account.currency ? <Text strong>Currency: {account.currency}</Text> : null}
+                                {account.number ? <Text strong>Account Number: {account.number}</Text> : null}
+                                {account.sortcode ? <Text strong>Sort Code: {account.sortcode}</Text> : null}
+                                {account.iban ? <Text strong>IBAN: {account.iban}</Text> : null}
+                                {account.swiftbic ? <Text strong>SWIFT: {account.swiftbic}</Text> : null}
+                                {account.bankname ? <Text strong>Bank Name: {account.bankname}</Text> : null}
+                                {account.holdername ? <Text strong>Account Holder's Name: {account.holdername}</Text> : null}
+                            </div>
+                        </Card>
+                    </Col>
+                ))}
+            </Row>
             </div>
             <Footer Companyname={data.name} /> {/* Include the footer component */}
         </>

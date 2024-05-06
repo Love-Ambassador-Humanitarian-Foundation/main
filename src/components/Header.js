@@ -19,16 +19,20 @@ const HeaderComponent = ({ Companyname,isloggedIn }) => {
     const onClose = () => {
         setIsMenuOpen(false);
     };
-    const useremail="oscarchiagoziem@gmail.com"
+    const userid="123334545"
     const profileMenu=(
         <Menu>
             {/* Your mail dropdown menu items */}
-            <Menu.Item key="1"><Link to={`/profile/${useremail}`} style={{textDecoration:'none'}}>View Profile</Link></Menu.Item>
+            <Menu.Item key="1"><Link to={`/profile/${userid}`} style={{textDecoration:'none'}}>Account</Link></Menu.Item>
             <Menu.Item key="2">email</Menu.Item>
             <Menu.Item key="3">usertype:{isAdmin?<>Admin</>:<></>}</Menu.Item>
             <Menu.Item key="4"><Link to='/admin/dashboard' style={{textDecoration:'none'}}>View Dashboard</Link></Menu.Item>
             <Menu.Item key="5">Activity Log</Menu.Item>
-            <Menu.Item key="6">Sign Out</Menu.Item>
+            <Menu.Item key="6">{isloggedIn?
+                            <Link to="/logout" text="Logout" style={{textDecoration:'none'}}>Logout</Link>
+                            :
+                            <Link to="/login" text="Login" style={{textDecoration:'none'}}>Login</Link>}
+                            </Menu.Item>
             {/* Add more menu items as needed */}
         </Menu>
     );
@@ -39,9 +43,7 @@ const HeaderComponent = ({ Companyname,isloggedIn }) => {
         const handleResize = () => {
             setIsMobile(window.innerWidth < 768);
         };
-
         window.addEventListener('resize', handleResize);
-
         return () => {
             window.removeEventListener('resize', handleResize);
         };
@@ -57,7 +59,6 @@ const HeaderComponent = ({ Companyname,isloggedIn }) => {
                         </Navbar.Brand>
                         <div className="d-flex justify-content-between align-items-center m-1" style={{marginLeft: 'auto'}}>
                             <Dropdown overlay={profileMenu} placement="bottomLeft" trigger={['click']}>
-                                
                                 <Avatar size={30} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
                             </Dropdown>
                             {isMenuOpen ? (
@@ -81,12 +82,10 @@ const HeaderComponent = ({ Companyname,isloggedIn }) => {
                             <NavLink to="/events" text="Events" className="m-2" />
                             <NavLink to="/contact" text="Contact" className="m-2" />
                             
-                            {isloggedIn?
-                            <NavLink to="/logout" text="Logout" className="m-2" />
-                            :
-                            <NavLink to="/login" text="Login" className="m-2" />}
-                            
-                            <Button to="/signup" text="Contribute" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
+                            <Dropdown overlay={profileMenu} placement="bottomLeft" trigger={['click']}>
+                                <Avatar size={30} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
+                            </Dropdown>
+                            <Button to="/contribute" text="Contribute" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
                         </Drawer>
 
                         
@@ -105,16 +104,11 @@ const HeaderComponent = ({ Companyname,isloggedIn }) => {
                         <NavLink to="/about" text="About" className="m-2" />
                         <NavLink to="/events" text="Events" className="m-2" />
                         <NavLink to="/contact" text="Contact" className="m-2" />
-                        {isloggedIn?
-                            <NavLink to="/logout" text="Logout" className="m-2" />
-                            :
-                            <NavLink to="/login" text="Login" className="m-2" />}
                         
                         <Dropdown overlay={profileMenu} placement="bottomLeft" trigger={['click']}>
-                            
                             <Avatar size={30} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
                         </Dropdown>
-                        <Button to="/signup" text="Contribute" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
+                        <Button to="/contribute" text="Contribute" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
                     </Container>
                 )}
         </Navbar>

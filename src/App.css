@@ -36,18 +36,40 @@
     transform: rotate(360deg);
   }
 }
-.form-control {
+.form-control,
+.ant-input,
+.ant-select,
+.ant-select-single {
   border: 1.5px solid transparent !important;
   background-color: whitesmoke !important;
   border-radius: 0%;
+  height: 2.4rem;
 }
 .form-control:hover,
 .form-control:focus,
-.form-control:active {
+.form-control:active,
+.ant-input:hover,
+.ant-input:focus,
+.ant-input:active,
+.ant-select:hover,
+.ant-select:focus,
+.ant-select:active,
+.ant-select-single:hover,
+.ant-select-single:focus,
+.ant-select-single:active {
   box-shadow: none !important;
   background-color: whitesmoke !important;
   border-color: #34356b !important;
 }
+.form-control:disabled,
+.ant-input:disabled,
+.ant-select:disabled,
+.ant-select-single:disabled{
+  box-shadow: none !important;
+  background-color: whitesmoke !important;
+  border: 1.5px solid transparent !important;
+}
+
 .form-check-input,
 .form-check-input:focus,
 .form-check-input:active {
@@ -89,26 +111,18 @@
   color: black !important; /* Change icon color to black on hover, focus, and active */
 }
 
-/* Styles for the input border on hover */
-.ant-input-outlined,
-.ant-input:hover,
-.ant-input:focus,
-.ant-input:active {
-  box-shadow: none !important;
-  border-color: #34356b !important;
-}
+
 
 .ant-pagination-item:hover,
 .ant-pagination-next:hover,
 .ant-pagination-previous:hover {
   background-color: #34356b !important;
+  color: white !important;
 }
 .ant-pagination-item-active {
   border-color: #34356b !important;
 }
-.ant-pagination-item-active a {
-  color: black !important; /* Change text color of active pagination item to black */
-}
+
 .ant-pagination-item-ellipsis {
   color: #ab9cff !important; /* Change color of ellipsis to match background */
 }
@@ -123,8 +137,8 @@
 
 /* Loading spinner */
 .spinner {
-  border: 8px solid #f3f3f3; /* Light grey */
-  border-top: 8px solid #34356b; /* Blue */
+  border: 4px solid #f3f3f3; /* Light grey */
+  border-top: 4px solid #34356b; /* Blue */
   border-radius: 50%;
   width: 50px;
   height: 50px;

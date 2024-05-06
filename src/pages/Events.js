@@ -1,27 +1,15 @@
 import React, { useState } from 'react';
-import { Row, Col, Input, Modal } from 'antd';
+import { Row, Col, Input} from 'antd';
 import Timeline from '../components/Timeline';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
 const { Search } = Input;
 
 const EventPage = ({Companyname, isloggedIn}) => {
-    const [modalVisible, setModalVisible] = useState(false);
-    const [selectedMedia, setSelectedMedia] = useState(null);
+    
     const [searchQuery, setSearchQuery] = useState('');
 
-    // Function to handle opening the modal when an image or video is clicked
-    const handleMediaClick = (media) => {
-        setSelectedMedia(media);
-        setModalVisible(true);
-    };
-
-    // Function to handle closing the modal
-    const handleCloseModal = () => {
-        setSelectedMedia(null);
-        setModalVisible(false);
-    };
-
+    
     // Example timeline data (replace with actual data)
     const timelineData = [
         {
@@ -68,32 +56,13 @@ const EventPage = ({Companyname, isloggedIn}) => {
                             placeholder="Search events"
                             enterButton
                             allowClear
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onChange = {(e) => setSearchQuery(e.target.value)}
                         />
                     </Col>
                 </Row>
                 {/* Timeline with filtered data */}
-                <Timeline data={filteredData} onMediaClick={handleMediaClick} />
-                {/* Modal for displaying selected media */}
-                <Modal
-                    visible={modalVisible}
-                    onCancel={handleCloseModal}
-                    footer={null}
-                    closable={false}
-                    centered
-                    width={800} // Adjust modal width as needed
-                >
-                    {/* Render image or video based on selectedMedia */}
-                    {selectedMedia && selectedMedia.type === 'image' && (
-                        <img src={selectedMedia.src} alt={selectedMedia.alt} style={{ width: '100%', height: '70vh' }} />
-                    )}
-                    {selectedMedia && selectedMedia.type === 'video' && (
-                        <video controls style={{ width: '100%' }}>
-                            <source src={selectedMedia.src} type="video/mp4" />
-                            Your browser does not support the video tag.
-                        </video>
-                    )}
-                </Modal>
+                <Timeline data={filteredData} />
+                
             </div>
             <Footer Companyname={Companyname} /> {/* Include the footer component */}
         </>
