@@ -118,7 +118,7 @@ const AboutPage = ({API_URL,isloggedIn}) => {
 
     useEffect(() => {
         fetchData(API_URL);
-    }, []);
+    }, [API_URL]);
 
     if (isLoading) {
         return <LoadingSpinner/>;
