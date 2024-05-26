@@ -1,0 +1,160 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.ant-card-body{
+  padding: 14px !important;
+}
+.form-control,
+.ant-input,
+.ant-select,
+.ant-select-single {
+  border: 1.5px solid transparent !important;
+  background-color: whitesmoke !important;
+  border-radius: 0%;
+  height: 2.4rem;
+}
+.form-control:hover,
+.form-control:focus,
+.form-control:active,
+.ant-input:hover,
+.ant-input:focus,
+.ant-input:active,
+.ant-select:hover,
+.ant-select:focus,
+.ant-select:active,
+.ant-select-single:hover,
+.ant-select-single:focus,
+.ant-select-single:active {
+  box-shadow: none !important;
+  background-color: whitesmoke !important;
+  border-color: #34356b !important;
+}
+.form-control:disabled,
+.ant-input:disabled,
+.ant-select:disabled,
+.ant-select-single:disabled{
+  box-shadow: none !important;
+  background-color: whitesmoke !important;
+  border: 1.5px solid transparent !important;
+}
+
+.form-check-input,
+.form-check-input:focus,
+.form-check-input:active {
+  cursor: pointer;
+  color: white  !important;
+  background-color: white !important;
+  border:2px solid #d7d7e9;
+  box-shadow: none !important;
+}
+
+
+.form-check-input:checked {
+  box-shadow: none !important;
+  color: white  !important;
+  background-color: #34356b !important;
+  border-color: #34356b !important;
+}
+
+
+
+.ant-btn {
+  color:black;
+  border-color: #34356b;
+  background-color: #34356b;
+  cursor: pointer;
+}
+
+/* Styles for the button on hover ant-btn-primary */
+.ant-btn:hover {
+  color: black  !important;
+  background-color: white !important;
+  border-color: #34356b !important;
+}
+
+/* Styles for the button icon on hover */
+.ant-btn:hover .anticon,
+.ant-btn:focus .anticon,
+.ant-btn:active .anticon {
+  color: black !important; /* Change icon color to black on hover, focus, and active */
+}
+
+
+
+.ant-pagination-item:hover,
+.ant-pagination-next:hover,
+.ant-pagination-previous:hover {
+  background-color: #34356b !important;
+  color: white !important;
+}
+.ant-pagination-item-active {
+  border-color: #34356b !important;
+}
+
+.ant-pagination-item-ellipsis {
+  color: #ab9cff !important; /* Change color of ellipsis to match background */
+}
+.ant-pagination-item-link-icon {
+  color: #34356b !important; /* Change color of pagination icon */
+}
+.ant-timeline-item-head,
+.ant-timeline-item-head-blue{
+  color: #34356b !important; 
+  border-color: #34356b !important; 
+}
+
+/* Loading spinner */
+.spinner {
+  border: 4px solid #f3f3f3; /* Light grey */
+  border-top: 4px solid #34356b; /* Blue */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto; /* Center the spinner */
+}
+
+/* Spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+#accountdetails {
+  margin-top: 80px; /* Adjust as needed */
+}
