@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Drawer, Badge, Avatar, Dropdown, Menu } from 'antd';
-import { UsergroupAddOutlined, HeartFilled, MailOutlined, BellOutlined, CloseOutlined, LogoutOutlined, LoginOutlined, MenuOutlined, UserOutlined } from '@ant-design/icons';
+import { MailOutlined, BellOutlined, CloseOutlined, LogoutOutlined, LoginOutlined, MenuOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, NavLink, IconButton } from './button';
 import Logo from '../assets/logo.jpg';
 import { Link } from 'react-router-dom';
@@ -10,7 +10,7 @@ import './Header.css';
 const HeaderComponent = ({ Companyname, isloggedIn, items, onchangeScreen }) => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const isAdmin = true;
+    //const isAdmin = true;
 
     const showDrawer = () => {
         setIsMenuOpen(true);

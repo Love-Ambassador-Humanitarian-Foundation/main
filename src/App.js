@@ -8,8 +8,6 @@ import LoginPage from './pages/Login';
 import SignUpPage from './pages/SignUp';
 import Profile from './pages/Profile';
 import PaymentPage from './pages/Payment';
-import Dashboard from './pages/AdminDashboard';
-import Users from './pages/AdminUsers';
 import ContributePage from './pages/Contribute';
 import NotFound from './pages/NotFound';
 import AdminMain from './pages/AdminMain';
