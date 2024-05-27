@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Card, Row, Col, Table, theme, Button, message } from 'antd';
-import FilterComponent from '../components/Filter';
-import { backendUrl } from '../utils/utils'; // Import backendUrl for the API endpoint
-import LoadingSpinner from '../components/LoadingSpinner';
 import { DeleteOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import FilterComponent from '../components/Filter';
+import LoadingSpinner from '../components/LoadingSpinner';
+import { backendUrl } from '../utils/utils';
 
 const Achievements = () => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const [achievements, setAchievements] = useState([]);
     const [filteredAchievements, setFilteredAchievements] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate(); // Use navigate for navigation
 
     useEffect(() => {
         axios.get(`${backendUrl}/api/v1/achievements`)
@@ -23,6 +25,8 @@ const Achievements = () => {
             .catch(error => {
                 console.error("There was an error fetching the achievements!", error);
                 setIsLoading(false);
+                setAchievements([{_id:'53545',name:"sfsdf",date:'2022-01-03'}]);
+                setFilteredAchievements([{_id:'53545',name:"sfsdf",date:'2022-01-03'}]);
                 message.error("There was an error fetching the achievements!", 5);
             });
     }, []);
@@ -39,13 +43,20 @@ const Achievements = () => {
                 console.error("There was an error deleting the achievement!", error);
                 message.error("There was an error deleting the achievement!", 5);
             });
-    }
+    };
 
     const columns = [
         {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
+            render: (text, record) => (
+                <div>
+                    <Button type="primary" onClick={() => navigate(`/admin/achievements/${record._id}`)}>
+                        {record.name}
+                    </Button>
+                </div>
+            ),
         },
         {
             title: 'Date',
@@ -54,6 +65,7 @@ const Achievements = () => {
             render: (text) => new Date(text).toLocaleDateString(),
         },
         {
+            key: 'actions',
             render: (text, record) => (
                 <Button type="primary" icon={<DeleteOutlined />} onClick={() => deleteAchievement(record._id)} />
             ),
@@ -62,20 +74,20 @@ const Achievements = () => {
 
     const filterAchievements = ({ itemName, dateRange }) => {
         let filtered = achievements;
-    
+
         if (itemName) {
-            filtered = filtered.filter(achievement => 
+            filtered = filtered.filter(achievement =>
                 achievement.name.toLowerCase().includes(itemName.toLowerCase())
             );
         }
-    
+
         if (dateRange && dateRange.length === 2) {
             filtered = filtered.filter(achievement => {
                 const achievementDate = new Date(achievement.date);
                 return achievementDate >= dateRange[0] && achievementDate <= dateRange[1];
             });
         }
-    
+
         setFilteredAchievements(filtered);
     };
 

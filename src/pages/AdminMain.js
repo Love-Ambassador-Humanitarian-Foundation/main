@@ -14,13 +14,14 @@ import Events from './AdminEvents';
 import Payments from './AdminPayments';
 import Branches from './AdminBranches';
 import Profile from './AdminProfile';
+import Partners from './AdminPartners';
 
 const { Content, Sider } = Layout;
 
-const AdminMain = ({ Companyname, isloggedIn }) => {
+const AdminMain = ({ Companyname, isloggedIn, screen }) => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [content, setContent] = useState(<Dashboard />);
-    const [currentScreen, setCurrentScreen] = useState({
+    const [currentScreen, setCurrentScreen] = useState(screen ?screen: {
         url: '/admin/23232',
         display: <Dashboard />,
         icon: <DashboardOutlined />,
@@ -32,7 +33,7 @@ const AdminMain = ({ Companyname, isloggedIn }) => {
         { url: '/admin/profiles', display: <Profiles />, icon: <UsergroupAddOutlined />, label: 'Profiles' },
         { url: '/admin/about', display: <AboutPage />, icon: <InfoCircleOutlined />, label: 'About' },
         { url: '/admin/achievements', display: <Achievements />, icon: <StarOutlined />, label: 'Achievements' },
-        { url: '/admin/partners', display: <Profile />, icon: <FontAwesomeIcon icon={faPeopleArrows} />, label: 'Partners' },
+        { url: '/admin/partners', display: <Partners />, icon: <FontAwesomeIcon icon={faPeopleArrows} />, label: 'Partners' },
         { url: '/admin/events', display: <Events />, icon: <InteractionOutlined />, label: 'Events' },
         { url: '/admin/payments', display: <Payments />, icon: <DollarOutlined />, label: 'Payments' },
         { url: '/admin/branches', display: <Branches />, icon: <BranchesOutlined />, label: 'Branches' },
@@ -47,6 +48,7 @@ const AdminMain = ({ Companyname, isloggedIn }) => {
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth < 768);
+            
         };
 
         window.addEventListener('resize', handleResize);

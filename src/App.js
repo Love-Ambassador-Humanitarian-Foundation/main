@@ -11,6 +11,7 @@ import PaymentPage from './pages/Payment';
 import ContributePage from './pages/Contribute';
 import NotFound from './pages/NotFound';
 import AdminMain from './pages/AdminMain';
+import Achievement from './pages/AdminAchievementdetail';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
@@ -51,7 +52,7 @@ const App = () => {
           <Route path="/admin/:id" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn}/>} ></Route>
           <Route path="/admin/users/:id" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn}/>} ></Route>
           <Route path="/admin/about" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn}/>} ></Route>
-          <Route path="/admin/achievement/:id" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn}/>} ></Route>
+          <Route path="/admin/achievements/:id" element={<AdminMain screen={<Achievement />} Companyname={Companyname} isloggedIn={isloggedIn}/>} ></Route>
           <Route path="/admin/activities/:id" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn}/>} ></Route>
           <Route path="/admin/branches/:id" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn}/>} ></Route>
           <Route path="/admin/payments/:id" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn}/>} ></Route>
