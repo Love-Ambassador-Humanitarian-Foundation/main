@@ -12,6 +12,7 @@ import Dashboard from './pages/AdminDashboard';
 import Users from './pages/AdminUsers';
 import ContributePage from './pages/Contribute';
 import NotFound from './pages/NotFound';
+import AdminMain from './pages/AdminMain';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
@@ -49,15 +50,15 @@ const App = () => {
           <Route path="/signup" element={<SignUpPage/>} exact ></Route>
           <Route path="/profile/:userid" element={<Profile API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
           <Route path="/payment/:variable" element={<PaymentPage/>} ></Route>
-          <Route path="/admin/:id" element={<Dashboard API_URL={API_URL} isloggedIn={isloggedIn}/>} ></Route>
-          <Route path="/admin/users/:id" component={Users} ></Route>
-          <Route path="/admin/about" element={<Dashboard API_URL={API_URL} isloggedIn={isloggedIn}/>}  ></Route>
-          <Route path="/admin/achievement/:id" component={Users}  ></Route>
-          <Route path="/admin/activities/:id" element={<Dashboard API_URL={API_URL} isloggedIn={isloggedIn}/>}  ></Route>
-          <Route path="/admin/branches/:id" component={Users}  ></Route>
-          <Route path="/admin/payments/:id" component={Users}  ></Route>
-          <Route path="/admin/reportlog/:id" element={<Dashboard API_URL={API_URL} isloggedIn={isloggedIn}/>}  ></Route>
-          <Route path="/admin/events/:id" component={Users}  ></Route>
+          <Route path="/admin/:id" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn}/>} ></Route>
+          <Route path="/admin/users/:id" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn}/>} ></Route>
+          <Route path="/admin/about" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn}/>} ></Route>
+          <Route path="/admin/achievement/:id" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn}/>} ></Route>
+          <Route path="/admin/activities/:id" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn}/>} ></Route>
+          <Route path="/admin/branches/:id" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn}/>} ></Route>
+          <Route path="/admin/payments/:id" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn}/>} ></Route>
+          <Route path="/admin/reportlog/:id" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn}/>} ></Route>
+          <Route path="/admin/events/:id" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn}/>} ></Route>
           {/* <Redirect from="/" to="/" /> */}
           
           <Route component={NotFound}  ></Route>
