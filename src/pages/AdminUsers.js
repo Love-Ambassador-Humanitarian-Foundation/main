@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { DeleteOutlined} from '@ant-design/icons';
+import { DeleteOutlined, HomeOutlined, EditOutlined, UsergroupAddOutlined} from '@ant-design/icons';
+import { Layout, Breadcrumb } from 'antd';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Card, Row, Col, Table, theme, Avatar, Button, message } from 'antd';
 import FilterComponent from '../components/Filter';
 import { backendUrl } from '../utils/utils'; // Import backendUrl for the API endpoint
 import LoadingSpinner from '../components/LoadingSpinner';
-
-const Profiles = () => {
+const { Content} = Layout;
+const Profiles = ({onSetContent}) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
+    const [editpage,SetEditPage] = useState(false);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const getRandomBgColorClass = () => {
@@ -29,7 +31,6 @@ const Profiles = () => {
         return colors[randomIndex];
     };
     
-
     useEffect(() => {
         axios.get(`${backendUrl}/api/v1/users`)
             .then(response => {
@@ -187,33 +188,46 @@ const Profiles = () => {
         return <LoadingSpinner />;
     }
     return (
-        <div
-            style={{
-                padding: 24,
-                minHeight: 360,
-                background: colorBgContainer,
-                borderRadius: borderRadiusXS,
-                height: 'calc(100vh - 140px)' 
-            }}
-        >
-            <FilterComponent onSearch={filterUsers} name={true} date={true} />
-                <div className="site-layout-background" style={{ padding: 8, minHeight: 380 }}>
-                    <Row style={{ marginTop: 1 }}>
-                        <Col span={24}>
-                            <Card title="Users" bordered={true} style={{ borderRadius: '2px' }}>
-                                <Table
-                                    dataSource={filteredUsers}
-                                    columns={columns}
-                                    pagination={true}
-                                    rowClassName="editable-row"
-                                    scroll={{ x: 'max-content' }}
-                                />
-                            </Card>
-                        </Col>
-                    </Row>
-                </div>
+        <Layout style={{ marginTop: '70px', height: '100vh' }}>
+            <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{ backgroundColor: '#d7d7e9', borderRadius: '4px' }}>
+                <Breadcrumb
+                    items={[
+                        { href: '/', title: <HomeOutlined /> },
+                        { title: (<><UsergroupAddOutlined /><span>Users</span></>) },
+                    ]}
+                />
+                <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={()=>SetEditPage(!editpage)} />
+            </div>
+            <Content className='m-2'>
+                <div
+                    style={{
+                        padding: 24,
+                        minHeight: 360,
+                        background: colorBgContainer,
+                        borderRadius: borderRadiusXS,
+                        height: 'calc(100vh - 140px)'
+                    }}
+                >
+                    <FilterComponent onSearch={filterUsers} name={true} date={true} />
+                    <div className="site-layout-background" style={{ padding: 8, minHeight: 380 }}>
+                        <Row style={{ marginTop: 1 }}>
+                            <Col span={24}>
+                                <Card title="Users" bordered={true} style={{ borderRadius: '2px' }}>
+                                    <Table
+                                        dataSource={filteredUsers}
+                                        columns={columns}
+                                        pagination={true}
+                                        rowClassName="editable-row"
+                                        scroll={{ x: 'max-content' }}
+                                    />
+                                </Card>
+                            </Col>
+                        </Row>
+                    </div>
             
-        </div>
+                </div>
+            </Content>
+        </Layout>
     );
 };
 

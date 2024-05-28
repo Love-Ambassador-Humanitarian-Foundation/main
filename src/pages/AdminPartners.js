@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Card, Row, Col, Table, Button, message, theme } from 'antd';
-import { DeleteOutlined} from '@ant-design/icons';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { backendUrl } from '../utils/utils';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPeopleArrows } from '@fortawesome/free-solid-svg-icons';
+import { DeleteOutlined,HomeOutlined, EditOutlined} from '@ant-design/icons';
+import { Card, Table, Row, Col, theme, message, Layout, Breadcrumb} from 'antd';
 
-const Partners = () => {
+import { Button} from '../components/button';
+
+const { Content} = Layout;
+
+const Partners = ({onSetContent}) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
+    
+    const [editpage,SetEditPage] = useState(false);
     const [partners, setPartners] = useState([]);
     const [filteredPartners, setFilteredPartners] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -89,32 +97,45 @@ const Partners = () => {
     }
 
     return (
-        <div
-            style={{
-                padding: 24,
-                minHeight: 360,
-                background: colorBgContainer,
-                borderRadius: borderRadiusXS,
-                height: 'calc(100vh - 140px)'
-            }}
-        >
-            <FilterComponent onSearch={filterPartners} name={true} date={true} />
-            <div className="site-layout-background" style={{ padding: 8, minHeight: 380 }}>
-                <Row style={{ marginTop: 1 }}>
-                    <Col span={24}>
-                        <Card title="Partners" bordered={true} style={{ borderRadius: '2px' }}>
-                            <Table
-                                dataSource={filteredPartners}
-                                columns={columns}
-                                pagination={true}
-                                rowClassName="editable-row"
-                                scroll={{ x: 'max-content' }}
-                            />
-                        </Card>
-                    </Col>
-                </Row>
+        <Layout style={{ marginTop: '70px', height: '100vh' }}>
+            <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{ backgroundColor: '#d7d7e9', borderRadius: '4px' }}>
+                <Breadcrumb
+                    items={[
+                        { href: '/', title: <HomeOutlined /> },
+                        { title: (<><FontAwesomeIcon icon={faPeopleArrows} /><span>Partners</span></>) },
+                    ]}
+                />
+                <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={()=>SetEditPage(!editpage)} />
             </div>
-        </div>
+            <Content className='m-2'>
+                <div
+                        style={{
+                            padding: 24,
+                            minHeight: 360,
+                            background: colorBgContainer,
+                            borderRadius: borderRadiusXS,
+                            height: 'calc(100vh - 140px)'
+                        }}
+                    >
+                    <FilterComponent onSearch={filterPartners} name={true} date={true} />
+                    <div className="site-layout-background" style={{ padding: 8, minHeight: 380 }}>
+                        <Row style={{ marginTop: 1 }}>
+                            <Col span={24}>
+                                <Card title="Partners" bordered={true} style={{ borderRadius: '2px' }}>
+                                    <Table
+                                        dataSource={filteredPartners}
+                                        columns={columns}
+                                        pagination={true}
+                                        rowClassName="editable-row"
+                                        scroll={{ x: 'max-content' }}
+                                    />
+                                </Card>
+                            </Col>
+                        </Row>
+                    </div>
+                </div>
+            </Content>
+        </Layout>
     );
 };
 

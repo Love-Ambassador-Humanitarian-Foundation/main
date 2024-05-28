@@ -1,16 +1,16 @@
 import React from 'react';
-import { SaveOutlined, FacebookOutlined, InstagramOutlined, TwitterOutlined, WhatsAppOutlined, LinkedinOutlined } from '@ant-design/icons';
-import { Row, Col, Avatar, Typography,Input, theme } from 'antd';
-import { Select } from 'antd';
-
+import { SaveOutlined, FacebookOutlined, InstagramOutlined, TwitterOutlined, WhatsAppOutlined, LinkedinOutlined,HomeOutlined, EditOutlined, UserOutlined  } from '@ant-design/icons';
+import { Row, Col, Avatar, Typography,Input, theme, Select, Layout, Breadcrumb   } from 'antd';
 
 import { Button} from '../components/button';
 import { useParams } from 'react-router-dom';
 import {countryCodes} from '../utils/utils';
+
+const { Content} = Layout;
 const { Option } = Select;
 const { Title, Text } = Typography;
 
-const Profile = ({Companyname,isloggedIn}) => {
+const Profile = ({onSetScreen}) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const {userdetails} = useParams();
     console.log(userdetails+"==========");
@@ -108,13 +108,26 @@ const Profile = ({Companyname,isloggedIn}) => {
     );
 
     return (
-        <div style={{
-            padding: 24,
-            minHeight: 360,
-            background: colorBgContainer,
-            borderRadius: borderRadiusXS,
-            height: 'calc(100vh - 140px)'
-        }}>
+        <Layout style={{ marginTop: '70px', height: '100vh' }}>
+            <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{ backgroundColor: '#d7d7e9', borderRadius: '4px' }}>
+                <Breadcrumb
+                    items={[
+                        { href: '/', title: <HomeOutlined /> },
+                        { title: (<><UserOutlined /><span>{name}</span></>) },
+                    ]}
+                />
+                <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={()=>setEditProfile(!editprofile)} />
+            </div>
+            <Content className='m-2'>
+                <div
+                    style={{
+                        padding: 24,
+                        minHeight: 360,
+                        background: colorBgContainer,
+                        borderRadius: borderRadiusXS,
+                        height: 'calc(100vh - 140px)'
+                    }}
+                >
             <Row justify="center" align="middle" style={{ marginBottom: '30px' }} >
                     <Col xs={24} sm={12} md={12} lg={12} xl={12} style={{backgroundColor: '#d7d7e9'}} >
                         <div className='d-flex flex-column justify-content-between align-items-center ms-2 p-2'>
@@ -198,8 +211,9 @@ const Profile = ({Companyname,isloggedIn}) => {
                     }
                 </Row>
                 
-                
-            </div>
+                </div>
+            </Content>
+        </Layout>
   );
 };
 

@@ -2,7 +2,7 @@ import React from 'react';
 
 const LoadingSpinner = () => {
   return (
-    <div className="spinner"></div>
+    <div className="spinner" style={{marginTop:'120px'}}></div>
   );
 };
 

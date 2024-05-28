@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Card, Row, Col, Table, Button, message, theme } from 'antd';
-import { DeleteOutlined, FilterOutlined } from '@ant-design/icons';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { backendUrl } from '../utils/utils';
+import { DeleteOutlined, FilterOutlined , HomeOutlined, EditOutlined, BranchesOutlined } from '@ant-design/icons';
+import { Card, Row, Col, Table, theme, Button, message,Layout, Breadcrumb  } from 'antd';
+const { Content} = Layout;
 
-const Branches = () => {
+const Branches = ({onSetScreen}) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
+    
+    const [editpage,SetEditPage] = useState(false);
     const [branches, setBranches] = useState([]);
     const [filteredBranches, setFilteredBranches] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -89,15 +92,26 @@ const Branches = () => {
     }
 
     return (
-        <div
-            style={{
-                padding: 24,
-                minHeight: 360,
-                background: colorBgContainer,
-                borderRadius: borderRadiusXS,
-                height: 'calc(100vh - 140px)'
-            }}
-        >
+        <Layout style={{ marginTop: '70px', height: '100vh' }}>
+            <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{ backgroundColor: '#d7d7e9', borderRadius: '4px' }}>
+                <Breadcrumb
+                    items={[
+                        { href: '/', title: <HomeOutlined /> },
+                        { title: (<><BranchesOutlined /><span>Branches</span></>) },
+                    ]}
+                />
+                <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={()=>SetEditPage(!editpage)} />
+            </div>
+            <Content className='m-2'>
+                <div
+                    style={{
+                        padding: 24,
+                        minHeight: 360,
+                        background: colorBgContainer,
+                        borderRadius: borderRadiusXS,
+                        height: 'calc(100vh - 140px)'
+                    }}
+                >
             <FilterComponent onSearch={filterBranches} name={true} date={true} />
             <div className="site-layout-background" style={{ padding: 8, minHeight: 380 }}>
                 <Row style={{ marginTop: 1 }}>
@@ -114,7 +128,9 @@ const Branches = () => {
                     </Col>
                 </Row>
             </div>
-        </div>
+            </div>
+            </Content>
+        </Layout>
     );
 };
 

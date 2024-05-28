@@ -1,11 +1,14 @@
 import React,{useRef, useState, useEffect} from 'react';
-import { UsergroupAddOutlined, StarOutlined, InteractionOutlined,UserOutlined, BranchesOutlined} from '@ant-design/icons';
-import { theme,Row, Col, Card, } from 'antd';
+import { DashboardOutlined, UsergroupAddOutlined, StarOutlined, InteractionOutlined,UserOutlined, BranchesOutlined, EditOutlined, HomeOutlined} from '@ant-design/icons';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { Link } from 'react-router-dom';
+import { Card, Row, Col, theme, Layout, Breadcrumb  } from 'antd';
+const { Content} = Layout;
 
-const Dashboard = () => {
+const Dashboard = ({onSetContent}) => {
     const [barwidth, setBarWidth] = useState(350);
+    
+    const [editpage,SetEditPage] = useState(false);
     const vref = useRef(null);
     const { token: { colorBgContainer, borderRadiusSM },} = theme.useToken();
     const { Meta } = Card;
@@ -69,14 +72,26 @@ const Dashboard = () => {
     }, []);
 
     return (
-        <div
-            style={{
-            padding: 24,
-            minHeight: 360,
-            background: colorBgContainer,
-            borderRadius: borderRadiusSM,
-            height:'calc(100vh - 140px)' }}
-            >
+        <Layout style={{ marginTop: '70px', height: '100vh' }}>
+            <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{ backgroundColor: '#d7d7e9', borderRadius: '4px' }}>
+                <Breadcrumb
+                    items={[
+                        { href: '/', title: <HomeOutlined /> },
+                        { title: (<><DashboardOutlined /><span>DashBoard</span></>) },
+                    ]}
+                />
+                <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={()=>SetEditPage(!editpage)} />
+            </div>
+            <Content className='m-2'>
+                <div
+                        style={{
+                            padding: 24,
+                            minHeight: 360,
+                            background: colorBgContainer,
+                            borderRadius: borderRadiusSM,
+                            height: 'calc(100vh - 140px)'
+                        }}
+                    >
             <Row gutter={[16, 16]}>
                 <Col xs={24} md={17} style={{ borderRadius: borderRadiusSM, backgroundColor:'#fcfcfc', padding:'16px'}}>
                     <div>
@@ -149,7 +164,9 @@ const Dashboard = () => {
                     </BarChart>
                 </Col>
             </Row>
-        </div>
+            </div>
+            </Content>
+        </Layout>
     );
 };
 export default Dashboard;
