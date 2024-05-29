@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Card, Row, Col, Table, Button, message, theme } from 'antd';
-import { DeleteOutlined, FilterOutlined } from '@ant-design/icons';
+import { DeleteOutlined, FilterOutlined, DollarOutlined } from '@ant-design/icons';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { backendUrl } from '../utils/utils';
+import Payment from './AdminPaymentDetail';
+import { Link } from 'react-router-dom';
 
-const Payments = () => {
+const Payments = ({onSetContent}) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const [payments, setPayments] = useState([]);
     const [filteredPayments, setFilteredPayments] = useState([]);
@@ -22,6 +24,8 @@ const Payments = () => {
             })
             .catch(error => {
                 console.error("There was an error fetching the payments!", error);
+                setPayments([{_id:'53545',name:"sfsdf", amount:'80',date:'2022-01-03'}]);
+                setFilteredPayments([{_id:'53545',name:"sfsdf", amount:'45',date:'2022-01-03'}]);
                 setIsLoading(false);
                 message.error("There was an error fetching the payments!", 5);
             });
@@ -46,6 +50,13 @@ const Payments = () => {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
+            render: (text, record) => (
+                <Link to={`/admin/payments`} className='text-decoration-none'>
+                    <Button type="primary" onClick={() => onSetContent({ url: '/admin/payments/23243', display: <Payment />, icon: <DollarOutlined />, label: record._id })}>
+                        {record.name}
+                    </Button>
+                </Link>
+            ),
         },
         {
             title: 'Date',

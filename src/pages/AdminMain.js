@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import HeaderComponent from '../components/AdminHeader';
-import { DashboardOutlined, UsergroupAddOutlined, InfoCircleOutlined, StarOutlined, InteractionOutlined, DollarOutlined, BranchesOutlined, UserOutlined } from '@ant-design/icons';
+import { DashboardOutlined, UsergroupAddOutlined, InfoCircleOutlined, StarOutlined, CalendarOutlined,TeamOutlined, DollarOutlined, BankOutlined, UserOutlined } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPeopleArrows } from '@fortawesome/free-solid-svg-icons';
 import { Nav } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Dashboard from './AdminDashboard';
 import Profiles from './AdminUsers';
 import AboutPage from './AdminAbout';
@@ -19,24 +17,19 @@ import Partners from './AdminPartners';
 const { Sider } = Layout;
 
 const AdminMain = ({ Companyname, isloggedIn, screen }) => {
+    const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-    const [content, setContent] = useState(<Dashboard />);
-    
-    const changeScreen = (screen) => {
-        setContent(screen.display);
-    };
-
     
     const items = [
-        { url: '/admin/23232', display: <Dashboard onSetContent={changeScreen} />, icon: <DashboardOutlined />, label: 'Dashboard' },
-        { url: '/admin/profiles', display: <Profiles onSetContent={changeScreen}/>, icon: <UsergroupAddOutlined />, label: 'Profiles' },
-        { url: '/admin/about', display: <AboutPage onSetContent={changeScreen} />, icon: <InfoCircleOutlined />, label: 'About' },
-        { url: '/admin/achievements', display: <Achievements onSetContent={changeScreen}/>, icon: <StarOutlined />, label: 'Achievements' },
-        { url: '/admin/partners', display: <Partners onSetContent={changeScreen}/>, icon: <FontAwesomeIcon icon={faPeopleArrows} />, label: 'Partners' },
-        { url: '/admin/events', display: <Events onSetContent={changeScreen} />, icon: <InteractionOutlined />, label: 'Events' },
-        { url: '/admin/payments', display: <Payments onSetContent={changeScreen} />, icon: <DollarOutlined />, label: 'Payments' },
-        { url: '/admin/branches', display: <Branches onSetContent={changeScreen} />, icon: <BranchesOutlined />, label: 'Branches' },
-        { url: '/admin/profile', display: <Profile onSetContent={changeScreen} />, icon: <UserOutlined />, label: 'Profile' },
+        { url: '/admin/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
+        { url: '/admin/profiles', icon: <UsergroupAddOutlined />, label: 'Profiles' },
+        { url: '/admin/about', icon: <InfoCircleOutlined />, label: 'About' },
+        { url: '/admin/achievements', icon: <StarOutlined />, label: 'Achievements' },
+        { url: '/admin/partners', icon: <TeamOutlined />, label: 'Partners' },
+        { url: '/admin/events', icon: <CalendarOutlined />, label: 'Events' },
+        { url: '/admin/payments', icon: <DollarOutlined />, label: 'Payments' },
+        { url: '/admin/branches', icon: <BankOutlined />, label: 'Branches' },
+        { url: '/admin/profile', icon: <UserOutlined />, label: 'Profile' },
     ];
     
     const navItems = [...items];
@@ -58,7 +51,7 @@ const AdminMain = ({ Companyname, isloggedIn, screen }) => {
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
-            <HeaderComponent Companyname={Companyname} isloggedIn={isloggedIn} items={navItems} onchangeScreen={changeScreen} />
+            <HeaderComponent Companyname={Companyname} isloggedIn={isloggedIn} items={navItems} />
             {isMobile ? null : (
                 <Sider
                     breakpoint="md"
@@ -68,7 +61,7 @@ const AdminMain = ({ Companyname, isloggedIn, screen }) => {
                     <div style={{ height: 'calc(100% - 48px)', overflowY: 'auto' }}>
                         <Menu theme="dark" mode="inline" defaultSelectedKeys={['0']}>
                             {navItems.map((item, index) => (
-                                <Menu.Item key={index} onClick={() => changeScreen(item)}>
+                                <Menu.Item key={index}>
                                     <Nav.Item className='nav-link d-flex justify-content-left align-items-center'>
                                         <span className='text-white'>{item.icon}</span>
                                         <Link
@@ -93,7 +86,7 @@ const AdminMain = ({ Companyname, isloggedIn, screen }) => {
                     </div>
                 </Sider>
             )}
-            {content}
+            {screen}
         </Layout>
     );
 };

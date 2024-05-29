@@ -1,44 +1,42 @@
 import React, { useState } from 'react';
-import { Row, Col, Typography, Input, Upload, Button as AntButton, theme, message,Layout,Breadcrumb } from 'antd';
+import { Row, Col, Typography, Input, Upload, Button as AntButton, theme, message, Layout, Breadcrumb, Avatar } from 'antd';
 import { Button } from '../components/button';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { backendUrl } from '../utils/utils';
-import { SaveOutlined, TrophyOutlined, UploadOutlined , HomeOutlined, EditOutlined, StarOutlined } from '@ant-design/icons';
+import { SaveOutlined, HomeOutlined, EditOutlined, DollarOutlined, UploadOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
-const { Content} = Layout;
+const { Content } = Layout;
 
-const Achievement = ({ item }) => {
+const Payment = ({ item }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
-    const { achievementDetails } = useParams();
-    const navigate = useNavigate();
-    console.log(achievementDetails + "==========");
+    //const { paymentDetails } = useParams();
     const [editpage, setEditPage] = useState(false);
-
-    const [title, setTitle] = useState('Top Fundraiser');
-    const [date, setDate] = useState('May 25th, 2023');
-    const [description, setDescription] = useState('Achieved top fundraising position in May 2023');
-    const [imageUrl, setImageUrl] = useState('');
+    const navigate = useNavigate();
+    const [name, setName] = useState('Payment Method');
+    const [location, setLocation] = useState('123 Payment St, Payment City');
+    const [date, setDate] = useState('February 20th, 2024');
+    const [avatarUrl, setAvatarUrl] = useState('');
 
     const saveEdit = () => {
         setEditPage(false);
-        message.success('Achievement details saved successfully');
-    }
+        message.success('Payment details saved successfully');
+    };
 
     const handleInputChange = (e) => {
-        if (e.target.id === 'title') {
-            setTitle(e.target.value);
+        if (e.target.id === 'name') {
+            setName(e.target.value);
+        } else if (e.target.id === 'location') {
+            setLocation(e.target.value);
         } else if (e.target.id === 'date') {
             setDate(e.target.value);
-        } else if (e.target.id === 'description') {
-            setDescription(e.target.value);
         }
     };
 
-    const handleImageUpload = (info) => {
+    const handleAvatarUpload = (info) => {
         if (info.file.status === 'done') {
-            // Assuming the server returns the image URL after upload
-            setImageUrl(info.file.response.url);
+            // Assuming the server returns the avatar URL after upload
+            setAvatarUrl(info.file.response.url);
             message.success(`${info.file.name} file uploaded successfully`);
         } else if (info.file.status === 'error') {
             message.error(`${info.file.name} file upload failed.`);
@@ -51,11 +49,11 @@ const Achievement = ({ item }) => {
                 <Breadcrumb
                     items={[
                         { href: '/', title: <HomeOutlined /> },
-                        { title: (<div  onClick={() => navigate('/admin/achievements')}><StarOutlined /><span>Achievements</span></div>) },
-                        { title: (<><span>mkml</span></>) },
+                        { title: (<div onClick={navigate(`/admin/events/`)}><DollarOutlined /><span>Payments</span></div>) },
+                        { title: (<><span>{name}</span></>) },
                     ]}
                 />
-                <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={()=>setEditPage(!editpage)} />
+                <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={() => setEditPage(!editpage)} />
             </div>
             <Content className='m-2'>
                 <div style={{
@@ -68,8 +66,8 @@ const Achievement = ({ item }) => {
                     <Row justify="center" align="middle" style={{ marginBottom: '30px' }}>
                         <Col xs={24} sm={24} md={16} lg={12} xl={12} style={{ backgroundColor: '#d7d7e9' }}>
                             <div className='d-flex flex-column justify-content-between align-items-center p-2'>
-                                <TrophyOutlined style={{ fontSize: 100, color: '#FFD700' }} />
-                                <Title level={3}>Achievement Details</Title>
+                                <DollarOutlined style={{ fontSize: 100, color: '#FFD700' }} />
+                                <Title level={3}>Payment Details</Title>
                             </div>
                         </Col>
                     </Row>
@@ -77,28 +75,28 @@ const Achievement = ({ item }) => {
                         <Col xs={24} sm={24} md={16} lg={12} xl={12}>
                             <div className='d-flex flex-column justify-content-left p-2'>
                                 <Text strong>
-                                    Title: <Input id="title" type="text" className="form-control" placeholder="Title" value={title} onChange={handleInputChange} disabled={!editpage} />
+                                    Name: <Input id="name" type="text" className="form-control" placeholder="Name" value={name} onChange={handleInputChange} disabled={!editpage} />
+                                </Text>
+                                <Text strong>
+                                    Location: <Input id="location" type="text" className="form-control" placeholder="Location" value={location} onChange={handleInputChange} disabled={!editpage} />
                                 </Text>
                                 <Text strong>
                                     Date: <Input id="date" type="text" className="form-control" placeholder="Date" value={date} onChange={handleInputChange} disabled={!editpage} />
                                 </Text>
                                 <Text strong>
-                                    Description: <Input id="description" type="text" className="form-control" placeholder="Description" value={description} onChange={handleInputChange} disabled={!editpage} />
-                                </Text>
-                                <Text strong>
-                                    Image: 
+                                    Avatar: 
                                     {editpage ? (
                                         <Upload
-                                            name="image"
+                                            name="avatar"
                                             action={`${backendUrl}/api/v1/upload`} // Update with your actual upload URL
                                             listType="picture"
                                             showUploadList={false}
-                                            onChange={handleImageUpload}
+                                            onChange={handleAvatarUpload}
                                         >
                                             <AntButton icon={<UploadOutlined />}>Upload</AntButton>
                                         </Upload>
                                     ) : (
-                                        imageUrl && <img src={imageUrl} alt="Achievement" style={{ maxWidth: '100%', marginTop: '10px' }} />
+                                        avatarUrl && <Avatar src={avatarUrl} alt="Payment Avatar" size={64} style={{ marginTop: '10px' }} />
                                     )}
                                 </Text>
                             </div>
@@ -111,7 +109,7 @@ const Achievement = ({ item }) => {
                             </Col>
                         ) : (
                             <Col>
-                                <Button text="Edit Achievement" onClick={() => setEditPage(true)} />
+                                <Button text="Edit Payment" onClick={() => setEditPage(true)} />
                             </Col>
                         )}
                     </Row>
@@ -121,4 +119,4 @@ const Achievement = ({ item }) => {
     );
 };
 
-export default Achievement;
+export default Payment;

@@ -2,19 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { DeleteOutlined, HomeOutlined, EditOutlined, UsergroupAddOutlined} from '@ant-design/icons';
 import { Layout, Breadcrumb } from 'antd';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Card, Row, Col, Table, theme, Avatar, Button, message } from 'antd';
 import FilterComponent from '../components/Filter';
 import { backendUrl } from '../utils/utils'; // Import backendUrl for the API endpoint
 import LoadingSpinner from '../components/LoadingSpinner';
-const { Content} = Layout;
-const Profiles = ({onSetContent}) => {
+
+const { Content } = Layout;
+
+const Profiles = ({ onSetContent }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
     const [users, setUsers] = useState([]);
-    const [editpage,SetEditPage] = useState(false);
+    const [editPage, setEditPage] = useState(false);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+
     const getRandomBgColorClass = () => {
         const colors = [
             'bg-primary',
@@ -30,7 +33,7 @@ const Profiles = ({onSetContent}) => {
         const randomIndex = Math.floor(Math.random() * colors.length);
         return colors[randomIndex];
     };
-    
+
     useEffect(() => {
         axios.get(`${backendUrl}/api/v1/users`)
             .then(response => {
@@ -42,6 +45,13 @@ const Profiles = ({onSetContent}) => {
             })
             .catch(error => {
                 console.error("There was an error fetching the users!", error);
+                const dummyData = [
+                    { _id: '1', name: 'Oscar', email: 'oscar@example.com', role: 'admin', status: 'active', artworks: 5, phonenumber: '1234567890', address: '123 Street', image: 'https://i.pravatar.cc/150?img=1' },
+                    { _id: '2', name: 'John Doe', email: 'john@example.com', role: 'user', status: 'inactive', artworks: 2, phonenumber: '0987654321', address: '456 Avenue', image: 'https://i.pravatar.cc/150?img=2' },
+                    { _id: '3', name: 'Jane Smith', email: 'jane@example.com', role: 'artist', status: 'active', artworks: 8, phonenumber: '5678901234', address: '789 Boulevard', image: 'https://i.pravatar.cc/150?img=3' }
+                ];
+                setUsers(dummyData);
+                setFilteredUsers(dummyData);
                 setIsLoading(false);
                 message.error("There was an error fetching the users!", 5);
             });
@@ -59,7 +69,7 @@ const Profiles = ({onSetContent}) => {
                 console.error("There was an error deleting the user!", error);
                 message.error("There was an error deleting the user!", 5);
             });
-    }
+    };
 
     const columns = [
         {
@@ -67,17 +77,17 @@ const Profiles = ({onSetContent}) => {
             dataIndex: 'image',
             key: 'image',
             render: (text, record) => (
-                <div>
-                    <Button type="primary" className='p-1 m-0' style={{ width: '40px', backgroundColor:'transparent', height:'40px'}} onClick={() => navigate(`/admin/users/${record._id}`)}>
+                <Link to={`/admin/profiles/${record._id}`} className='text-decoration-none'>
+                    <Button type="primary" className='p-1 m-0' style={{ width: '40px', backgroundColor: 'transparent', height: '40px' }}>
                         {record.image ? (
                             <Avatar src={record.image} />
                         ) : (
-                            <div className={`rounded-5 ${getRandomBgColorClass()} m-0 p-0`} style={{ textAlign: 'center', lineHeight: '30px', color: getRandomBgColorClass().includes('dark') ? 'white' : 'black' }}>
+                            <div className={`rounded-5 ${getRandomBgColorClass()} m-0 p-0`} style={{ textAlign: 'center', color: getRandomBgColorClass().includes('dark') ? 'white' : 'black' }}>
                                 {record.email.slice(0, 1).toUpperCase()}
                             </div>
                         )}
                     </Button>
-                </div>
+                </Link>
             ),
         },
         {
@@ -100,7 +110,6 @@ const Profiles = ({onSetContent}) => {
             dataIndex: 'status',
             key: 'status',
         },
-        
         {
             title: 'Artworks Bought',
             dataIndex: 'artworks',
@@ -127,9 +136,7 @@ const Profiles = ({onSetContent}) => {
 
     const filterUsers = ({ itemName, dateRange }) => {
         let filtered = users;
-        console.log(filtered);
-        console.log(itemName);
-    
+
         if (itemName) {
             filtered = filtered.filter(user => {
                 const lowerName = user.name.toLowerCase();
@@ -143,50 +150,38 @@ const Profiles = ({onSetContent}) => {
                 const lowerLinkedin = user.linkedin ? user.linkedin.toLowerCase() : '';
                 const phoneNumber = user.phonenumber; // Assuming phonenumber is a string
                 const lowerTelegram = user.telegram ? user.telegram.toLowerCase() : '';
-    
-                const matchesName = !itemName || lowerName.includes(itemName.toLowerCase());
-                const matchesEmail = !itemName || lowerEmail.includes(itemName.toLowerCase());
-                const matchesRole = !itemName || lowerRole.includes(itemName.toLowerCase());
-                const matchesStatus = !itemName || lowerStatus.includes(itemName.toLowerCase());
-                const matchesAddress = !itemName || lowerAddress.includes(itemName.toLowerCase());
-                const matchesFacebook = !itemName || lowerFacebook.includes(itemName.toLowerCase());
-                const matchesInstagram = !itemName || lowerInstagram.includes(itemName.toLowerCase());
-                const matchesTwitter = !itemName || lowerTwitter.includes(itemName.toLowerCase());
-                const matchesLinkedin = !itemName || lowerLinkedin.includes(itemName.toLowerCase());
-                const matchesPhoneNumber = !itemName || phoneNumber.includes(itemName);
-                const matchesTelegram = !itemName || lowerTelegram.includes(itemName.toLowerCase());
-                
+
                 return (
-                    matchesName ||
-                    matchesEmail ||
-                    matchesRole ||
-                    matchesStatus ||
-                    matchesAddress ||
-                    matchesFacebook ||
-                    matchesInstagram ||
-                    matchesTwitter ||
-                    matchesLinkedin ||
-                    matchesPhoneNumber ||
-                    matchesTelegram 
+                    lowerName.includes(itemName.toLowerCase()) ||
+                    lowerEmail.includes(itemName.toLowerCase()) ||
+                    lowerRole.includes(itemName.toLowerCase()) ||
+                    lowerStatus.includes(itemName.toLowerCase()) ||
+                    lowerAddress.includes(itemName.toLowerCase()) ||
+                    lowerFacebook.includes(itemName.toLowerCase()) ||
+                    lowerInstagram.includes(itemName.toLowerCase()) ||
+                    lowerTwitter.includes(itemName.toLowerCase()) ||
+                    lowerLinkedin.includes(itemName.toLowerCase()) ||
+                    phoneNumber.includes(itemName) ||
+                    lowerTelegram.includes(itemName.toLowerCase())
                 );
-                
             });
-            
         }
+
         // Filter by date range
         if (dateRange && dateRange.length === 2) {
             filtered = filtered.filter(user => {
-                const matchesDate = !dateRange || (new Date(user.createdAt) >= dateRange[0] && new Date(user.createdAt) <= dateRange[1]);
-
+                const matchesDate = new Date(user.createdAt) >= dateRange[0] && new Date(user.createdAt) <= dateRange[1];
                 return matchesDate;
             });
         }
-    
+
         setFilteredUsers(filtered);
     };
+
     if (isLoading) {
         return <LoadingSpinner />;
     }
+
     return (
         <Layout style={{ marginTop: '70px', height: '100vh' }}>
             <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{ backgroundColor: '#d7d7e9', borderRadius: '4px' }}>
@@ -196,7 +191,7 @@ const Profiles = ({onSetContent}) => {
                         { title: (<><UsergroupAddOutlined /><span>Users</span></>) },
                     ]}
                 />
-                <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={()=>SetEditPage(!editpage)} />
+                <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={() => setEditPage(!editPage)} />
             </div>
             <Content className='m-2'>
                 <div
@@ -216,7 +211,7 @@ const Profiles = ({onSetContent}) => {
                                     <Table
                                         dataSource={filteredUsers}
                                         columns={columns}
-                                        pagination={true}
+                                        pagination={{ pageSize: 10 }}
                                         rowClassName="editable-row"
                                         scroll={{ x: 'max-content' }}
                                     />
@@ -224,7 +219,6 @@ const Profiles = ({onSetContent}) => {
                             </Col>
                         </Row>
                     </div>
-            
                 </div>
             </Content>
         </Layout>

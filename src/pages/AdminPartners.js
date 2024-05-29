@@ -3,13 +3,10 @@ import axios from 'axios';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { backendUrl } from '../utils/utils';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPeopleArrows } from '@fortawesome/free-solid-svg-icons';
-import { DeleteOutlined,HomeOutlined, EditOutlined} from '@ant-design/icons';
+import { DeleteOutlined,HomeOutlined, EditOutlined,TeamOutlined} from '@ant-design/icons';
 import { Card, Table, Row, Col, theme, message, Layout, Breadcrumb} from 'antd';
-
+import { Link } from 'react-router-dom';
 import { Button} from '../components/button';
-
 const { Content} = Layout;
 
 const Partners = ({onSetContent}) => {
@@ -30,6 +27,8 @@ const Partners = ({onSetContent}) => {
             })
             .catch(error => {
                 console.error("There was an error fetching the partners!", error);
+                setPartners([{_id:'53545',name:"sfsdf",dateStarted:'2022-01-03', location:'cdfsc'}]);
+                setFilteredPartners([{_id:'53545',name:"sfsdf",dateStarted:'2022-01-03', location:'cdfsc'}]);
                 setIsLoading(false);
                 message.error("There was an error fetching the partners!", 5);
             });
@@ -54,6 +53,13 @@ const Partners = ({onSetContent}) => {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
+            render: (text, record) => (
+                <Link to={`/admin/partners/${record._id}`} className='text-decoration-none'>
+                    <Button type="primary">
+                        {record.name}
+                    </Button>
+                </Link>
+            ),
         },
         {
             title: 'Date Started',
@@ -102,7 +108,7 @@ const Partners = ({onSetContent}) => {
                 <Breadcrumb
                     items={[
                         { href: '/', title: <HomeOutlined /> },
-                        { title: (<><FontAwesomeIcon icon={faPeopleArrows} /><span>Partners</span></>) },
+                        { title: (<><TeamOutlined /><span>Partners</span></>) },
                     ]}
                 />
                 <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={()=>SetEditPage(!editpage)} />

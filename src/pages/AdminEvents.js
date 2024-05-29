@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { InteractionOutlined,DeleteOutlined, HomeOutlined, EditOutlined, } from '@ant-design/icons';
-import { Card, Row, Col, Table, theme, Button, message,Layout, Breadcrumb  } from 'antd';
+import { DeleteOutlined, HomeOutlined, EditOutlined, CalendarOutlined } from '@ant-design/icons';
+import { Card, Row, Col, Table, theme, Button, message, Layout, Breadcrumb } from 'antd';
 import FilterComponent from '../components/Filter';
 import { backendUrl } from '../utils/utils'; // Import backendUrl for the API endpoint
 import LoadingSpinner from '../components/LoadingSpinner';
-const { Content} = Layout;
+import { Link } from 'react-router-dom';
 
-const Events = ({onSetContent}) => {
+const { Content } = Layout;
+
+const Events = ({ onSetContent }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
-    
-    const [editpage,SetEditPage] = useState(false);
+    const [editPage, setEditPage] = useState(false);
     const [events, setEvents] = useState([]);
     const [filteredEvents, setFilteredEvents] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -25,8 +26,15 @@ const Events = ({onSetContent}) => {
             })
             .catch(error => {
                 console.error("There was an error fetching the events!", error);
+                const dummyData = [
+                    { _id: '1', name: 'Dummy Event 1', date: '2023-01-01', location: 'Location 1' },
+                    { _id: '2', name: 'Dummy Event 2', date: '2023-02-01', location: 'Location 2' },
+                    { _id: '3', name: 'Dummy Event 3', date: '2023-03-01', location: 'Location 3' }
+                ];
+                setEvents(dummyData);
+                setFilteredEvents(dummyData);
                 setIsLoading(false);
-                message.error("There was an error fetching the events!", 5);
+                message.warning("Using dummy data due to error fetching events", 5);
             });
     }, []);
 
@@ -42,13 +50,21 @@ const Events = ({onSetContent}) => {
                 console.error("There was an error deleting the event!", error);
                 message.error("There was an error deleting the event!", 5);
             });
-    }
+    };
 
     const columns = [
         {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
+            render: (text, record) => (
+                <Link to={`/admin/events/${record._id}`} className='text-decoration-none'>
+                    <Button type="link">
+                        {record.name}
+                    </Button>
+                </Link>
+                
+            ),
         },
         {
             title: 'Date',
@@ -62,6 +78,8 @@ const Events = ({onSetContent}) => {
             key: 'location',
         },
         {
+            title: 'Action',
+            key: 'action',
             render: (text, record) => (
                 <Button type="primary" icon={<DeleteOutlined />} onClick={() => deleteEvent(record._id)} />
             ),
@@ -70,20 +88,20 @@ const Events = ({onSetContent}) => {
 
     const filterEvents = ({ itemName, dateRange }) => {
         let filtered = events;
-    
+
         if (itemName) {
-            filtered = filtered.filter(event => 
+            filtered = filtered.filter(event =>
                 event.name.toLowerCase().includes(itemName.toLowerCase())
             );
         }
-    
+
         if (dateRange && dateRange.length === 2) {
             filtered = filtered.filter(event => {
                 const eventDate = new Date(event.date);
-                return eventDate >= dateRange[0] && eventDate <= dateRange[1];
+                return eventDate >= dateRange[0] && dateRange[1] >= eventDate;
             });
         }
-    
+
         setFilteredEvents(filtered);
     };
 
@@ -97,10 +115,10 @@ const Events = ({onSetContent}) => {
                 <Breadcrumb
                     items={[
                         { href: '/', title: <HomeOutlined /> },
-                        { title: (<><InteractionOutlined /><span>Events</span></>) },
+                        { title: (<><CalendarOutlined /><span>Events</span></>) },
                     ]}
                 />
-                <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={()=>SetEditPage(!editpage)} />
+                <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={() => setEditPage(!editPage)} />
             </div>
             <Content className='m-2'>
                 <div
@@ -112,23 +130,23 @@ const Events = ({onSetContent}) => {
                         height: 'calc(100vh - 140px)'
                     }}
                 >
-            <FilterComponent onSearch={filterEvents} name={true} date={true} />
-            <div className="site-layout-background" style={{ padding: 8, minHeight: 380 }}>
-                <Row style={{ marginTop: 1 }}>
-                    <Col span={24}>
-                        <Card title="Events" bordered={true} style={{ borderRadius: '2px' }}>
-                            <Table
-                                dataSource={filteredEvents}
-                                columns={columns}
-                                pagination={true}
-                                rowClassName="editable-row"
-                                scroll={{ x: 'max-content' }}
-                            />
-                        </Card>
-                    </Col>
-                </Row>
-            </div>
-            </div>
+                    <FilterComponent onSearch={filterEvents} name={true} date={true} />
+                    <div className="site-layout-background" style={{ padding: 8, minHeight: 380 }}>
+                        <Row style={{ marginTop: 1 }}>
+                            <Col span={24}>
+                                <Card title="Events" bordered={true} style={{ borderRadius: '2px' }}>
+                                    <Table
+                                        dataSource={filteredEvents}
+                                        columns={columns}
+                                        pagination={{ pageSize: 10 }}
+                                        rowClassName="editable-row"
+                                        scroll={{ x: 'max-content' }}
+                                    />
+                                </Card>
+                            </Col>
+                        </Row>
+                    </div>
+                </div>
             </Content>
         </Layout>
     );

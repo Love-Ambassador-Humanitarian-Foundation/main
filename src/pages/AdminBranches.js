@@ -3,11 +3,13 @@ import axios from 'axios';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { backendUrl } from '../utils/utils';
+import { useNavigate, Link } from 'react-router-dom';
 import { DeleteOutlined, FilterOutlined , HomeOutlined, EditOutlined, BranchesOutlined } from '@ant-design/icons';
 import { Card, Row, Col, Table, theme, Button, message,Layout, Breadcrumb  } from 'antd';
+
 const { Content} = Layout;
 
-const Branches = ({onSetScreen}) => {
+const Branches = ({item}) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     
     const [editpage,SetEditPage] = useState(false);
@@ -26,6 +28,8 @@ const Branches = ({onSetScreen}) => {
             .catch(error => {
                 console.error("There was an error fetching the branches!", error);
                 setIsLoading(false);
+                setBranches([{_id:'53545',name:"sfsdf",date:'2022-01-03'}]);
+                setFilteredBranches([{_id:'53545',name:"sfsdf",date:'2022-01-03'}]);
                 message.error("There was an error fetching the branches!", 5);
             });
     }, []);
@@ -49,6 +53,13 @@ const Branches = ({onSetScreen}) => {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
+            render: (text, record) => (
+                <Link to={`/admin/branches/${record._id}`} className='text-decoration-none'>
+                    <Button type="primary" >
+                        {record.name}
+                    </Button>
+                </Link>
+            ),
         },
         {
             title: 'Location',

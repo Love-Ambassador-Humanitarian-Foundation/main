@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import './Header.css';
 
-const HeaderComponent = ({ Companyname, isloggedIn, items, onchangeScreen }) => {
+const HeaderComponent = ({ Companyname, isloggedIn, items }) => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     //const isAdmin = true;
@@ -64,10 +64,7 @@ const HeaderComponent = ({ Companyname, isloggedIn, items, onchangeScreen }) => 
             <Menu.Item key="2">Notification 2</Menu.Item>
         </Menu>
     );
-    const clicknavitem = (item)=>{
-        onchangeScreen(item);
-        onClose();
-    }
+    
 
     return (
         <Navbar bg="white" expand="lg" fixed="top" className="m-0 p-0">
@@ -111,7 +108,7 @@ const HeaderComponent = ({ Companyname, isloggedIn, items, onchangeScreen }) => 
                                 key={index}
                                 to={item.url}
                                 text={item.label}
-                                onClick={() => clicknavitem(item)} // Changed here
+                                onClick={onClose}
                                 className="m-2 text-decoration-none"
                                 fwicon={item.icon}
                             />
