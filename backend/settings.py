@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt',
     'corsheaders',
     'api',
 ]
@@ -70,6 +71,9 @@ TEMPLATES = [
         },
     },
 ]
+
+AUTH_USER_MODEL = 'api.User'  # Replace 'api' with the actual app name where your User model is defined
+
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
@@ -115,6 +119,28 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Add custom authentication backend
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Keep the default backend
+    'api.backends.EmailBackend',  # Add your custom backend
+]
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+# JWT settings
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=604800),#7 days
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=259200), #3 days
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -136,3 +162,16 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'mail.privateemail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'info@loveahfoundation.org'
+EMAIL_HOST_PASSWORD = 'loveinfo_4_christ'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
+
+
+
+

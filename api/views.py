@@ -7,15 +7,17 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import User, About, Event, Partners, Payments, Logs
 from .serializers import (
     UserSerializer, AboutSerializer, EventSerializer,
-    PartnersSerializer, PaymentsSerializer, LogsSerializer,UserLoginSerializer
+    PartnersSerializer, PaymentsSerializer, LogsSerializer,UserRegistrationSerializer, UserLoginSerializer
 )
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.auth import login
+from django.conf import settings
+
 
 NAME = 'LAHF'
 VERSION = '1.0.0'
@@ -175,29 +177,157 @@ class PartnerDetailView(generics.RetrieveUpdateDestroyAPIView):
         self.perform_destroy(instance)
         return Response({'success': True, 'message': 'Partner deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 
-
 class UserListCreateView(generics.ListCreateAPIView):
+    """
+    API view to list and create users.
+    """
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    email_verification_html = """
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <title>Email Verification</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        background-color: #f4f4f4;
+                        margin: 0;
+                        padding: 0;
+                        color: #333;
+                    }
+                    .container {
+                        max-width: 600px;
+                        margin: 20px auto;
+                        background-color: #fff;
+                        padding: 20px;
+                        border-radius: 10px;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    }
+                    .header {
+                        text-align: center;
+                        padding: 10px 0;
+                        border-bottom: 1px solid #ddd;
+                    }
+                    .header h1 {
+                        margin: 0;
+                        color: #4CAF50;
+                    }
+                    .content {
+                        padding: 20px;
+                    }
+                    .content p {
+                        margin: 10px 0;
+                        line-height: 1.6;
+                    }
+                    .verify-button {
+                        display: block;
+                        width: 200px;
+                        margin: 20px auto;
+                        padding: 10px 0;
+                        text-align: center;
+                        background-color: #4CAF50;
+                        color: #fff;
+                        text-decoration: none;
+                        border-radius: 5px;
+                        font-size: 16px;
+                    }
+                    .footer {
+                        text-align: center;
+                        padding: 10px 0;
+                        border-top: 1px solid #ddd;
+                        margin-top: 20px;
+                        color: #888;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>Email Verification</h1>
+                    </div>
+                    <div class="content">
+                        <p>Hi {first_name},</p>
+                        <p>Click the button below to verify your email address:</p>
+                        <a href="{verify_link}" class="verify-button">Verify Email</a>
+                        <p>If you did not request this email, please ignore it.</p>
+                    </div>
+                    <div class="footer">
+                        <p>Thank you for using our service!</p>
+                    </div>
+                </div>
+            </body>
+            </html>
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+    """
+
+    def post(self, request):
+        serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(user.pk.bytes)
+            current_site = get_current_site(request)# www.loveahfoundation.org/api
+            verify_link = f"http://{current_site.domain}/api/email/verify/{uid}/{token}"
+            #print(verify_link," ===============")
+            subject = 'Email Verification'
+            message = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Email Verification</title>
+                <style>
+                    body {{ font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; color: #333; }}
+                    .container {{ max-width: 600px; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }}
+                    .header {{ text-align: center; padding: 10px 0; border-bottom: 1px solid #ddd; }}
+                    .header h1 {{ margin: 0; color: #4CAF50; }}
+                    .content {{ padding: 20px; }}
+                    .content p {{ margin: 10px 0; line-height: 1.6; }}
+                    .verify-button {{ display: block; width: 200px; margin: 20px auto; padding: 10px 0; text-align: center; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 5px; font-size: 16px; }}
+                    .footer {{ text-align: center; padding: 10px 0; border-top: 1px solid #ddd; margin-top: 20px; color: #888; }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>Email Verification</h1>
+                    </div>
+                    <div class="content">
+                        <p>Hi {user.firstname},</p>
+                        <p>Click the link below to verify your email address:</p>
+                        <a href="{verify_link}" class="verify-button">Verify Email</a>
+                        <p>If you did not request this email, please ignore it.</p>
+                    </div>
+                    <div class="footer">
+                        <p>Thank you for using our service!</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            send_mail(subject, message, settings.EMAIL_HOST_USER, [user.email], fail_silently=False, html_message=message)
             refresh = RefreshToken.for_user(user)
             return Response({
                 'success': True,
-                'message': 'User created successfully',
+                'message': 'User registered successfully',
                 'data': serializer.data,
                 'refresh': str(refresh),
                 'access': str(refresh.access_token)
             }, status=status.HTTP_201_CREATED)
-        return Response({'success': False, 'message': 'Failed to create user', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-class UserLoginView(APIView):
+        return Response({'success': False, 'message': 'Failed to register user', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+        queryset = self.get_queryset()
+        serializer = UserSerializer(queryset, many=True)
+        return Response({'success': True, 'message': 'Users retrieved successfully', 'data': serializer.data}, status=status.HTTP_200_OK)
+
+class UserLoginAPIView(APIView):
     def post(self, request):
         serializer = UserLoginSerializer(data=request.data)
+        print(serializer)
         if serializer.is_valid():
             user = serializer.validated_data['user']
+            login(request, user)
             refresh = RefreshToken.for_user(user)
             return Response({
                 'success': True,
@@ -209,40 +339,77 @@ class UserLoginView(APIView):
 
 
 class PasswordResetRequestView(APIView):
+    
     def post(self, request):
         email = request.data.get('email')
+        new_password = request.data.get('new_password')
         user = User.objects.filter(email=email).first()
         if user:
             token = default_token_generator.make_token(user)
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            uid = urlsafe_base64_encode(user.pk.bytes)
             current_site = get_current_site(request)
-            reset_link = f"{current_site.domain}/reset-password/{uid}/{token}/"
+            reset_link = f"http://{current_site.domain}/api/password/reset/confirm/{uid}/{token}?new_password={new_password}"
             subject = 'Password Reset Request'
-            message = render_to_string('password_reset_email.html', {'reset_link': reset_link})
-            send_mail(subject, message, None, [email])
+            message = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Password Reset</title>
+                <style>
+                    body {{ font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; color: #333; }}
+                    .container {{ max-width: 600px; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }}
+                    .header {{ text-align: center; padding: 10px 0; border-bottom: 1px solid #ddd; }}
+                    .header h1 {{ margin: 0; color: #4CAF50; }}
+                    .content {{ padding: 20px; }}
+                    .content p {{ margin: 10px 0; line-height: 1.6; }}
+                    .reset-button {{ display: block; width: 200px; margin: 20px auto; padding: 10px 0; text-align: center; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 5px; font-size: 16px; }}
+                    .footer {{ text-align: center; padding: 10px 0; border-top: 1px solid #ddd; margin-top: 20px; color: #888; }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>Password Reset</h1>
+                    </div>
+                    <div class="content">
+                        <p>Hi {user.firstname},</p>
+                        <p>Click the button below to reset your password:</p>
+                        <a href="{reset_link}" class="reset-button">Reset Password</a>
+                        <p>If you did not request this email, please ignore it.</p>
+                    </div>
+                    <div class="footer">
+                        <p>Thank you for using our service!</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            send_mail(subject, '', settings.EMAIL_HOST_USER, [email], html_message=message)
+            #print(reset_link)
             return Response({'success': True, 'message': 'Password reset link sent successfully'}, status=status.HTTP_200_OK)
         return Response({'success': False, 'message': 'User with this email does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
 class PasswordResetConfirmView(APIView):
-    def post(self, request, uidb64, token):
-        try:
-            uid = force_text(urlsafe_base64_decode(uidb64))
-            user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            user = None
-        if user and default_token_generator.check_token(user, token):
-            new_password = request.data.get('new_password')
-            user.set_password(new_password)
-            user.save()
-            return Response({'success': True, 'message': 'Password reset successful'}, status=status.HTTP_200_OK)
-        return Response({'success': False, 'message': 'Invalid token or user'}, status=status.HTTP_400_BAD_REQUEST)
+    def get(self, request, uidb64, token):
+        new_password = request.query_params.get('new_password')
+        if new_password:
+            try:
+                uid = int.from_bytes(urlsafe_base64_decode(uidb64), 'big')
+                user = User.objects.get(pk=uid)
+            except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+                user = None
+            if user and default_token_generator.check_token(user, token):
+                user.set_password(new_password)
+                user.save()
+                return Response({'success': True, 'message': 'Password reset successful'}, status=status.HTTP_200_OK)
+            return Response({'success': False, 'message': 'Invalid token or user'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'success': False, 'message': "'new_password' field is needed"}, status=status.HTTP_400_BAD_REQUEST)
 
+    
 class EmailVerificationView(APIView):
     def get(self, request, uidb64, token):
-        
-
         try:
-            uid = str(urlsafe_base64_decode(uidb64), 'utf-8')
+            uid = int.from_bytes(urlsafe_base64_decode(uidb64), 'big')
             user = User.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None

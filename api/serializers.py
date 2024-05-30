@@ -2,57 +2,44 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from .models import User, About, Partners, Event, Payments, Logs
 
+from django.contrib.auth.hashers import make_password
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import serializers
+from .models import User
+from django.contrib.auth import authenticate
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'firstname', 'lastname', 'is_active', 'is_staff', 'joined_date', 'last_login', 'position')
+
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'password', 'firstname', 'lastname')
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        return user
+
 class UserLoginSerializer(serializers.Serializer):
-    """
-    Serializer for user login.
-    """
     email = serializers.EmailField()
     password = serializers.CharField()
 
-    def validate(self, data):
-        email = data.get('email')
-        password = data.get('password')
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
 
         if email and password:
-            user = authenticate(email=email, password=password)
-            if user:
-                if not user.is_active:
-                    raise serializers.ValidationError("User account is disabled.")
-                return user
-            else:
-                raise serializers.ValidationError("Unable to login with provided credentials.")
+            user = authenticate(request=self.context.get('request'), email=email, password=password)
+            if not user:
+                raise serializers.ValidationError('Unable to login with provided credentials.')
         else:
-            raise serializers.ValidationError("Must include 'email' and 'password'.")
-
-class UserSerializer(serializers.ModelSerializer):
-    """
-    Serializer for user model.
-    """
-    class Meta:
-        model = User
-        fields = [
-            'id', 'username', 'password', 'email', 'firstname', 'lastname',
-            'is_admin', 'is_active', 'is_staff', 'joined_date', 'last_login',
-            'position'
-        ]
-        extra_kwargs = {
-            'password': {'write_only': True}
-        }
-
-    def create(self, validated_data):
-        user = User.objects.create(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            firstname=validated_data['firstname'],
-            lastname=validated_data['lastname'],
-            is_admin=validated_data['is_admin'],
-            is_active=validated_data['is_active'],
-            is_staff=validated_data['is_staff'],
-            position=validated_data['position']
-        )
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
+            raise serializers.ValidationError('Must include "email" and "password".')
+        attrs['user'] = user
+        return attrs
 
 class AboutSerializer(serializers.ModelSerializer):
     """
