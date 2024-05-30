@@ -27,7 +27,7 @@ const HeaderComponent = ({ Companyname,isloggedIn }) => {
             <Menu.Item key="1"><Link to={`/profile/${userid}`} style={{textDecoration:'none'}}>Account</Link></Menu.Item>
             <Menu.Item key="2">email</Menu.Item>
             <Menu.Item key="3">usertype:{isAdmin?<>Admin</>:<></>}</Menu.Item>
-            <Menu.Item key="4"><Link to='/admin/1233244' style={{textDecoration:'none'}}>View Dashboard</Link></Menu.Item>
+            <Menu.Item key="4"><Link to='/admin/dashboard' style={{textDecoration:'none'}}>View Dashboard</Link></Menu.Item>
             <Menu.Item key="5">Activity Log</Menu.Item>
             <Menu.Item key="6">{isloggedIn?
                             <Link to="/logout" text="Logout" style={{textDecoration:'none'}}>Logout</Link>

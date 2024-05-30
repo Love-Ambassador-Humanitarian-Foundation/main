@@ -26,6 +26,7 @@ import Partner from './pages/AdminPartnerDetail';
 import Payment from './pages/AdminPaymentDetail';
 import Branch from './pages/AdminBranchDetail';
 import Event from './pages/AdminEventDetail';
+import PrivateRoute from './utils/PrivateRoute.js';
 
 const URL = 'https://loveahfoundation.org/api';
 const API_URL = URL; //'http://127.0.0.1:8000';
@@ -55,27 +56,27 @@ const App = () => {
           <Route path="/" element={<LandingPage API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
           <Route path="/about" element={<AboutPage API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
           <Route path="/events" element={<EventsPage API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
-          <Route path="/contribute" element={<ContributePage API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
+          <Route path="/contribute" element={<PrivateRoute><ContributePage API_URL={API_URL} isloggedIn={isloggedIn}/></PrivateRoute>} exact ></Route>
           <Route path="/contact" element={<ContactUsPage/>} exact ></Route>
           <Route path="/login" element={<LoginPage/>} exact ></Route>
           <Route path="/signup" element={<SignUpPage/>} exact ></Route>
-          <Route path="/profile/:userid" element={<Profile API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
-          <Route path="/payment/:variable" element={<PaymentPage/>} ></Route>
-          <Route path="/admin/profiles" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Profiles />} />} />
-          <Route path="/admin/profiles/:id" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<User />} />} />
-          <Route path="/admin/dashboard" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Dashboard />} />} />
-          <Route path="/admin/about" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<AboutPage />} />} />
-          <Route path="/admin/achievements" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Achievements />} />} />
-          <Route path="/admin/achievements/:id" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Achievement />} />} />
-          <Route path="/admin/partners" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Partners />} />} />
-          <Route path="/admin/partners/:id" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Partner />} />} />
-          <Route path="/admin/events" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Events />} />} />
-          <Route path="/admin/events/:id" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Event />} />} />
-          <Route path="/admin/payments" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Payments />} />} />
-          <Route path="/admin/payments/:id" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Payment />} />} />
-          <Route path="/admin/branches" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Branches />} />} />
-          <Route path="/admin/branches/:id" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Branch />} />} />
-          <Route path="/admin/profile" element={<AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Profile />} />} />
+          <Route path="/profile/:userid" element={<PrivateRoute><Profile API_URL={API_URL} isloggedIn={isloggedIn}/></PrivateRoute>} exact ></Route>
+          <Route path="/payment/:variable" element={<PrivateRoute><PaymentPage/></PrivateRoute>} ></Route>
+          <Route path="/admin/profiles" element={<PrivateRoute><AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Profiles />} /></PrivateRoute>} />
+          <Route path="/admin/profiles/:id" element={<PrivateRoute><AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<User />} /></PrivateRoute>} />
+          <Route path="/admin/dashboard" element={<PrivateRoute><AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Dashboard />} /></PrivateRoute>} />
+          <Route path="/admin/about" element={<PrivateRoute><AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<AboutPage />} /></PrivateRoute>} />
+          <Route path="/admin/achievements" element={<PrivateRoute><AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Achievements />} /></PrivateRoute>} />
+          <Route path="/admin/achievements/:id" element={<PrivateRoute><AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Achievement />} /></PrivateRoute>} />
+          <Route path="/admin/partners" element={<PrivateRoute><AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Partners />} /></PrivateRoute>} />
+          <Route path="/admin/partners/:id" element={<PrivateRoute><AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Partner />} /></PrivateRoute>} />
+          <Route path="/admin/events" element={<PrivateRoute><AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Events />} /></PrivateRoute>} />
+          <Route path="/admin/events/:id" element={<PrivateRoute><AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Event />} /></PrivateRoute>} />
+          <Route path="/admin/payments" element={<PrivateRoute><AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Payments />} /></PrivateRoute>} />
+          <Route path="/admin/payments/:id" element={<PrivateRoute><AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Payment />} /></PrivateRoute>} />
+          <Route path="/admin/branches" element={<PrivateRoute><AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Branches />} /></PrivateRoute>} />
+          <Route path="/admin/branches/:id" element={<PrivateRoute><AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Branch />} /></PrivateRoute>} />
+          <Route path="/admin/profile" element={<PrivateRoute><AdminMain Companyname={Companyname} isloggedIn={isloggedIn} screen={<Profile />} /></PrivateRoute>} />
           {/* Add other routes as needed */}
           {/* <Redirect from="/" to="/" /> */}
           

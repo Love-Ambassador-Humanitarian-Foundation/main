@@ -118,7 +118,7 @@ const LandingPage = ({API_URL, isloggedIn}) => {
         { title: 'Donations', description: '$400K+', color:'#044a18' },
         { title: 'Partners', description: '1k',color:'green'  },
         { title: 'Volunteers', description: '29',color:'orange'  },
-        { title: 'Communities', description: '3',color:'#04364a'  },
+        { title: 'Achievements', description: '3',color:'#04364a'  },
         { title: 'Seminars', description: '7',color:'red'  },
         { title: 'Branches', description: '1',color:'orangered'  }
         // Add more achievements as needed
@@ -287,7 +287,7 @@ const LandingPage = ({API_URL, isloggedIn}) => {
                                     <Card.Body>
                                         <Card.Title>
                                             <IconButton style={{'color':'#04364a'}} className='seedling-menu' hover={false} icon={<FontAwesomeIcon icon={faSeedling} size='xl' />} />
-                                            <h6 className="text-dark fw-bold">Communities</h6>
+                                            <h6 className="text-dark fw-bold">Achievements</h6>
                                         </Card.Title>
                                         <h6>supports persons who are unable to help themselves.</h6>
                                         <div className='mb-5 mt-5'></div>

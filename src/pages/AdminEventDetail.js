@@ -50,13 +50,19 @@ const Event = ({ item }) => {
     return (
         <Layout style={{ marginTop: '70px', height: '100vh' }}>
             <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{ backgroundColor: '#d7d7e9', borderRadius: '4px' }}>
-                <Breadcrumb
-                    items={[
-                        { href: '/', title: <HomeOutlined /> },
-                        { title: (<div onClick={navigate(`/admin/events/`)}><CalendarOutlined /><span>Events</span></div>) },
-                        { title: (<><span>{name}</span></>) },
-                    ]}
-                />
+                
+                <Breadcrumb>
+                    <Breadcrumb.Item href="/">
+                        <HomeOutlined />
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item onClick={() => navigate('/admin/events')}>
+                        <CalendarOutlined />
+                        <span>Events</span>
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item>
+                        <span>{name}</span>
+                    </Breadcrumb.Item>
+                </Breadcrumb>
                 <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={() => setEditPage(!editpage)} />
             </div>
             <Content className='m-2'>

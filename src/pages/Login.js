@@ -1,55 +1,74 @@
-import React, { useState} from 'react';
-import { Container, Row, Col, Form, Alert } from 'react-bootstrap';
+import React, { useState } from 'react';
+import axios from 'axios';
+import { Form, Input, Button, Alert, Row, Col, Typography } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
 
-import { Button} from '../components/button';
-import { Link } from 'react-router-dom';
+const { Title } = Typography;
+
 const LoginPage = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setError('Invalid email or password. Please try again.');
+    const handleSubmit = async (values) => {
+        setLoading(true);
+        setError('');
+
+        try {
+            const response = await axios.post('http://localhost:8000/api/login/', {
+                username: values.email,
+                password: values.password,
+            });
+            localStorage.setItem('access_token', response.data.access);
+            localStorage.setItem('refresh_token', response.data.refresh);
+            axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
+            navigate('/dashboard');
+        } catch (error) {
+            setError('Invalid credentials. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <Container className="py-5">
-            <Row className="justify-content-center mt-4 ">
-                <Col md={6} style={{ maxWidth: '380px',backgroundColor:'#ececec' }}>
-                    <h2 className="text-center mb-4 mt-3">Login</h2>
-                    {error && <Alert variant="danger">{error}</Alert>}
-                    <Form onSubmit={handleSubmit} className="d-flex flex-column w-100">
-                        <Form.Group controlId="formBasicEmail" style={{margin:'10px'}}>
-                            <Form.Label>Email address</Form.Label>
-                            <Form.Control
-                                type="email"
-                                placeholder="Enter email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
-                        </Form.Group>
+        <Row justify="center" align="middle" style={{ height: '100vh' }}>
+            <Col xs={24} sm={16} md={12} lg={8} xl={6} style={{ padding: '20px', backgroundColor: '#ececec', borderRadius: '8px' }}>
+                <Title level={2} className="text-center">Login</Title>
+                {error && <Alert message={error} type="error" showIcon style={{ marginBottom: '20px' }} />}
+                <Form
+                    name="login"
+                    layout="vertical"
+                    onFinish={handleSubmit}
+                    style={{ maxWidth: '100%' }}
+                >
+                    <Form.Item
+                        label="Email"
+                        name="email"
+                        rules={[{ required: true, message: 'Please input your email!' }]}
+                    >
+                        <Input disabled={loading} />
+                    </Form.Item>
 
-                        <Form.Group controlId="formBasicPassword" style={{margin:'10px'}}>
-                            <Form.Label>Password</Form.Label>
-                            <Form.Control
-                                type="password"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                        </Form.Group>
-                        <div style={{margin:'10px'}}>
-                            Not yet joined?, <Link to='/signup' className='text-danger'>Sign up</Link>
-                        </div>
+                    <Form.Item
+                        label="Password"
+                        name="password"
+                        rules={[{ required: true, message: 'Please input your password!' }]}
+                    >
+                        <Input.Password disabled={loading} />
+                    </Form.Item>
 
-                        <Button  text="Login"  style={{margin:'20px', alignSelf: 'center' }} />
-                    </Form>
-                </Col>
-            </Row>
-        </Container>
+                    <Form.Item>
+                        <Link to='/signup'>Not yet joined? Sign up</Link>
+                    </Form.Item>
+
+                    <Form.Item>
+                        <Button type="primary" htmlType="submit" loading={loading} style={{ width: '100%' }}>
+                            {loading ? <div className="spinner"></div> : 'Login'}
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Col>
+        </Row>
     );
 };
 

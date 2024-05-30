@@ -3,7 +3,7 @@ import axios from 'axios';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { backendUrl } from '../utils/utils';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { DeleteOutlined, FilterOutlined , HomeOutlined, EditOutlined, BranchesOutlined } from '@ant-design/icons';
 import { Card, Row, Col, Table, theme, Button, message,Layout, Breadcrumb  } from 'antd';
 

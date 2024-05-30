@@ -3,21 +3,12 @@ import HeaderComponent from '../components/AdminHeader';
 import { DashboardOutlined, UsergroupAddOutlined, InfoCircleOutlined, StarOutlined, CalendarOutlined,TeamOutlined, DollarOutlined, BankOutlined, UserOutlined } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
 import { Nav } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
-import Dashboard from './AdminDashboard';
-import Profiles from './AdminUsers';
-import AboutPage from './AdminAbout';
-import Achievements from './AdminAchievements';
-import Events from './AdminEvents';
-import Payments from './AdminPayments';
-import Branches from './AdminBranches';
-import Profile from './AdminProfile';
-import Partners from './AdminPartners';
+import { Link} from 'react-router-dom';
 
 const { Sider } = Layout;
 
 const AdminMain = ({ Companyname, isloggedIn, screen }) => {
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     
     const items = [

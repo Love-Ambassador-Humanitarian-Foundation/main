@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import { Row, Col, Typography, Input, Upload, Button as AntButton, theme, message, Layout, Breadcrumb, Avatar } from 'antd';
 import { Button } from '../components/button';
-import { useParams } from 'react-router-dom';
+//import { useParams } from 'react-router-dom';
 import { backendUrl } from '../utils/utils';
-import { SaveOutlined, HomeOutlined, EditOutlined, UserOutlined, UploadOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import { SaveOutlined, HomeOutlined, EditOutlined, UserOutlined, UploadOutlined} from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import Profiles from './AdminUsers';
 const { Title, Text } = Typography;
 const { Content } = Layout;
 
 const User = ({ item }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
-    const { userDetails } = useParams();
+    //const { userDetails } = useParams();
     const navigate = useNavigate();
     const [editpage, setEditPage] = useState(false);
 
