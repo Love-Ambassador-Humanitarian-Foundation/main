@@ -27,3 +27,7 @@ yarn-error.log*
 .zip
 
 db.sqlite3
+/api
+/eventimages
+/eventvideos
+__pycache__
