@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { Card, Row, Col, theme, Layout, Breadcrumb  } from 'antd';
 const { Content} = Layout;
 
-const Dashboard = ({onSetContent}) => {
+const Dashboard = () => {
     const [barwidth, setBarWidth] = useState(350);
     
     const [editpage,SetEditPage] = useState(false);
