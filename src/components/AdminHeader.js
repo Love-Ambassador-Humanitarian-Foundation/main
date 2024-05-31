@@ -7,9 +7,10 @@ import { Link } from 'react-router-dom';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import './Header.css';
 
-const HeaderComponent = ({ Companyname, isloggedIn, items }) => {
+const HeaderComponent = ({ Companyname,isloggedIn, items }) => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    console.log(isloggedIn,':====')
     //const isAdmin = true;
 
     const showDrawer = () => {

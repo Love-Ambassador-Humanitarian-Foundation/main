@@ -161,6 +161,7 @@ const LandingPage = ({API_URL, isloggedIn}) => {
               setIsLoading(false);
               console.log(error);
             }
+            
           };
     
         // Cleanup function to remove the event listener when the component unmounts

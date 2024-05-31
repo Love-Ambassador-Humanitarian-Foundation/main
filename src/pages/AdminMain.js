@@ -11,6 +11,7 @@ const AdminMain = ({ Companyname, isloggedIn, screen }) => {
     //const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     
+    
     const items = [
         { url: '/admin/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
         { url: '/admin/profiles', icon: <UsergroupAddOutlined />, label: 'Profiles' },
@@ -30,7 +31,6 @@ const AdminMain = ({ Companyname, isloggedIn, screen }) => {
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth < 768);
-            
         };
 
         window.addEventListener('resize', handleResize);

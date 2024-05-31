@@ -1,30 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Form, Input, Button, Alert, Row, Col, Typography } from 'antd';
-import { Link, useNavigate } from 'react-router-dom';
+import { Form, Input, Button, Alert, Row, Col, Typography, message } from 'antd';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const { Title } = Typography;
 
-const LoginPage = () => {
+const LoginPage = ({API_URL}) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    //const logindetails = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
+    const redirectUrl = location.state?.redirectUrl;
+
+    useEffect(() => {
+        if (redirectUrl) {
+            console.log('Redirect URL:', redirectUrl);
+        }
+    }, [redirectUrl]);
 
     const handleSubmit = async (values) => {
         setLoading(true);
         setError('');
 
         try {
-            const response = await axios.post('http://localhost:8000/api/login/', {
-                username: values.email,
+            const response = await axios.post(`${API_URL}/api/users/login`, {
+                email: values.email,
                 password: values.password,
             });
+            //console.log('response',response)
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
             axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
-            navigate('/dashboard');
+            //console.log(localStorage)
+            navigate(redirectUrl);
+            message.success(response.data.message)
         } catch (error) {
             setError('Invalid credentials. Please try again.');
+            message.error('Invalid credentials. Please try again.')
         } finally {
             setLoading(false);
         }
@@ -58,12 +71,12 @@ const LoginPage = () => {
                     </Form.Item>
 
                     <Form.Item>
-                        <Link to='/signup'>Not yet joined? Sign up</Link>
+                        Not yet joined?, <Link to='/signup' state={{redirectUrl:redirectUrl}} >Sign up</Link>
                     </Form.Item>
 
-                    <Form.Item>
+                    <Form.Item className='px-5'>
                         <Button type="primary" htmlType="submit" loading={loading} style={{ width: '100%' }}>
-                            {loading ? <div className="spinner"></div> : 'Login'}
+                            {loading ? 'Login...' : 'Login'}
                         </Button>
                     </Form.Item>
                 </Form>
