@@ -267,8 +267,8 @@ class UserListCreateView(generics.ListCreateAPIView):
             user = serializer.save()
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(user.pk.bytes)
-            current_site = get_current_site(request)# www.loveahfoundation.org/api
-            verify_link = f"http://{current_site.domain}/api/email/verify/{uid}/{token}"
+            current_site = get_current_site(request)
+            verify_link = f"http://{current_site.domain}/#/email/registration/{uid}/{token}"
             #print(verify_link," ===============")
             subject = 'Email Verification'
             message = f"""
@@ -348,7 +348,7 @@ class PasswordResetRequestView(APIView):
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(user.pk.bytes)
             current_site = get_current_site(request)
-            reset_link = f"http://{current_site.domain}/api/password/reset/confirm/{uid}/{token}?new_password={new_password}"
+            reset_link = f"http://{current_site.domain}/#/password/reset/confirm/{uid}/{token}?new_password={new_password}"
             subject = 'Password Reset Request'
             message = f"""
             <!DOCTYPE html>
