@@ -310,7 +310,7 @@ class UserListCreateView(generics.ListCreateAPIView):
             return Response({
                 'success': True,
                 'message': 'User registered successfully',
-                'user': user,
+                'userid': user.id,
                 'refresh': str(refresh),
                 'access': str(refresh.access_token)
             }, status=status.HTTP_201_CREATED)
@@ -332,7 +332,7 @@ class UserLoginAPIView(APIView):
             return Response({
                 'success': True,
                 'message': 'Login successful',
-                'user': user,
+                'user.id': user.id,
                 'refresh': str(refresh),
                 'access': str(refresh.access_token)
             }, status=status.HTTP_200_OK)
