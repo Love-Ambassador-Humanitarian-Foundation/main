@@ -56,6 +56,12 @@ class AboutAPIView(APIView):
             serializer = AboutSerializer(about, data=request.data)
             if serializer.is_valid():
                 serializer.save()
+                old_image_path = about.logo.path if about.logo else None
+
+                if 'image' in request.data and old_image_path:
+                    if os.path.exists(old_image_path):
+                        os.remove(old_image_path)
+
                 return Response({'success': 'true', 'message': 'Event updated successfully', 'response': serializer.data}, status=status.HTTP_200_OK)
             return Response({'success': 'false', 'message': 'Failed to update event', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'success': 'false', 'message': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -63,6 +69,8 @@ class AboutAPIView(APIView):
     def delete(self, request):
         about = About.objects.first()
         if about:
+            if about.logo:
+                about.logo.delete()
             about.delete()
             return Response({'success': 'true', 'message': 'Event deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         return Response({'success': 'false', 'message': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -169,11 +177,19 @@ class PartnerDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
+        old_image_path = instance.logo.path if instance.logo else None
+
         self.perform_update(serializer)
+        
+        if 'logo' in request.data and old_image_path:
+            if os.path.exists(old_image_path):
+                os.remove(old_image_path)
         return Response({'success': True, 'message': 'Partner updated successfully', 'data': serializer.data})
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
+        if instance.logo:
+            instance.logo.delete()
         self.perform_destroy(instance)
         return Response({'success': True, 'message': 'Partner deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 
@@ -183,84 +199,6 @@ class UserListCreateView(generics.ListCreateAPIView):
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    email_verification_html = """
-        <!DOCTYPE html>
-        <html>
-            <head>
-                <title>Email Verification</title>
-                <style>
-                    body {
-                        font-family: Arial, sans-serif;
-                        background-color: #f4f4f4;
-                        margin: 0;
-                        padding: 0;
-                        color: #333;
-                    }
-                    .container {
-                        max-width: 600px;
-                        margin: 20px auto;
-                        background-color: #fff;
-                        padding: 20px;
-                        border-radius: 10px;
-                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                    }
-                    .header {
-                        text-align: center;
-                        padding: 10px 0;
-                        border-bottom: 1px solid #ddd;
-                    }
-                    .header h1 {
-                        margin: 0;
-                        color: #4CAF50;
-                    }
-                    .content {
-                        padding: 20px;
-                    }
-                    .content p {
-                        margin: 10px 0;
-                        line-height: 1.6;
-                    }
-                    .verify-button {
-                        display: block;
-                        width: 200px;
-                        margin: 20px auto;
-                        padding: 10px 0;
-                        text-align: center;
-                        background-color: #4CAF50;
-                        color: #fff;
-                        text-decoration: none;
-                        border-radius: 5px;
-                        font-size: 16px;
-                    }
-                    .footer {
-                        text-align: center;
-                        padding: 10px 0;
-                        border-top: 1px solid #ddd;
-                        margin-top: 20px;
-                        color: #888;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <h1>Email Verification</h1>
-                    </div>
-                    <div class="content">
-                        <p>Hi {first_name},</p>
-                        <p>Click the button below to verify your email address:</p>
-                        <a href="{verify_link}" class="verify-button">Verify Email</a>
-                        <p>If you did not request this email, please ignore it.</p>
-                    </div>
-                    <div class="footer">
-                        <p>Thank you for using our service!</p>
-                    </div>
-                </div>
-            </body>
-            </html>
-
-    """
-
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
@@ -338,7 +276,6 @@ class UserLoginAPIView(APIView):
             }, status=status.HTTP_200_OK)
         return Response({'success': False, 'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
-
 class PasswordResetRequestView(APIView):
     
     def post(self, request):
@@ -405,8 +342,7 @@ class PasswordResetConfirmView(APIView):
                 return Response({'success': True, 'message': 'Password reset successful'}, status=status.HTTP_200_OK)
             return Response({'success': False, 'message': 'Invalid token or user'}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'success': False, 'message': "'new_password' field is needed"}, status=status.HTTP_400_BAD_REQUEST)
-
-    
+  
 class EmailVerificationView(APIView):
     def get(self, request, uidb64, token):
         try:
@@ -420,7 +356,6 @@ class EmailVerificationView(APIView):
             return Response({'success': True, 'message': 'Email verified successfully'}, status=status.HTTP_200_OK)
         return Response({'success': False, 'message': 'Invalid token or user'}, status=status.HTTP_400_BAD_REQUEST)
 
-
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -433,15 +368,24 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data)
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
+        old_image_path = instance.profileImage.path if instance.profileImage else None
+
         self.perform_update(serializer)
+        
+        if 'profileImage' in request.data and old_image_path:
+            if os.path.exists(old_image_path):
+                os.remove(old_image_path)
         return Response({'success': True, 'message': 'User updated successfully', 'data': serializer.data})
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
+        # Ensure the profile image is deleted if necessary
+        if instance.profileImage:
+            instance.profileImage.delete()
         self.perform_destroy(instance)
-        return Response({'success': True, 'message': 'User deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'success': True, 'message': 'User deleted successfully'})
 
 class PaymentListCreateView(generics.ListCreateAPIView):
     queryset = Payments.objects.all()
@@ -473,11 +417,19 @@ class PaymentDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
+        old_image_path = instance.image.path if instance.image else None
+
         self.perform_update(serializer)
+        
+        if 'image' in request.data and old_image_path:
+            if os.path.exists(old_image_path):
+                os.remove(old_image_path)
         return Response({'success': True, 'message': 'Payment updated successfully', 'data': serializer.data})
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
+        if instance.paymentimages:
+            instance.paymentimages.delete()
         self.perform_destroy(instance)
         return Response({'success': True, 'message': 'Payment deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 
@@ -511,11 +463,18 @@ class LogsDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
+        old_image_path = instance.image.path if instance.image else None
+
         self.perform_update(serializer)
+        if 'image' in request.data and old_image_path:
+            if os.path.exists(old_image_path):
+                os.remove(old_image_path)
         return Response({'success': True, 'message': 'Log updated successfully', 'data': serializer.data})
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
+        if instance.image:
+            instance.image.delete()
         self.perform_destroy(instance)
         return Response({'success': True, 'message': 'Log deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 

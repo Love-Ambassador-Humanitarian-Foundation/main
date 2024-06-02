@@ -17,6 +17,8 @@ api/migrations/
 # Media directories
 eventimages/
 eventvideos/
+profileimages/
+logos/
 
 # Video files
 *.mp4
@@ -28,3 +30,7 @@ eventvideos/
 # Editor backup files
 *~
 build
+
+*.sqlite3
+
+*.db

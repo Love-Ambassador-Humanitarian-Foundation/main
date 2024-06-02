@@ -35,6 +35,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     firstname = models.CharField(max_length=255)
     lastname = models.CharField(max_length=255)
+    number = models.IntegerField(blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+    facebook = models.CharField(max_length=255, blank=True, null=True)
+    instagram = models.CharField(max_length=255, blank=True, null=True)
+    twitter = models.CharField(max_length=255, blank=True, null=True)
+    linkedIn = models.CharField(max_length=255, blank=True, null=True)
+    whatsapp = models.CharField(max_length=255, blank=True, null=True)
+    profileImage = models.FileField(upload_to='profileimages/', blank=True, null=True)
     #is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -43,7 +51,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     position = models.CharField(max_length=255, blank=True)
     groups = models.ManyToManyField(Group, related_name='custom_user_set')
     user_permissions = models.ManyToManyField(Permission, related_name='custom_user_set')
-
 
     objects = CustomUserManager()
 
@@ -60,7 +67,7 @@ class About(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     company_name = models.CharField(max_length=MAX_LENGTH)
     story = models.TextField()
-    logo = models.TextField()
+    logo = models.FileField(upload_to='logos/', blank=True, null=True)
     phonenumber = models.CharField(max_length=15)
     emailone = models.EmailField(max_length=MAX_LENGTH)
     emailtwo = models.EmailField(max_length=MAX_LENGTH, blank=True, null=True)
@@ -72,9 +79,9 @@ class About(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
     branches = models.JSONField(blank=True, null=True)
-    policies = models.TextField()
-    socials = models.JSONField()
-    account_details = models.JSONField()
+    policies = models.TextField(blank=True, null=True)
+    socials = models.JSONField(blank=True, null=True)
+    account_details = models.JSONField(blank=True, null=True)
 
     def __str__(self):
         return self.company_name
@@ -92,7 +99,7 @@ class Partners(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=MAX_LENGTH)
     description = models.TextField()
-    logo = models.TextField()
+    logo = models.FileField(upload_to='logos/', blank=True, null=True)
     link = models.URLField(max_length=MAX_LENGTH)
     created_date = models.DateTimeField(auto_now_add=True)
 
@@ -134,7 +141,7 @@ class Payments(models.Model):
     contributor = models.CharField(max_length=MAX_LENGTH)
     reason = models.CharField(max_length=MAX_LENGTH)
     details = models.TextField()
-    image = models.TextField()
+    image = models.FileField(upload_to='paymentimages/', blank=True, null=True)
 
     def __str__(self):
         return f"{self.contributor} ({self.amount}) {self.reason}"
