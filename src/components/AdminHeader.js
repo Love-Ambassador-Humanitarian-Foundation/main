@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import './Header.css';
 
-const HeaderComponent = ({ Companyname,isloggedIn, items }) => {
+const HeaderComponent = ({ Companyname,isloggedIn, items,userDetails  }) => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     console.log(isloggedIn,':====')
@@ -55,7 +55,11 @@ const HeaderComponent = ({ Companyname,isloggedIn, items }) => {
             <Menu.Item key="3">{userdetails.email}</Menu.Item>
             <Menu.Item key="4">Usertype: Admin</Menu.Item>
             <Menu.Item key="5">Activity Log</Menu.Item>
-            <Menu.Item key="6">Sign Out</Menu.Item>
+            <Menu.Item key="6">{isloggedIn?
+                    <Link to="/logout" text="Logout" style={{textDecoration:'none'}}>Logout</Link>
+                    :
+                    <Link to="/login" text="Login" style={{textDecoration:'none'}}>Login</Link>}
+            </Menu.Item>
         </Menu>
     );
 

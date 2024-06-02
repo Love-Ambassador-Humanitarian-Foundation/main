@@ -25,14 +25,18 @@ const LogoutPage = ({API_URL}) => {
 
         try {
             // Remove tokens from local storage
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('lahf_access_token');
+            localStorage.removeItem('lahf_refresh_token');
+            localStorage.removeItem('lahf_user_id');
     
             // Clear authorization header
             delete axios.defaults.headers.common['Authorization'];
     
             // Navigate to the redirect URL
             //console.log('Redirect URL:====', redirectUrl);
+            const token = localStorage.getItem('lahf_access_token');
+            const userId = localStorage.getItem('lahf_user_id');
+            console.log("UserId:",userId);
             navigate(-1);
     
             // Show success message

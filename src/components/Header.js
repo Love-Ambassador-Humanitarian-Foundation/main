@@ -9,31 +9,29 @@ import Logo from '../assets/logo.jpg';
 import './Header.css';
 
 
-const HeaderComponent = ({ Companyname,isloggedIn }) => {
+const HeaderComponent = ({ Companyname,isloggedIn,userDetails }) => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    //const [isAdmin, SetAdmin] = useState(false);
-    const isAdmin = true;
     const showDrawer = () => {
         setIsMenuOpen(true);
     };
     const onClose = () => {
         setIsMenuOpen(false);
     };
-    const userid="123334545"
+    //console.log(userDetails,"]]]]",isloggedIn);
     const profileMenu=(
         <Menu>
             {/* Your mail dropdown menu items */}
-            <Menu.Item key="1"><Link to={`/profile/${userid}`} style={{textDecoration:'none'}}>Account</Link></Menu.Item>
-            <Menu.Item key="2">email</Menu.Item>
-            <Menu.Item key="3">usertype:{isAdmin?<>Admin</>:<></>}</Menu.Item>
+            <Menu.Item key="1"><Link to={`/profile/${userDetails?userDetails.id:'-'}`} style={{textDecoration:'none'}}>Account</Link></Menu.Item>
+            
+            {userDetails?<Menu.Item key="2">{userDetails.email}</Menu.Item>:<></>}
+            {(userDetails && userDetails.is_staff)?<Menu.Item key="3" className='bg-success'>Admin</Menu.Item>:<></>}
             <Menu.Item key="4"><Link to='/admin/dashboard' style={{textDecoration:'none'}}>View Dashboard</Link></Menu.Item>
-            <Menu.Item key="5">Activity Log</Menu.Item>
-            <Menu.Item key="6">{isloggedIn?
-                            <Link to="/logout" text="Logout" style={{textDecoration:'none'}}>Logout</Link>
-                            :
-                            <Link to="/login" text="Login" style={{textDecoration:'none'}}>Login</Link>}
-                            </Menu.Item>
+            <Menu.Item key="5">{isloggedIn?
+                <Link to="/logout" text="Logout" style={{textDecoration:'none'}}>Logout</Link>
+                :
+                <Link to="/login" text="Login" style={{textDecoration:'none'}}>Login</Link>}
+            </Menu.Item>
             {/* Add more menu items as needed */}
         </Menu>
     );
@@ -97,7 +95,7 @@ const HeaderComponent = ({ Companyname,isloggedIn }) => {
                                     
                                 >
                                     <Dropdown overlay={profileMenu} placement="bottomLeft" trigger={['click']}>
-                                        <Avatar size={30} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
+                                        <Avatar src={(userDetails && userDetails.image)?userDetails.image:null} size={30} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
                                     </Dropdown>
                                 </Link>
                             </Nav.Item>
@@ -122,7 +120,7 @@ const HeaderComponent = ({ Companyname,isloggedIn }) => {
                         <NavLink to="/contact" text="Contact" className="m-2" />
                         
                         <Dropdown overlay={profileMenu} placement="bottomLeft" trigger={['click']}>
-                            <Avatar size={30} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
+                            <Avatar src={userDetails?userDetails.image:null} size={30} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
                         </Dropdown>
                         <Button to="/contribute" text="Contribute" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
                     </Container>

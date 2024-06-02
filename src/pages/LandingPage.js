@@ -11,6 +11,7 @@ import CustomAccordion from '../components/Accordion';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
 import LoadingSpinner from '../components/LoadingSpinner';
+import {useUpdateLoginStatus, useUpdateUserDetails} from '../utils/UpdateLoginstatus'
 import axios from 'axios';
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -25,7 +26,10 @@ import 'swiper/css/pagination';
 // import required modules
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
-const LandingPage = ({API_URL, isloggedIn}) => {
+const LandingPage = ({API_URL}) => {
+    const userDetails = useUpdateUserDetails(API_URL);
+    const isLoggedIn = useUpdateLoginStatus();
+    
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -146,6 +150,7 @@ const LandingPage = ({API_URL, isloggedIn}) => {
       };
     
     useEffect(() => {
+        // Update the state when the component mounts
         setHeights();
     
         window.addEventListener('resize', setHeights);
@@ -155,11 +160,12 @@ const LandingPage = ({API_URL, isloggedIn}) => {
               const response = await axios.get(API_URL+'/api/');
               setData(response.data.response);
               setIsLoading(false);
-              console.log(response.data);
+              //console.log(response.data);
+              //console.log(userDetails,"==========]]]",isLoggedIn)
             } catch (error) {
               setError(error.message);
               setIsLoading(false);
-              console.log(error);
+              //console.log(error);
             }
             
           };
@@ -181,7 +187,7 @@ const LandingPage = ({API_URL, isloggedIn}) => {
       }
     return (
         <>
-            <HeaderComponent Companyname={data.name} isloggedIn={isloggedIn} /> {/* Include the header component */}
+            <HeaderComponent Companyname={data.name} isloggedIn={isLoggedIn} userDetails={userDetails} /> {/* Include the header component */}
         
             <div style={{
                 backgroundImage: `url(${LandingPageImg})`,

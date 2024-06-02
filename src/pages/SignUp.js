@@ -1,16 +1,10 @@
-import React, { useState } from 'react';
+import React,{useState} from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Form, Button, Input, Alert, message } from 'antd';
 
 const SignUpPage = ({ API_URL }) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [username, setUserName] = useState('');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -37,12 +31,20 @@ const SignUpPage = ({ API_URL }) => {
                     position: 'Volunteer'
                 });
 
-                localStorage.setItem('access_token', response.data.access);
-                localStorage.setItem('refresh_token', response.data.refresh);
+                localStorage.setItem('lahf_access_token', response.data.access);
+                localStorage.setItem('lahf_refresh_token', response.data.refresh);
+                localStorage.setItem('lahf_user_id', response.data.userid); // Assuming the user ID is in response.data.user.id
+
                 axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
 
+                const token = localStorage.getItem('lahf_access_token');
+                const userId = localStorage.getItem('lahf_user_id');
+                console.log("UserId:",userId);
+                console.log(token)
+                // Navigate to another page and pass the user details as state
                 navigate('/email/verify');
                 message.success(response.data.message || 'Sign up successful!');
+                
             } catch (error) {
                 console.log(error);
                 setError('Invalid credentials. Please try again.');
@@ -65,11 +67,7 @@ const SignUpPage = ({ API_URL }) => {
                             rules={[{ required: true, message: 'Please enter your username!' }]}
                             style={{ margin: '10px' }}
                         >
-                            <Input
-                                placeholder="Enter Username"
-                                value={username}
-                                onChange={(e) => setUserName(e.target.value)}
-                            />
+                            <Input placeholder="Enter Username" />
                         </Form.Item>
 
                         <Form.Item
@@ -77,11 +75,7 @@ const SignUpPage = ({ API_URL }) => {
                             rules={[{ required: true, message: 'Please enter your first name!' }]}
                             style={{ margin: '10px' }}
                         >
-                            <Input
-                                placeholder="Enter first name"
-                                value={firstName}
-                                onChange={(e) => setFirstName(e.target.value)}
-                            />
+                            <Input placeholder="Enter first name" />
                         </Form.Item>
 
                         <Form.Item
@@ -89,11 +83,7 @@ const SignUpPage = ({ API_URL }) => {
                             rules={[{ required: true, message: 'Please enter your last name!' }]}
                             style={{ margin: '10px' }}
                         >
-                            <Input
-                                placeholder="Enter last name"
-                                value={lastName}
-                                onChange={(e) => setLastName(e.target.value)}
-                            />
+                            <Input placeholder="Enter last name" />
                         </Form.Item>
 
                         <Form.Item
@@ -101,12 +91,7 @@ const SignUpPage = ({ API_URL }) => {
                             rules={[{ required: true, type: 'email', message: 'Please enter a valid email!' }]}
                             style={{ margin: '10px' }}
                         >
-                            <Input
-                                type="email"
-                                placeholder="Enter email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
+                            <Input placeholder="Enter email" />
                         </Form.Item>
 
                         <Form.Item
@@ -114,11 +99,7 @@ const SignUpPage = ({ API_URL }) => {
                             rules={[{ required: true, message: 'Please enter your password!' }]}
                             style={{ margin: '10px' }}
                         >
-                            <Input.Password
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
+                            <Input.Password placeholder="Password" />
                         </Form.Item>
 
                         <Form.Item
@@ -126,11 +107,7 @@ const SignUpPage = ({ API_URL }) => {
                             rules={[{ required: true, message: 'Please confirm your password!' }]}
                             style={{ margin: '10px' }}
                         >
-                            <Input.Password
-                                placeholder="Confirm Password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                            />
+                            <Input.Password placeholder="Confirm Password" />
                         </Form.Item>
 
                         <div style={{ margin: '10px' }}>
