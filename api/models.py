@@ -35,7 +35,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     firstname = models.CharField(max_length=255)
     lastname = models.CharField(max_length=255)
-    numberpre = models.CharField(max_length=255)
+    numberpre = models.CharField(max_length=255,blank=True, null=True)
     number = models.IntegerField(blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     facebook = models.CharField(max_length=255, blank=True, null=True)
