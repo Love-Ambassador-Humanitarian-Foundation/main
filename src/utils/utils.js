@@ -1,3 +1,4 @@
+import axios from 'axios';
 
 export const backendUrl = 'http://localhost:5000';
 //export const backendUrl = 'https://durable-backend.herokuapp.com';
@@ -919,3 +920,45 @@ export const countryCodes = [
       name: "Zimbabwe"
     }
 ];
+export const fetchUserDetails = async (API_URL,userId) => {
+  const token = localStorage.getItem('lahf_access_token');
+  const id = userId || localStorage.getItem('lahf_user_id');
+  try {
+      const response = await axios.get(`${API_URL}/api/users/${id}`, {
+          headers: {
+              'Authorization': `Bearer ${token}`
+          }
+      });
+      
+      return response.data.data;
+  } catch (error) {
+      console.error('Error fetching user details:', error);
+      return null;
+  }
+};
+
+
+export const convertImageToBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+  });
+  
+};
+export const convertVideoToBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+  });
+};
+
+export const base64ToFile = async (base64String, fileName) => {
+  const res = await fetch(base64String);
+  const blob = await res.blob();
+  return new File([blob], fileName, { type: blob.type });
+};
+

@@ -11,7 +11,8 @@ import CustomAccordion from '../components/Accordion';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
 import LoadingSpinner from '../components/LoadingSpinner';
-import {useUpdateLoginStatus, useUpdateUserDetails} from '../utils/UpdateLoginstatus'
+import {useUpdateLoginStatus} from '../utils/hooks'
+import {fetchUserDetails} from '../utils/utils';
 import axios from 'axios';
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -27,91 +28,92 @@ import 'swiper/css/pagination';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
 const LandingPage = ({API_URL}) => {
-    const userDetails = useUpdateUserDetails(API_URL);
+    const [userDetails, setUserDetails] = useState(null);
+
     const isLoggedIn = useUpdateLoginStatus();
-    
+
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     // Modal state
     const [visible, setVisible] = useState(false);
-    const [currentactivitiy, setCurrentActivity] = useState(null);
+    const [currentActivity, setCurrentActivity] = useState(null);
     const slide_inner_item_style = {
         background: '#fff',
         borderRadius: '4px',
         border: '1px dotted #34356b',
         color: '#333',
-        maxHeight:'16rem',
+        maxHeight: '16rem',
         fontSize: '1.5rem',
         marginBottom: '1rem',
     };
-    const [imgheight, SetImgHeight] = useState('40vh');
+    const [imgHeight, setImgHeight] = useState('40vh');
+
     const setHeights = () => {
-      const windowWidth = window.outerWidth;
-      let imgHeight;
-      if (windowWidth <= 240) {
-        imgHeight = '215vh';
-      } else if (windowWidth <= 330) {
-        imgHeight = '93vh';
-      }else if (windowWidth <= 360) {
-        imgHeight = '72vh';
-      } else if (windowWidth <= 375) {
-        
-        if (window.outerHeight <= 670) {
-          imgHeight = '74vh';
-        }else if(window.outerHeight <= 813) {
-          imgHeight = '60vh';
-        }
-      } else if (windowWidth <= 390) {
-        imgHeight = '60vh';
-      } else if (windowWidth <= 416) {
-        imgHeight = '56vh';
-        if (window.outerHeight <= 800) {
-          imgHeight = '64vh';
-        }
-      }else if (windowWidth <= 430) {
-        imgHeight = '53vh';
-      } else if (windowWidth <= 459) {
-        imgHeight = '66vh';
-      } else if (windowWidth <= 574) {
-        imgHeight = '67vh';
-        
-      } else if (windowWidth <= 720) {
-        
-        imgHeight = '60vh';
-      }else if (windowWidth <= 768) {
-        imgHeight = '38vh';
-      } else if (windowWidth <= 820) {
-        imgHeight = '30vh';
-      }else if (windowWidth <= 912) {
-        imgHeight = '30vh';
-      } else if (windowWidth <= 1024) {
-        if (window.outerHeight <= 1200) {
+        const windowWidth = window.outerWidth;
+        let imgHeight;
+        if (windowWidth <= 240) {
+          imgHeight = '215vh';
+        } else if (windowWidth <= 330) {
+          imgHeight = '93vh';
+        }else if (windowWidth <= 360) {
+          imgHeight = '72vh';
+        } else if (windowWidth <= 375) {
           
-          imgHeight = '62vh';
-        }else{
-          imgHeight = '28vh';
-        }
-      } else if (windowWidth <= 1400) {
-        console.log(window.outerHeight+'------===-------')
-        
-        if (window.outerHeight <= 720) {
+          if (window.outerHeight <= 670) {
+            imgHeight = '74vh';
+          }else if(window.outerHeight <= 813) {
+            imgHeight = '60vh';
+          }
+        } else if (windowWidth <= 390) {
           imgHeight = '60vh';
-        }else if (window.outerHeight <= 820) {
-          imgHeight = '50vh';
-        }else{
-          imgHeight = '34vh';
+        } else if (windowWidth <= 416) {
+          imgHeight = '56vh';
+          if (window.outerHeight <= 800) {
+            imgHeight = '64vh';
+          }
+        }else if (windowWidth <= 430) {
+          imgHeight = '53vh';
+        } else if (windowWidth <= 459) {
+          imgHeight = '66vh';
+        } else if (windowWidth <= 574) {
+          imgHeight = '67vh';
+          
+        } else if (windowWidth <= 720) {
+          
+          imgHeight = '60vh';
+        }else if (windowWidth <= 768) {
+          imgHeight = '38vh';
+        } else if (windowWidth <= 820) {
+          imgHeight = '30vh';
+        }else if (windowWidth <= 912) {
+          imgHeight = '30vh';
+        } else if (windowWidth <= 1024) {
+          if (window.outerHeight <= 1200) {
+            
+            imgHeight = '62vh';
+          }else{
+            imgHeight = '28vh';
+          }
+        } else if (windowWidth <= 1400) {
+          console.log(window.outerHeight+'------===-------')
+          
+          if (window.outerHeight <= 720) {
+            imgHeight = '60vh';
+          }else if (window.outerHeight <= 820) {
+            imgHeight = '50vh';
+          }else{
+            imgHeight = '34vh';
+          }
+        }else {
+          imgHeight = '40vh';
         }
-      }else {
-        imgHeight = '40vh';
-      }
+        
       
-    
-      SetImgHeight(imgHeight);
-      setIsMobile(window.innerWidth < 768);
-    };
-    
+        setImgHeight(imgHeight);
+        setIsMobile(window.innerWidth < 768);
+      };
+
     const images = [
         { img: img1 },
         { img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80' },
@@ -119,21 +121,20 @@ const LandingPage = ({API_URL}) => {
         { img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80' }
     ];
     const activities = [
-        { title: 'Donations', description: '$400K+', color:'#044a18' },
-        { title: 'Partners', description: '1k',color:'green'  },
-        { title: 'Volunteers', description: '29',color:'orange'  },
-        { title: 'Achievements', description: '3',color:'#04364a'  },
-        { title: 'Seminars', description: '7',color:'red'  },
-        { title: 'Branches', description: '1',color:'orangered'  }
+        { title: 'Scholarships', description: '10', color: '#044a18' },
+        { title: 'Partners', description: '1k', color: 'green' },
+        { title: 'Volunteers', description: '29', color: 'orange' },
+        { title: 'Achievements', description: '3', color: '#04364a' },
+        { title: 'Seminars', description: '7', color: 'red' },
+        { title: 'Branches', description: '1', color: 'orangered' }
         // Add more achievements as needed
     ];
-    
+
     const [image, setImage] = useState(images.length > 0 ? images[0].img : '');
-    
+
     const switchImage = (index) => {
         if (images.length > index) {
             setImage(images[index].img);
-            console.log(image);
         } else {
             console.error(`Index ${index} is out of bounds for images array`);
         }
@@ -146,45 +147,42 @@ const LandingPage = ({API_URL}) => {
 
     // Hide modal
     const handleCancel = () => {
-          setVisible(false);
-      };
-    
+        setVisible(false);
+    };
+
     useEffect(() => {
         // Update the state when the component mounts
         setHeights();
-    
+        const fetchDetails = async () => {
+            const d = await fetchUserDetails(API_URL);
+            setUserDetails(d);
+        };
+        fetchDetails();
         window.addEventListener('resize', setHeights);
         window.addEventListener('load', setHeights);
-        const fetchData = async (API_URL) => {
+        const fetchData = async () => {
             try {
-              const response = await axios.get(API_URL+'/api/');
-              setData(response.data.response);
-              setIsLoading(false);
-              //console.log(response.data);
-              //console.log(userDetails,"==========]]]",isLoggedIn)
+                const response = await axios.get(API_URL + '/api/');
+                setData(response.data.response);
+                setIsLoading(false);
             } catch (error) {
-              setError(error.message);
-              setIsLoading(false);
-              //console.log(error);
+                setIsLoading(false);
             }
-            
-          };
-    
-        // Cleanup function to remove the event listener when the component unmounts
-        fetchData(API_URL);
-        return () => {
-          window.removeEventListener('resize', setHeights);
-          window.removeEventListener('load', setHeights);
         };
-        
-      }, [API_URL]);
-      if (isLoading) {
-            return <LoadingSpinner/>;
-      }
+
+        // Cleanup function to remove the event listener when the component unmounts
+        fetchData();
+        return () => {
+            window.removeEventListener('resize', setHeights);
+            window.removeEventListener('load', setHeights);
+        };
+
+    }, [API_URL]);
+
+    if (isLoading) {
+        return <LoadingSpinner />;
+    }
     
-      if (error) {
-            return <div>Error: {error}</div>;
-      }
     return (
         <>
             <HeaderComponent Companyname={data.name} isloggedIn={isLoggedIn} userDetails={userDetails} /> {/* Include the header component */}
@@ -192,7 +190,7 @@ const LandingPage = ({API_URL}) => {
             <div style={{
                 backgroundImage: `url(${LandingPageImg})`,
                 backgroundSize: 'cover',
-                height: imgheight,
+                height: imgHeight,
                 zIndex: '-1',
                 filter: 'brightness(30%)',
                 width: '100%',
@@ -231,12 +229,12 @@ const LandingPage = ({API_URL}) => {
                         ))}
                     </Row>
                     <Modal
-                        title={currentactivitiy ? currentactivitiy.title : ''}
+                        title={currentActivity ? currentActivity.title : ''}
                         visible={visible}
                         onCancel={handleCancel}
                         footer={null}
                     >
-                        {currentactivitiy ? <p>{currentactivitiy.description}</p> : null}
+                        {currentActivity ? <p>{currentActivity.description}</p> : null}
                     </Modal>
                 </div>
             </div>

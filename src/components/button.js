@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button as BtnComponent, Nav } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-const Button = ({ to, props, classname, style, text, onClick, icon }) => {
+const Button = ({ to, props, isloading, style, text, onClick, icon }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseEnter = () => {
@@ -45,6 +45,7 @@ const Button = ({ to, props, classname, style, text, onClick, icon }) => {
           onClick={onClick}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          isloading={isloading}
         >
           <span className='me-2'>{text}</span>
           {icon}
@@ -56,6 +57,7 @@ const Button = ({ to, props, classname, style, text, onClick, icon }) => {
           onClick={onClick}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          isloading={isloading}
         >
           <span className='me-2'>{text}</span>
           {icon}

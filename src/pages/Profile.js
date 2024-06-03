@@ -1,13 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { HomeOutlined, UserOutlined, EditOutlined, SaveOutlined, FacebookOutlined, InstagramOutlined, TwitterOutlined, WhatsAppOutlined, LinkedinOutlined } from '@ant-design/icons';
+import {
+    HomeOutlined,
+    UserOutlined,
+    EditOutlined,
+    SaveOutlined,
+    FacebookOutlined,
+    InstagramOutlined,
+    TwitterOutlined,
+    WhatsAppOutlined,
+    LinkedinOutlined
+} from '@ant-design/icons';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
-import { Row, Col, Avatar, Typography, Breadcrumb, Input, Select } from 'antd';
-import { countryCodes } from '../utils/utils';
-import { Button } from '../components/button';
-import { useUpdateLoginStatus, useUpdateUserDetails } from '../utils/UpdateLoginstatus';
+import { Row, Col, Avatar, Typography, Breadcrumb, Input, Select, Button } from 'antd';
+import { countryCodes, fetchUserDetails, convertImageToBase64 } from '../utils/utils';
+import { useUpdateLoginStatus } from '../utils/hooks';
 import { useParams } from 'react-router-dom';
-import LoadingSpinner from '../components/LoadingSpinner' ;
+import LoadingSpinner from '../components/LoadingSpinner';
 import axios from 'axios';
 
 const { Option } = Select;
@@ -15,14 +24,12 @@ const { Title, Text } = Typography;
 
 const UserProfilePage = ({ API_URL }) => {
     const { userId } = useParams();
-    //console.log(useUpdateUserDetails(API_URL));
-    const [userDetails, setUserDetails] = useState(useUpdateUserDetails(API_URL));
+    const isLoggedIn = useUpdateLoginStatus();
+    const [userDetails, setUserDetails] = useState(null);
     const [editProfile, setEditProfile] = useState(false);
     const [profileImage, setProfileImage] = useState(null);
-    const [profileImagePreview, setProfileImagePreview] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const isLoggedIn = useUpdateLoginStatus();
-
+    const [isLoading, setIsLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [name, setName] = useState('');
     const [status, setStatus] = useState('');
     const [email, setEmail] = useState('');
@@ -36,44 +43,32 @@ const UserProfilePage = ({ API_URL }) => {
     const [whatsapp, setWhatsapp] = useState('');
 
     useEffect(() => {
-        setIsLoading(true);
-        const fetchuserData = async() =>{
-            const token = localStorage.getItem('lahf_access_token');
-            const userId = localStorage.getItem('lahf_user_id');
-
+        const fetchDetails = async () => {
             try {
-                const response = await axios.get(`${API_URL}/api/users/${userId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                // Set user details in state
-                //setUserDetails(response.data.data);
-                //console.log('User details fetched:', response.data.data);
-                setUserDetails(response.data.data);
-                //console.log(response.data.data,"=====");
+                const user = await fetchUserDetails(API_URL, userId);
+                setUserDetails(user);
+                //console.log(user)
+                setName(`${user.firstname} ${user.lastname}`);
+                setStatus(user.is_active ? 'Active' : 'Inactive');
+                setEmail(user.email);
+                setPhoneNumberPre(user.numberpre);
+                setPhoneNumber(user.number);
+                setAddress(user.address);
+                setFacebook(user.facebook);
+                setInstagram(user.instagram);
+                setTwitter(user.twitter);
+                setLinkedIn(user.linkedIn);
+                setWhatsapp(user.whatsapp);
+                setProfileImage(user.profileImage);
             } catch (error) {
-                console.error('Error fetching profile details:', error);
+                console.error('Error fetching user details:', error);
+            } finally {
+                setIsLoading(false);
             }
-        }
-        
-        fetchuserData();
-        if (userDetails) {
-            setName(`${userDetails.firstname} ${userDetails.lastname}`);
-            setStatus(userDetails.is_active ? 'Active' : 'Inactive');
-            setEmail(userDetails.email);
-            setPhoneNumber(userDetails.number);
-            setAddress(userDetails.address);
-            setFacebook(userDetails.facebook);
-            setInstagram(userDetails.instagram);
-            setTwitter(userDetails.twitter);
-            setLinkedIn(userDetails.linkedIn);
-            setWhatsapp(userDetails.whatsapp);
-            setProfileImagePreview(userDetails.profileImage); // Set initial profile image
-        }
-        setIsLoading(false)
-    }, [userDetails, API_URL]);
+        };
+
+        fetchDetails();
+    }, [API_URL, userId]);
 
     const handleInputChange = (e) => {
         const { id, value } = e.target;
@@ -112,52 +107,54 @@ const UserProfilePage = ({ API_URL }) => {
         }
     };
 
-    const handleImageChange = (e) => {
+    const handleImageChange = async(e) => {
         const file = e.target.files[0];
         if (file) {
-            setProfileImage(file);
-            setProfileImagePreview(URL.createObjectURL(file));
+            try {
+                const base64 = await convertImageToBase64(file);
+                setProfileImage(base64);
+                //console.log(base64)
+            } catch (error) {
+                console.error('Error converting file to Base64:', error);
+            }
         }
     };
 
     const saveEdit = async () => {
-        try {
-            const updatedUserDetails = {
-                firstname: name.split(' ')[0],
-                lastname: name.split(' ')[1],
-                email,
-                number: phoneNumber,
-                address,
-                facebook,
-                instagram,
-                twitter,
-                linkedIn,
-                whatsapp,
-                is_active: status === 'Active'
-            };
+        setLoading(true);
+        const token = localStorage.getItem('lahf_access_token');
+        const formData = new FormData();
+        const [firstName, lastName] = name.split(' ');
 
-            // Update user details
-            const response = await axios.patch(`${API_URL}/api/users/${userId}`, updatedUserDetails, {
+        formData.append('firstname', firstName || '');
+        formData.append('lastname', lastName || '');
+        formData.append('email', email);
+        formData.append('numberpre', phoneNumberPre);
+        formData.append('number', parseInt(phoneNumber, 10));
+        formData.append('address', address);
+        formData.append('facebook', facebook);
+        formData.append('instagram', instagram);
+        formData.append('twitter', twitter);
+        formData.append('linkedIn', linkedIn);
+        formData.append('whatsapp', whatsapp);
+        formData.append('is_active', status === 'Active');
+
+        if (profileImage) {
+            formData.append('profileImage', profileImage);
+        }
+
+        // Log the formData content for debugging
+        // for (let [key, value] of formData.entries()) {
+        //     console.log(`${key}: ${value}===>`,userDetails.id);
+        // }
+
+        try {
+            const response = await axios.patch(`${API_URL}/api/users/${userDetails.id}`, formData, {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('lahf_access_token')}`,
-                    'Content-Type': 'application/json'
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
                 }
             });
-
-            if (profileImage) {
-                // Update profile image
-                const formData = new FormData();
-                formData.append('profileImage', profileImage);
-
-                const imageResponse = await axios.patch(`${API_URL}/api/users/${userId}/profile-image`, formData, {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('lahf_access_token')}`,
-                        'Content-Type': 'multipart/form-data'
-                    }
-                });
-
-                setProfileImagePreview(imageResponse.data.data.profileImage); // Update the profile image preview with the new image URL
-            }
 
             setUserDetails(response.data.data);
             setEditProfile(false);
@@ -165,53 +162,17 @@ const UserProfilePage = ({ API_URL }) => {
         } catch (error) {
             console.error('Error updating user details:', error);
         }
+        setLoading(false);
     };
 
-    const items = [
-        {
-            title: 'Fundraising',
-            amount: 34,
-            content: [
-                { title: 'Upcoming Fundraiser', date: 'May 25th, 2023' },
-                { title: 'Fundraiser Report', date: 'June 15th, 2023' }
-            ]
-        },
-        {
-            title: 'Volunteering',
-            amount: 34,
-            content: [
-                { title: 'Orphanage visitation', date: 'May 25th, 2023' },
-                { title: 'Food distribution', date: 'June 15th, 2023' },
-                { title: 'Clothes donation drive', date: 'July 1st-15th, 2023' }
-            ]
-        },
-        {
-            title: 'Donation',
-            amount: 34,
-            content: [
-                { title: 'Donation Drive', date: 'June 15th - 30th, 2023' },
-                { title: 'Donation Drive Report', date: 'July 15th, 2023' }
-            ]
-        },
-        {
-            title: 'Seminars',
-            amount: 34,
-            content: [
-                { title: 'Seminar on Nutrition', date: 'July 10th, 2023' },
-                { title: 'Seminar on Child Development', date: 'August 15th, 2023' }
-            ]
-        },
-        {
-            title: 'Partnerships',
-            amount: 1,
-            content: [
-                { title: 'Partnership with XYZ Foundation', date: 'August 30th, 2023' }
-            ]
-        }
-    ];
-
     const selectBefore = (
-        <Select defaultValue={phoneNumberPre} disabled={!editProfile} onChange={(value) => setPhoneNumberPre(value)} style={{ minWidth: '80px' }}>
+        <Select
+            defaultValue={phoneNumberPre}
+            disabled={!editProfile}
+            onChange={(value) => setPhoneNumberPre(value)}
+            style={{ minWidth: '80px' }}
+            id='phonenumberpre'
+        >
             {countryCodes.map((country, index) => (
                 <Option key={index} value={country.code}>
                     {country.code}
@@ -220,8 +181,14 @@ const UserProfilePage = ({ API_URL }) => {
         </Select>
     );
 
-    if (isLoading){
-        return <LoadingSpinner />
+    const events = [
+        { title: "Fundraiser", content: [{ name: 'Event 1', date: '2023-01-01' },{ name: 'Event 2', date: '2023-01-01' }] },
+        { title: "Donations", content: [{ name: 'Event 2', date: '2023-02-01' }] },
+        { title: "Seminars", content: [{ name: 'Event 3', date: '2023-03-01' }] }
+    ];
+
+    if (isLoading) {
+        return <LoadingSpinner />;
     }
 
     return (
@@ -235,12 +202,12 @@ const UserProfilePage = ({ API_URL }) => {
                             { title: (<><UserOutlined /><span>{userDetails?.firstname}</span></>) }
                         ]}
                     />
-                    <EditOutlined onClick={() => setEditProfile(true)} style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
+                    <EditOutlined onClick={() => setEditProfile(!editProfile)} style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
                 </div>
                 <Row justify="center" align="middle" style={{ marginBottom: '30px' }}>
                     <Col xs={24} sm={12} md={12} lg={12} xl={12} style={{ backgroundColor: '#d7d7e9' }}>
                         <div className='d-flex flex-column justify-content-between align-items-center ms-2 p-2'>
-                            <Avatar size={150} src={profileImagePreview || "https://example.com/default-avatar.jpg"} />
+                            <Avatar size={150} src={profileImage || "https://example.com/default-avatar.jpg"} />
                             {editProfile && (
                                 <input type="file" accept="image/*" onChange={handleImageChange} />
                             )}
@@ -259,63 +226,78 @@ const UserProfilePage = ({ API_URL }) => {
                                 <Text strong>Email: <input id="email" type="email" className="form-control" placeholder={email} value={email} onChange={handleInputChange} disabled={!editProfile} /></Text>
                             </div>
                             <div className='my-2'>
-                                <Text strong>Phone Number: <Input addonBefore={selectBefore} id="phonenumber" type="text" placeholder={phoneNumber} value={phoneNumber} onChange={handleInputChange} disabled={!editProfile} /></Text>
+                                <Text strong>Phone Number: <Input addonBefore={selectBefore} id="phonenumber" placeholder={phoneNumber} value={phoneNumber} onChange={handleInputChange} disabled={!editProfile} /></Text>
                             </div>
                             <div className='my-2'>
-                                <Text strong>Location: <input id="address" type="text" className="form-control" placeholder={address} value={address} onChange={handleInputChange} disabled={!editProfile} /></Text>
+                                <Text strong>Address: <input id="address" type="text" className="form-control" placeholder={address} value={address} onChange={handleInputChange} disabled={!editProfile} /></Text>
                             </div>
                         </div>
                     </Col>
                 </Row>
-                <Row justify="center" align="middle">
-                    <Col xs={24} sm={12} md={12} lg={12} xl={12}>
-                        <div className='d-flex flex-column justify-content-left ms-2'>
-                            <Text strong className='mb-2'>
-                                <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" className='mt-2 text-decoration-none text-black'>
-                                    Face Book <span></span>
-                                </a>
-                                <FacebookOutlined style={{ fontSize: 16, color: '#1877F2' }} />: <input id="facebook" type="text" className="form-control" placeholder={facebook} value={facebook} onChange={handleInputChange} disabled={!editProfile} /></Text>
-                            <Text strong className='mb-2'>
-                                <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" className='mt-2 text-decoration-none text-black'>
-                                    Twitter <span></span>
-                                </a>
-                                <TwitterOutlined style={{ fontSize: 16, color: '#1DA1F2' }} />: <input id="twitter" type="text" className="form-control" placeholder={twitter} value={twitter} onChange={handleInputChange} disabled={!editProfile} /></Text>
-                            <Text strong className='mb-2'>
-                                <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" className='mt-2 text-decoration-none text-black'>
-                                    Instagram <span></span>
-                                </a>
-                                <InstagramOutlined style={{ fontSize: 16, color: '#E4405F' }} />: <input id="instagram" type="text" className="form-control" placeholder={instagram} value={instagram} onChange={handleInputChange} disabled={!editProfile} /></Text>
-                            <Text strong className='mb-2'>
-                                <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer" className='mt-2 text-decoration-none text-black'>
-                                    Whatsapp <span></span>
-                                </a>
-                                <WhatsAppOutlined style={{ fontSize: 16, color: '#25D366' }} />: <input id="whatsapp" type="text" className="form-control" placeholder={whatsapp} value={whatsapp} onChange={handleInputChange} disabled={!editProfile} /></Text>
-                            <Text strong className='mb-2'>
-                                <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" className='mt-2 text-decoration-none text-black'>
-                                    LinkedIn <span></span>
-                                </a>
-                                <LinkedinOutlined style={{ fontSize: 16, color: '#0077B5' }} />: <input id="linkedln" type="text" className="form-control" placeholder={linkedIn} value={linkedIn} onChange={handleInputChange} disabled={!editProfile} /></Text>
-                        </div>
-                    </Col>
-                    <Col xs={24} sm={12} md={12} lg={12} xl={12}>
-                        <div className='d-flex flex-column justify-content-left ms-2'>
-                            {items.map((item, index) => (
-                                <div key={index} className='my-2'>
-                                    <Text strong>{item.title} - ({item.amount}) : {item.content.map((c) => (<input key={c.title} id={`${index}-${c.title}`} type="text" className="form-control" placeholder={c.title} value={`${c.title} - ${c.date}`} disabled />))}</Text>
+                <Row justify="center" align="middle" style={{ marginBottom: '20px' }}>
+                    <Col span={24}>
+                        <Row justify="center" className='p-0 m-0' gutter={[2, 8]}>
+                            <Col xs={24} sm={24} md={8}>
+                                <div className='mx-2'>
+                                    <FacebookOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#1877F2' }}/>
+                                    <input id="facebook" type="text" className="form-control" placeholder="Facebook" value={facebook} onChange={handleInputChange} disabled={!editProfile} />
                                 </div>
-                            ))}
-                        </div>
+                            </Col>
+                            <Col xs={24} sm={24} md={8}>
+                                <div className='mx-2'>
+                                    <InstagramOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#E4405F' }}/>
+                                    <input id="instagram" type="text" className="form-control" placeholder="Instagram" value={instagram} onChange={handleInputChange} disabled={!editProfile} />
+                                </div>
+                            </Col>
+                            <Col xs={24} sm={24} md={8}>
+                                <div className='mx-2'>
+                                    <TwitterOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#1DA1F2' }}/>
+                                    <input id="twitter" type="text" className="form-control" placeholder="Twitter" value={twitter} onChange={handleInputChange} disabled={!editProfile} />
+                                </div>
+                            </Col>
+                            <Col xs={24} sm={24} md={8}>
+                                <div className='mx-2'>
+                                    <LinkedinOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#0077B5' }}/>
+                                    <input id="linkedln" type="text" className="form-control" placeholder="LinkedIn" value={linkedIn} onChange={handleInputChange} disabled={!editProfile} />
+                                </div>
+                            </Col>
+                            <Col xs={24} sm={24} md={8}>
+                                <div className='mx-2'>
+                                    <WhatsAppOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#25D366' }} />
+                                    <input id="whatsapp" type="text" className="form-control" placeholder="WhatsApp" value={whatsapp} onChange={handleInputChange} disabled={!editProfile} />
+                                </div>
+                            </Col>
+                        </Row>
                     </Col>
                 </Row>
-                <Row justify="center" align="middle" style={{ marginTop: '30px' }}>
-                    {editProfile &&
+                {editProfile && (
+                    <Row justify="center">
                         <Col>
-                            <Button text="Save Changes" icon={<SaveOutlined style={{ color: '#25D366' }} />} onClick={saveEdit} />
+                            <Button type="primary" icon={<SaveOutlined />} htmlType="submit" onClick={saveEdit} loading={loading} style={{ width: '100%' }}>
+                                {loading ? 'Saving...' : 'Save Changes'}
+                            </Button>
                         </Col>
-                    }
+                    </Row>
+                )}
+                <Text strong>Events:</Text>
+                <Row justify="center" align="middle" style={{ marginBottom: '20px' }}>
+                {events.map((event, index) => (
+                    <Col xs={24} sm={24} md={8} key={index}>
+                        <div >{event.title}</div>
+                        <Row justify="center" className='p-0 m-0' gutter={[2, 8]}>
+                            {event.content.map((content, contentIndex) => (
+                                <Col xs={24} sm={24} md={24} key={contentIndex}>
+                                    <div className='mx-2'>
+                                        <Text className="form-control">{content.name} - {content.date}</Text>
+                                    </div>
+                                </Col>
+                            ))}
+                        </Row>
+                    </Col>
+                ))}
                 </Row>
             </div>
-            <Footer Companyname={'LAHF'} />
+            <Footer />
         </>
     );
 };

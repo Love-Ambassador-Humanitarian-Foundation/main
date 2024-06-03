@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Button, message } from 'antd';
 
 
@@ -24,6 +24,8 @@ const Registering = ({ API_URL })=>{
                 //console.log('response',response)
                 localStorage.setItem('lahf_access_token', response.data.access);
                 localStorage.setItem('lahf_refresh_token', response.data.refresh);
+                localStorage.setItem('lahf_user_id', response.data.userid); // Assuming the user ID is in response.data.user.id
+
                 axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
                 setIsLoading(false);
                 navigate('/')
@@ -54,7 +56,7 @@ const Registering = ({ API_URL })=>{
 
     return (
         <div  className='px-5'>
-            Registration Complete
+            Registration Complete...<Link to='/' onClick={()=>{navigate(-1)}} >Go back</Link>
         </div>
     )
 }

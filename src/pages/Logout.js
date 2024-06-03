@@ -34,7 +34,7 @@ const LogoutPage = ({API_URL}) => {
     
             // Navigate to the redirect URL
             //console.log('Redirect URL:====', redirectUrl);
-            const token = localStorage.getItem('lahf_access_token');
+            //const token = localStorage.getItem('lahf_access_token');
             const userId = localStorage.getItem('lahf_user_id');
             console.log("UserId:",userId);
             navigate(-1);

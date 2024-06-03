@@ -1,11 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import {useUpdateLoginStatus, useUpdateUserDetails} from '../utils/UpdateLoginstatus';
+import { useUpdateLoginStatus } from '../utils/hooks';
+import { fetchUserDetails } from './utils';
+
 const PrivateRoute = ({ children, redirectUrl, API_URL }) => {
     const isLoggedIn = useUpdateLoginStatus();
-    const userDetails = useUpdateUserDetails(API_URL);
+    const [userDetails, setUserDetails] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        fetchUserData();
+    }, []);
+
+    const fetchUserData = () => {
+        fetchUserDetails(API_URL)
+            .then(userData => {
+                setUserDetails(userData);
+                setIsLoading(false);
+            })
+            .catch(error => {
+                console.error('Error fetching user details:', error);
+                setIsLoading(false);
+            });
+    };
     
-    return (isLoggedIn && userDetails) ? children : <Navigate to="/login" state={{ redirectUrl: redirectUrl }} />;
+    if (isLoading) {
+        return null; // or return loading indicator
+    }
+
+    return isLoggedIn && userDetails ? (
+        children
+    ) : (
+        <Navigate to="/login" state={{ redirectUrl: redirectUrl }} />
+    );
 };
 
 export default PrivateRoute;

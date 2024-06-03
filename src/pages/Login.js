@@ -1,17 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { Form, Input, Button, Alert, Row, Col, Typography, message } from 'antd';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+
 const { Title } = Typography;
 
-const LoginPage = ({API_URL}) => {
-    
+const LoginPage = ({ API_URL }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    //const logindetails = useParams();
     const navigate = useNavigate();
     const location = useLocation();
-    const redirectUrl = location.state?.redirectUrl ||'/';
+    const redirectUrl = location.state?.redirectUrl || '/';
 
     const handleSubmit = async (values) => {
         setLoading(true);
@@ -22,28 +21,23 @@ const LoginPage = ({API_URL}) => {
                 email: values.email,
                 password: values.password,
             });
-            //console.log('response',response)
+            
             localStorage.setItem('lahf_access_token', response.data.access);
             localStorage.setItem('lahf_refresh_token', response.data.refresh);
-            localStorage.setItem('lahf_user_id', response.data.userid); // Assuming the user ID is in response.data.user.id
+            localStorage.setItem('lahf_user_id', response.data.userid);
 
             axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
-            //console.log(localStorage)
-            // Redirect to another page or fetch user details
-            const url = redirectUrl.replace(':userid',response.data.userid)
-            navigate(`${url}`);
-            console.log(`||||${url}`);
             
+            const url = redirectUrl.replace(':userid', response.data.userid);
+            navigate(url);
             message.success('Login successful');
             
         } catch (error) {
             setError('Invalid credentials. Please try again.');
-            message.error('Invalid credentials. Please try again.')
+            message.error('Invalid credentials. Please try again.');
         } finally {
             setLoading(false);
-            
         }
-        
     };
 
     return (
@@ -74,7 +68,7 @@ const LoginPage = ({API_URL}) => {
                     </Form.Item>
 
                     <Form.Item>
-                        Not yet joined?, <Link to='/signup' state={{redirectUrl:redirectUrl}} >Sign up</Link>
+                        Not yet joined?, <Link to='/signup' state={{ redirectUrl }}>Sign up</Link>
                     </Form.Item>
 
                     <Form.Item className='px-5'>
