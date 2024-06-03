@@ -35,6 +35,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     firstname = models.CharField(max_length=255)
     lastname = models.CharField(max_length=255)
+    numberpre = models.CharField(max_length=255)
     number = models.IntegerField(blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     facebook = models.CharField(max_length=255, blank=True, null=True)
@@ -42,7 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     twitter = models.CharField(max_length=255, blank=True, null=True)
     linkedIn = models.CharField(max_length=255, blank=True, null=True)
     whatsapp = models.CharField(max_length=255, blank=True, null=True)
-    profileImage = models.FileField(upload_to='profileimages/', blank=True, null=True)
+    profileImage = models.TextField(blank=True, null=True)
     #is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -66,15 +67,16 @@ class User(AbstractBaseUser, PermissionsMixin):
 class About(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     company_name = models.CharField(max_length=MAX_LENGTH)
-    story = models.TextField()
-    logo = models.FileField(upload_to='logos/', blank=True, null=True)
+    story = models.TextField(blank=True, null=True)
+    logo = models.TextField(blank=True, null=True)
+    phonenumberpre = models.CharField(max_length=15)
     phonenumber = models.CharField(max_length=15)
     emailone = models.EmailField(max_length=MAX_LENGTH)
     emailtwo = models.EmailField(max_length=MAX_LENGTH, blank=True, null=True)
     emailthree = models.EmailField(max_length=MAX_LENGTH, blank=True, null=True)
-    address = models.TextField()
-    mission = models.TextField()
-    values = models.TextField()
+    address = models.TextField(blank=True, null=True)
+    mission = models.TextField(blank=True, null=True)
+    values = models.TextField(blank=True, null=True)
     achievements = models.JSONField(blank=True, null=True)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
@@ -99,7 +101,7 @@ class Partners(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=MAX_LENGTH)
     description = models.TextField()
-    logo = models.FileField(upload_to='logos/', blank=True, null=True)
+    logo = models.TextField(blank=True, null=True)
     link = models.URLField(max_length=MAX_LENGTH)
     created_date = models.DateTimeField(auto_now_add=True)
 
@@ -125,8 +127,8 @@ class Event(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     ongoing = models.BooleanField(default=False)
-    images = models.FileField(upload_to='eventimages/', blank=True, null=True)
-    videos = models.FileField(upload_to='eventvideos/', blank=True, null=True)
+    images = models.TextField(blank=True, null=True)
+    videos = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.title
@@ -141,7 +143,7 @@ class Payments(models.Model):
     contributor = models.CharField(max_length=MAX_LENGTH)
     reason = models.CharField(max_length=MAX_LENGTH)
     details = models.TextField()
-    image = models.FileField(upload_to='paymentimages/', blank=True, null=True)
+    image = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.contributor} ({self.amount}) {self.reason}"

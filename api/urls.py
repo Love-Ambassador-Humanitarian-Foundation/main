@@ -8,6 +8,7 @@ urlpatterns = [
     # Event URLs
     path('events', views.EventAPIView.as_view(), name='event_list_create'),
     path('events/<uuid:id>', views.EventDetailAPIView.as_view(), name='event_detail'),
+    path('events/participant/<str:participant_id>/', views.EventDetailAPIView.as_view(), name='event-detail-by-participant'),
 
     # Partner URLs
     path('partners', views.PartnerListCreateView.as_view(), name='partner_list_create'),

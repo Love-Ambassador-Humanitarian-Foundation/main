@@ -8,20 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = User
-        fields = ('id', 'email', 'firstname', 'lastname', 'profileImage', 'number', 'address', 'facebook', 'instagram', 'twitter', 'linkedIn', 'whatsapp', 'is_active', 'is_staff', 'joined_date', 'last_login', 'position')
-    
-    def update(self, instance, validated_data):
-        # Update profileImage if provided
-        profile_image = validated_data.pop('profileImage', None)
-        if profile_image:
-            instance.profileImage = profile_image
-        
-        # Update other fields
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        
-        instance.save()
-        return instance
+        fields = ('id', 'email', 'firstname', 'lastname', 'profileImage','numberpre', 'number', 'address', 'facebook', 'instagram', 'twitter', 'linkedIn', 'whatsapp', 'is_active', 'is_staff', 'joined_date', 'last_login', 'position')
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """
@@ -31,7 +18,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'password', 'firstname', 'lastname', 'profileImage', 'number', 'address', 'facebook', 'instagram', 'twitter', 'linkedIn', 'whatsapp', 'is_active', 'is_staff', 'joined_date', 'last_login', 'position')
+        fields = ('id', 'email', 'password', 'firstname', 'lastname', 'profileImage','numberpre',  'number', 'address', 'facebook', 'instagram', 'twitter', 'linkedIn', 'whatsapp', 'is_active', 'is_staff', 'joined_date', 'last_login', 'position')
 
     def create(self, validated_data):
         # Create user with hashed password

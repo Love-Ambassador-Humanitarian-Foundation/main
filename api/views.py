@@ -17,6 +17,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth import login
 from django.conf import settings
+from django.db import connection
 
 
 NAME = 'LAHF'
@@ -56,11 +57,6 @@ class AboutAPIView(APIView):
             serializer = AboutSerializer(about, data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                old_image_path = about.logo.path if about.logo else None
-
-                if 'image' in request.data and old_image_path:
-                    if os.path.exists(old_image_path):
-                        os.remove(old_image_path)
 
                 return Response({'success': 'true', 'message': 'Event updated successfully', 'response': serializer.data}, status=status.HTTP_200_OK)
             return Response({'success': 'false', 'message': 'Failed to update event', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
@@ -69,8 +65,6 @@ class AboutAPIView(APIView):
     def delete(self, request):
         about = About.objects.first()
         if about:
-            if about.logo:
-                about.logo.delete()
             about.delete()
             return Response({'success': 'true', 'message': 'Event deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         return Response({'success': 'false', 'message': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -95,34 +89,32 @@ class EventDetailAPIView(APIView):
         except Event.DoesNotExist:
             return None
 
-    def get(self, request, id):
-        event = self.get_object(id)
-        if event:
-            serializer = EventSerializer(event)
-            return Response({'success': 'true', 'message': 'Event retrieved successfully', 'response': serializer.data}, status=status.HTTP_200_OK)
+    def get_objects_by_participant(self, participant_id):
+        if connection.vendor == 'postgresql':
+            return Event.objects.filter(participants__contains=participant_id)
+        else:
+            # Use alternative approach for SQLite or other backends
+            return Event.objects.filter(participants__icontains=f'"{participant_id}"')
+
+    def get(self, request, id=None, participant_id=None):
+        if id:
+            event = self.get_object(id)
+            if event:
+                serializer = EventSerializer(event)
+                return Response({'success': 'true', 'message': 'Event retrieved successfully', 'response': serializer.data}, status=status.HTTP_200_OK)
+        elif participant_id:
+            events = self.get_objects_by_participant(participant_id)
+            if events.exists():
+                serializer = EventSerializer(events, many=True)
+                return Response({'success': 'true', 'message': 'Events retrieved successfully', 'response': serializer.data}, status=status.HTTP_200_OK)
         return Response({'success': 'false', 'message': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, id):
         event = self.get_object(id)
         if event:
-            # Check if images field is being updated
-            old_image_path = event.images.path if event.images else None
-            old_video_path = event.videos.path if event.videos else None
-
             serializer = EventSerializer(event, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
-
-                # Remove the old image file if it has been replaced
-                if 'images' in request.data and old_image_path:
-                    if os.path.exists(old_image_path):
-                        os.remove(old_image_path)
-
-                # Remove the old video file if it has been replaced
-                if 'videos' in request.data and old_video_path:
-                    if os.path.exists(old_video_path):
-                        os.remove(old_video_path)
-
                 return Response({'success': 'true', 'message': 'Event updated successfully', 'response': serializer.data}, status=status.HTTP_200_OK)
             return Response({'success': 'false', 'message': 'Failed to update event', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'success': 'false', 'message': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -130,20 +122,7 @@ class EventDetailAPIView(APIView):
     def delete(self, request, id):
         event = self.get_object(id)
         if event:
-            # Store the paths of the image and video files
-            image_path = event.images.path if event.images else None
-            video_path = event.videos.path if event.videos else None
-
             event.delete()
-
-            # Remove the image file from the directory
-            if image_path and os.path.exists(image_path):
-                os.remove(image_path)
-
-            # Remove the video file from the directory
-            if video_path and os.path.exists(video_path):
-                os.remove(video_path)
-
             return Response({'success': 'true', 'message': 'Event deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         return Response({'success': 'false', 'message': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -177,19 +156,12 @@ class PartnerDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
-        old_image_path = instance.logo.path if instance.logo else None
-
         self.perform_update(serializer)
         
-        if 'logo' in request.data and old_image_path:
-            if os.path.exists(old_image_path):
-                os.remove(old_image_path)
         return Response({'success': True, 'message': 'Partner updated successfully', 'data': serializer.data})
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.logo:
-            instance.logo.delete()
         self.perform_destroy(instance)
         return Response({'success': True, 'message': 'Partner deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 
@@ -270,7 +242,7 @@ class UserLoginAPIView(APIView):
             return Response({
                 'success': True,
                 'message': 'Login successful',
-                'user.id': user.id,
+                'userid': user.id,
                 'refresh': str(refresh),
                 'access': str(refresh.access_token)
             }, status=status.HTTP_200_OK)
@@ -370,20 +342,11 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-        old_image_path = instance.profileImage.path if instance.profileImage else None
-
         self.perform_update(serializer)
-        
-        if 'profileImage' in request.data and old_image_path:
-            if os.path.exists(old_image_path):
-                os.remove(old_image_path)
         return Response({'success': True, 'message': 'User updated successfully', 'data': serializer.data})
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        # Ensure the profile image is deleted if necessary
-        if instance.profileImage:
-            instance.profileImage.delete()
         self.perform_destroy(instance)
         return Response({'success': True, 'message': 'User deleted successfully'})
 
@@ -417,21 +380,14 @@ class PaymentDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
-        old_image_path = instance.image.path if instance.image else None
-
         self.perform_update(serializer)
         
-        if 'image' in request.data and old_image_path:
-            if os.path.exists(old_image_path):
-                os.remove(old_image_path)
         return Response({'success': True, 'message': 'Payment updated successfully', 'data': serializer.data})
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.paymentimages:
-            instance.paymentimages.delete()
         self.perform_destroy(instance)
-        return Response({'success': True, 'message': 'Payment deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'success': True, 'message': 'Payment deleted successfully'})
 
 class LogsListCreateView(generics.ListCreateAPIView):
     queryset = Logs.objects.all()
@@ -463,18 +419,11 @@ class LogsDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
-        old_image_path = instance.image.path if instance.image else None
-
         self.perform_update(serializer)
-        if 'image' in request.data and old_image_path:
-            if os.path.exists(old_image_path):
-                os.remove(old_image_path)
         return Response({'success': True, 'message': 'Log updated successfully', 'data': serializer.data})
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.image:
-            instance.image.delete()
         self.perform_destroy(instance)
         return Response({'success': True, 'message': 'Log deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 
