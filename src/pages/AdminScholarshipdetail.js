@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import { Row, Col, Typography, Input, Upload, Button as AntButton, theme, message,Layout,Breadcrumb } from 'antd';
 import { Button } from '../components/button';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { backendUrl } from '../utils/utils';
 import { SaveOutlined, TrophyOutlined, UploadOutlined , HomeOutlined, EditOutlined, StarOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const { Content} = Layout;
 
-const Achievement = ({ item }) => {
+const Scholarship = ({ item }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const { achievementDetails } = useParams();
-    const navigate = useNavigate();
     console.log(achievementDetails + "==========");
     const [editpage, setEditPage] = useState(false);
 
@@ -48,13 +47,18 @@ const Achievement = ({ item }) => {
     return (
         <Layout style={{ marginTop: '70px', height: '100vh' }}>
             <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{ backgroundColor: '#d7d7e9', borderRadius: '4px' }}>
-                <Breadcrumb
-                    items={[
-                        { href: '/', title: <HomeOutlined /> },
-                        { title: (<div  onClick={() => navigate('/admin/achievements')}><StarOutlined /><span>Achievements</span></div>) },
-                        { title: (<><span>mkml</span></>) },
-                    ]}
-                />
+                <Breadcrumb>
+                    <Breadcrumb.Item href="/">
+                        <HomeOutlined />
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item href='/#/admin/scholarships' className='text-decoration-none'>
+                        <StarOutlined />
+                        <span>Achievements</span>
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item>
+                        <span>name</span>
+                    </Breadcrumb.Item>
+                </Breadcrumb>
                 <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={()=>setEditPage(!editpage)} />
             </div>
             <Content className='m-2'>
@@ -121,4 +125,4 @@ const Achievement = ({ item }) => {
     );
 };
 
-export default Achievement;
+export default Scholarship;

@@ -36,8 +36,17 @@
     transform: rotate(360deg);
   }
 }
+.ant-inpu-outlined,
+.ant-input:hover,
+.ant-input:focus,
+.ant-input:active {
+  box-shadow: none !important;
+  background-color: none !important;
+  border-color: none !important;
+}
 .form-control,
-.ant-input,
+.ant-picker,
+.ant-input-outlined,
 .ant-select,
 .ant-select-single {
   border: 1.5px solid transparent !important;
@@ -48,21 +57,24 @@
 .form-control:hover,
 .form-control:focus,
 .form-control:active,
-.ant-input:hover,
-.ant-input:focus,
-.ant-input:active,
+.ant-input-outlined:hover,
+.ant-input-outlined:focus,
+.ant-input-outlined:active,
 .ant-select:hover,
 .ant-select:focus,
 .ant-select:active,
 .ant-select-single:hover,
 .ant-select-single:focus,
-.ant-select-single:active {
+.ant-select-single:active,
+.ant-picker:hover,
+.ant-picker:focus,
+.ant-picker:active {
   box-shadow: none !important;
   background-color: whitesmoke !important;
   border-color: #34356b !important;
 }
 .form-control:disabled,
-.ant-input:disabled,
+.ant-input-outlined:disabled,
 .ant-select:disabled,
 .ant-select-single:disabled{
   box-shadow: none !important;

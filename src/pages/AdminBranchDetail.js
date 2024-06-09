@@ -1,28 +1,101 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, Typography, Input, Upload, Button as AntButton, theme, message, Layout, Breadcrumb } from 'antd';
 import { Button } from '../components/button';
 import { useParams, useNavigate } from 'react-router-dom';
-import { backendUrl } from '../utils/utils';
+import DateTimeInput from '../components/DateTimeSetter';
+import LoadingSpinner from '../components/LoadingSpinner';
+import axios from 'axios';
+import dayjs from 'dayjs';
 import { SaveOutlined, HomeOutlined, EditOutlined, EnvironmentOutlined, UploadOutlined, BankOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
 
-const Branch = ({ item }) => {
+const Branch = ({ API_URL }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
-    const { branchDetails } = useParams();
+    const { id } = useParams();
     const navigate = useNavigate();
-    console.log(branchDetails + "==========");
+    //console.log("==========",id);
     const [editpage, setEditPage] = useState(false);
-
+    const [about, setAbout] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [branches, setBranches] = useState([]);
     const [name, setName] = useState('Main Branch');
     const [location, setLocation] = useState('123 Main Street, City, Country');
-    const [date, setDate] = useState('May 25th, 2023');
-    const [imageUrl, setImageUrl] = useState('');
+    const [date, setDate] = useState('2024-06-04T09:37:17.716028Z');
+    useEffect(() => {
+        axios.get(`${API_URL}/api/about`)
+            .then(response => {
+                //console.log(response.data.response)
+                setAbout(response.data.response);
+                const fetchedBranches = response.data.response.branches ||response.data.data.branches;
+                const branches = fetchedBranches.filter(branch => branch.id === id);
+                setBranches(branches)
+                const branch = branches[0];
+                
+                setName(branch.name);
+                setLocation(branch.location);
+                setDate(branch.date_created);
+                setIsLoading(false);
+            })
+            .catch(error => {
+                console.error("There was an error fetching the branches!", error);
+                setIsLoading(false);
+                message.error("There was an error fetching the branches!", 5);
+            });
+    }, []);
 
-    const saveEdit = () => {
-        setEditPage(false);
-        message.success('Branch details saved successfully');
+    const saveEdit = async() => {
+        setLoading(true);
+        const token = localStorage.getItem('lahf_access_token');
+
+        // Assuming 'about' is an object that contains 'formData'
+        const formData = about;
+
+        // Find the branch by id from the 'branches' array
+        const branch = branches.find(branch => branch.id === id);
+
+        if (branch) {
+            // Update the branch details
+            branch.name = name;
+            branch.location = location;
+            branch.date_created = date;
+
+            // Update the corresponding branch in the formData
+            formData.branches = formData.branches.map(b => b.id === id ? branch : b);
+            // Log the formData content for debugging
+            console.log(formData);
+        
+            try {
+                const response = await axios.put(`${API_URL}/api/about`, formData, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                setAbout(response.data.response);
+                const fetchedBranches = response.data.response.branches ||response.data.data.branches;
+                const branches = fetchedBranches.filter(branch => branch.id === id);
+                setBranches(branches)
+                const branch = branches[0];
+                
+                setName(branch.name);
+                setLocation(branch.location);
+                setDate(branch.date_created);
+                
+                setEditPage(false);
+                message.success('branch details updated');
+            } catch (error) {
+                console.error('Error updating branch details:', error);
+                message.error('Error updating branch details');
+            }
+        } else {
+            console.error(`Branch with id ${id} not found.`,branches);
+        }
+
+        
+        setLoading(false);
     }
 
     const handleInputChange = (e) => {
@@ -34,27 +107,26 @@ const Branch = ({ item }) => {
             setDate(e.target.value);
         }
     };
-
-    const handleImageUpload = (info) => {
-        if (info.file.status === 'done') {
-            // Assuming the server returns the image URL after upload
-            setImageUrl(info.file.response.url);
-            message.success(`${info.file.name} file uploaded successfully`);
-        } else if (info.file.status === 'error') {
-            message.error(`${info.file.name} file upload failed.`);
-        }
-    };
+    if (isLoading) {
+        return <LoadingSpinner />;
+    }
 
     return (
         <Layout style={{ marginTop: '70px', height: '100vh' }}>
             <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{ backgroundColor: '#d7d7e9', borderRadius: '4px' }}>
-                <Breadcrumb
-                    items={[
-                        { href: '/', title: <HomeOutlined /> },
-                        { title: (<div onClick={() => navigate('/admin/branches')}><BankOutlined /><span>Branches</span></div>) },
-                        { title: (<><span>{name}</span></>) },
-                    ]}
-                />
+                
+                <Breadcrumb>
+                    <Breadcrumb.Item href="/">
+                        <HomeOutlined />
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item href='/#/admin/branches' className='text-decoration-none'>
+                        <BankOutlined />
+                        <span>Branches</span>
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item>
+                        <span>{name}</span>
+                    </Breadcrumb.Item>
+                </Breadcrumb>
                 <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={() => setEditPage(!editpage)} />
             </div>
             <Content className='m-2'>
@@ -83,31 +155,16 @@ const Branch = ({ item }) => {
                                     Location: <Input id="location" type="text" className="form-control" placeholder="Location" value={location} onChange={handleInputChange} disabled={!editpage} />
                                 </Text>
                                 <Text strong>
-                                    Date: <Input id="date" type="text" className="form-control" placeholder="Date" value={date} onChange={handleInputChange} disabled={!editpage} />
+                                    Date: <DateTimeInput date={true} defaultValue={date} onChange={setDate} disabled={!editpage} />
                                 </Text>
-                                <Text strong>
-                                    Image: 
-                                    {editpage ? (
-                                        <Upload
-                                            name="image"
-                                            action={`${backendUrl}/api/v1/upload`} // Update with your actual upload URL
-                                            listType="picture"
-                                            showUploadList={false}
-                                            onChange={handleImageUpload}
-                                        >
-                                            <AntButton icon={<UploadOutlined />}>Upload</AntButton>
-                                        </Upload>
-                                    ) : (
-                                        imageUrl && <img src={imageUrl} alt="Branch" style={{ maxWidth: '100%', marginTop: '10px' }} />
-                                    )}
-                                </Text>
+                                
                             </div>
                         </Col>
                     </Row>
                     <Row justify="center" align="middle" style={{ marginTop: '30px' }}>
                         {editpage ? (
                             <Col>
-                                <Button text="Save Changes" icon={<SaveOutlined style={{ color: '#25D366' }} />} onClick={saveEdit} />
+                                <Button text="Save Changes" isloading={loading} icon={<SaveOutlined style={{ color: '#25D366' }} />} onClick={saveEdit} />
                             </Col>
                         ) : (
                             <Col>

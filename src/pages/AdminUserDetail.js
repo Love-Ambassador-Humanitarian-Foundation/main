@@ -1,62 +1,150 @@
-import React, { useState } from 'react';
-import { Row, Col, Typography, Input, Upload, Button as AntButton, theme, message, Layout, Breadcrumb, Avatar } from 'antd';
-import { Button } from '../components/button';
-//import { useParams } from 'react-router-dom';
-import { backendUrl } from '../utils/utils';
-import { SaveOutlined, HomeOutlined, EditOutlined, UserOutlined, UploadOutlined} from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import {
+    HomeOutlined,
+    UserOutlined,
+    EditOutlined,
+    SaveOutlined,
+    FacebookOutlined,
+    InstagramOutlined,
+    TwitterOutlined,
+    WhatsAppOutlined,
+    LinkedinOutlined
+} from '@ant-design/icons';
+import { Row, Col, Typography, Input, Button, message, Breadcrumb,Select, Avatar } from 'antd';
+import { countryCodes, fetchUserDetails, convertImageToBase64 } from '../utils/utils';
+import { useParams } from 'react-router-dom';
+import LoadingSpinner from '../components/LoadingSpinner';
+import DateTimeInput from '../components/DateTimeSetter';
+import axios from 'axios';
+import dayjs from 'dayjs';
+import buddhistEra from 'dayjs/plugin/buddhistEra';
+
+dayjs.extend(buddhistEra);
+
+const { Option } = Select;
 const { Title, Text } = Typography;
-const { Content } = Layout;
 
-const User = ({ item }) => {
-    const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
-    //const { userDetails } = useParams();
-    const navigate = useNavigate();
-    const [editpage, setEditPage] = useState(false);
-
-    const [name, setName] = useState('User Name');
-    const [location, setLocation] = useState('123 User St, User City');
-    const [date, setDate] = useState('March 15th, 2024');
-    const [avatarUrl, setAvatarUrl] = useState('https://i.pravatar.cc/150?img=1');
-
-    const [email, setEmail] = useState('john@email.com');
-    const [phonenumber, setPhonenumber] = useState('08012345678');
-    const [address, setAddress] = useState('Lagos state');
-    const [phonenumberpre, setPhonenumberpre] = useState('+234');
-    const [facebook, setFacebook] = useState('facebook.com/john');
-    const [instagram, setInstagram] = useState('instagram.com/john');
-    const [twitter, setTwitter] = useState('twitter.com/john');
-    const [linkedIn, setLinkedIn] = useState('linkedin.com/in/john');
-    const [whatsapp, setWhatsapp] = useState('whatsapp.com/john');
-
-    const saveEdit = () => {
-        setEditPage(false);
-        message.success('User details saved successfully');
+const User = ({ API_URL }) => {
+    const { userId } = useParams();
+    const [userDetails, setUserDetails] = useState(null);
+    const [editProfile, setEditProfile] = useState(false);
+    const [profileImage, setProfileImage] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [firstname, setFirstName] = useState('');
+    const [lastname, setLastName]=useState(null)
+    const [status, setStatus] = useState('');
+    const [email, setEmail] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [address, setAddress] = useState('');
+    const [phoneNumberPre, setPhoneNumberPre] = useState('+234');
+    const [facebook, setFacebook] = useState('');
+    const [instagram, setInstagram] = useState('');
+    const [twitter, setTwitter] = useState('');
+    const [linkedIn, setLinkedIn] = useState('');
+    const [whatsapp, setWhatsapp] = useState('');
+    const [is_active, setIsActive]=useState(null)
+    const [is_staff, setIsStaff]=useState(null)
+    const [joined_date, setJoinedDate]=useState(null)
+    const [last_login, setLastLogin]=useState(null)
+    const [position, setPosition]=useState(null)
+    const [events, setEvents] = useState([
+        { title: "Fundraiser", content: [{ name: 'Event 1', date: '2023-01-01' },{ name: 'Event 2', date: '2023-01-01' }] },
+        { title: "Donations", content: [{ name: 'Event 2', date: '2023-02-01' }] },
+        { title: "Seminars", content: [{ name: 'Event 3', date: '2023-03-01' }] }
+    ]);
+    
+    const joined_dateonChange = (dateString) => {
+        try{
+            let dateobj = new Date(dateString);
+            
+            //console.log('joined_date', dateobj.toISOString());
+            //console.log('last_login', last_login)
+            setJoinedDate(dateobj.toISOString());
+        }catch (error) {
+            //
+        }
+      };
+    const last_loginonChange = (dateString) => {
+        try{
+            let dateobj = new Date(dateString);
+            //console.log('last_login', dateobj.toISOString());
+            //console.log('joined_date', joined_date);
+            setLastLogin(dateobj.toISOString());
+        }catch (error) {
+            //
+        }
+        
     };
+
+    useEffect(() => {
+        const fetchDetails = async () => {
+            try {
+                const user = await fetchUserDetails(API_URL, userId);
+                setUserDetails(user);
+                //console.log(user)
+                setFirstName(user.firstname);
+                setLastName(user.lastname);
+                setStatus(user.is_active ? 'Active' : 'Inactive');
+                setEmail(user.email);
+                setPhoneNumberPre(user.numberpre);
+                setPhoneNumber(user.number);
+                setAddress(user.address);
+                setFacebook(user.facebook);
+                setInstagram(user.instagram);
+                setTwitter(user.twitter);
+                setLinkedIn(user.linkedIn);
+                setWhatsapp(user.whatsapp);
+                setProfileImage(user.profileImage);
+                setIsActive(user.is_active);
+                setIsStaff(user.is_staff);
+                setJoinedDate(user.joined_date);
+                setLastLogin(user.last_login);
+                setPosition(user.position);
+            } catch (error) {
+                console.error('Error fetching user details:', error);
+            }
+
+            try {
+                const token = localStorage.getItem('lahf_access_token');
+                const id = userId || localStorage.getItem('lahf_user_id');
+                const response = await axios.get(`${API_URL}/api/events/participant/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                console.log(response.data);
+                setEvents(response.data.data)
+            } catch (error) {
+                console.error('Error fetching event details:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchDetails();
+    }, [API_URL, userId]);
 
     const handleInputChange = (e) => {
         const { id, value } = e.target;
         switch (id) {
-            case 'name':
-                setName(value);
+            case 'firstname':
+                setFirstName(value);
                 break;
-            case 'location':
-                setLocation(value);
-                break;
-            case 'date':
-                setDate(value);
+            case 'lastname':
+                setLastName(value);
                 break;
             case 'email':
                 setEmail(value);
                 break;
             case 'phonenumber':
-                setPhonenumber(value);
+                if (!isNaN(value.charAt(value.length - 1))) {
+                    setPhoneNumber(value);
+                }
                 break;
             case 'address':
                 setAddress(value);
-                break;
-            case 'phonenumberpre':
-                setPhonenumberpre(value);
                 break;
             case 'facebook':
                 setFacebook(value);
@@ -67,132 +155,284 @@ const User = ({ item }) => {
             case 'twitter':
                 setTwitter(value);
                 break;
-            case 'linkedin':
+            case 'linkedln':
                 setLinkedIn(value);
                 break;
             case 'whatsapp':
                 setWhatsapp(value);
+                break;
+            case 'position':
+                setPosition(value);
                 break;
             default:
                 break;
         }
     };
 
-    const handleAvatarUpload = (info) => {
-        if (info.file.status === 'done') {
-            setAvatarUrl(info.file.response.url); // Adjust this based on your server response
-            message.success(`${info.file.name} file uploaded successfully`);
-        } else if (info.file.status === 'error') {
-            message.error(`${info.file.name} file upload failed.`);
+    const handleImageChange = async(e) => {
+        const file = e.target.files[0];
+        if (file) {
+            try {
+                const base64 = await convertImageToBase64(file);
+                setProfileImage(base64);
+                //console.log(base64)
+            } catch (error) {
+                console.error('Error converting file to Base64:', error);
+            }
         }
     };
 
+    const saveEdit = async () => {
+        setLoading(true);
+        const token = localStorage.getItem('lahf_access_token');
+
+        const formData = {
+            firstname: firstname,
+            lastname: lastname,
+            email: email,
+            numberpre: phoneNumberPre,
+            number: parseInt(phoneNumber, 10),
+            address: address,
+            facebook: facebook,
+            instagram: instagram,
+            twitter: twitter,
+            linkedIn: linkedIn,
+            whatsapp: whatsapp,
+            position:position,
+            is_active: is_active,
+            is_staff:is_staff,
+            last_login:last_login,
+            joined_date:joined_date,
+            profileImage:profileImage
+        };
+    
+        // Log the formData content for debugging
+        console.log(formData);
+    
+        try {
+            const response = await axios.patch(`${API_URL}/api/users/${userDetails.id}`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            const user = response.data.data;
+            setUserDetails(user);
+            setFirstName(user.firstname);
+            setLastName(user.lastname);
+            setStatus(user.is_active ? 'Active' : 'Inactive');
+            setEmail(user.email);
+            setPhoneNumberPre(user.numberpre);
+            setPhoneNumber(user.number);
+            setAddress(user.address);
+            setFacebook(user.facebook);
+            setInstagram(user.instagram);
+            setTwitter(user.twitter);
+            setLinkedIn(user.linkedIn);
+            setWhatsapp(user.whatsapp);
+            setProfileImage(user.profileImage);
+            setIsActive(user.is_active);
+            setIsStaff(user.is_staff);
+            setJoinedDate(user.joined_date);
+            setLastLogin(user.last_login);
+            setPosition(user.position);
+            setEditProfile(false);
+            message.success('User details updated');
+            console.log('User details updated:', response.data.data);
+        } catch (error) {
+            console.error('Error updating user details:', error);
+            message.error('Error updating user details');
+        }
+        setLoading(false);
+    };
+
+    const selectBefore = (
+        <Select
+            defaultValue={phoneNumberPre}
+            disabled={!editProfile}
+            onChange={(value) => setPhoneNumberPre(value)}
+            style={{ minWidth: '80px' }}
+            id='phonenumberpre'
+        >
+            {countryCodes.map((country, index) => (
+                <Option key={index} value={country.code}>
+                    {country.code}
+                </Option>
+            ))}
+        </Select>
+    );
+    const activeBefore = (
+        <Select
+            defaultValue={is_active}
+            disabled={!editProfile}
+            onChange={(value) => setIsActive(value)}
+            style={{ minWidth: '80px' }}
+            id='is_active'
+        >
+            <Option key={0} value={false}>
+                False
+            </Option>
+            <Option key={1} value={true}>
+                True
+            </Option>
+        </Select>
+    );
+    const staffBefore = (
+        <Select
+            defaultValue={is_staff}
+            disabled={!editProfile}
+            onChange={(value) => setIsStaff(value)}
+            style={{ minWidth: '80px' }}
+            id='is_active'
+        >
+            <Option key={0} value={false}>
+                False
+            </Option>
+            <Option key={1} value={true}>
+                True
+            </Option>
+        </Select>
+    );
+    
+
+    if (isLoading) {
+        return <LoadingSpinner />;
+    }
+
     return (
-        <Layout style={{ marginTop: '70px', height: '100vh' }}>
-            <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{ backgroundColor: '#d7d7e9', borderRadius: '4px' }}>
+        <div className='mt-5 p-4 pt-5 bg-white '>
+            <div className='d-flex justify-content-between align-items-center p-2 mb-4' style={{ backgroundColor: '#d7d7e9' }}>
+                
                 <Breadcrumb>
                     <Breadcrumb.Item href="/">
                         <HomeOutlined />
                     </Breadcrumb.Item>
-                    <Breadcrumb.Item onClick={() => navigate('/admin/profiles')}>
+                    <Breadcrumb.Item href='/#/admin/profiles' className='text-decoration-none'>
                         <UserOutlined />
                         <span>Users</span>
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>
-                        <span>{name}</span>
+                        <span>{firstname}</span>
                     </Breadcrumb.Item>
                 </Breadcrumb>
-                <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={() => setEditPage(!editpage)} />
+                <EditOutlined onClick={() => setEditProfile(!editProfile)} style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
             </div>
-            <Content className='m-2'>
-                <div style={{
-                    padding: 24,
-                    minHeight: 360,
-                    background: colorBgContainer,
-                    borderRadius: borderRadiusXS,
-                    height: 'calc(100vh - 140px)'
-                }}>
-                    <Row justify="center" align="middle" style={{ marginBottom: '30px' }}>
-                        <Col xs={24} sm={24} md={16} lg={12} xl={12} style={{ backgroundColor: '#d7d7e9' }}>
-                            <div className='d-flex flex-column justify-content-between align-items-center p-2'>
-                                <Avatar src={avatarUrl} style={{ fontSize: 300, color: '#FFD700' }} size={100} />
-                                <Title level={3}>User Details</Title>
-                            </div>
-                        </Col>
-                    </Row>
-                    <Row justify="center" align="middle">
-                        <Col xs={24} sm={24} md={16} lg={12} xl={12}>
-                            <div className='d-flex flex-column justify-content-left p-2'>
-                                <Text strong>
-                                    Name: <Input id="name" type="text" className="form-control" placeholder="Name" value={name} onChange={handleInputChange} disabled={!editpage} />
-                                </Text>
-                                <Text strong>
-                                    Location: <Input id="location" type="text" className="form-control" placeholder="Location" value={location} onChange={handleInputChange} disabled={!editpage} />
-                                </Text>
-                                <Text strong>
-                                    Date: <Input id="date" type="text" className="form-control" placeholder="Date" value={date} onChange={handleInputChange} disabled={!editpage} />
-                                </Text>
-                                <Text strong>
-                                    Email: <Input id="email" type="text" className="form-control" placeholder="Email" value={email} onChange={handleInputChange} disabled={!editpage} />
-                                </Text>
-                                <Text strong>
-                                    Phone Number: <Input id="phonenumber" type="text" className="form-control" placeholder="Phone Number" value={phonenumber} onChange={handleInputChange} disabled={!editpage} />
-                                </Text>
-                                <Text strong>
-                                    Address: <Input id="address" type="text" className="form-control" placeholder="Address" value={address} onChange={handleInputChange} disabled={!editpage} />
-                                </Text>
-                                <Text strong>
-                                    Phone Number Prefix: <Input id="phonenumberpre" type="text" className="form-control" placeholder="Phone Number Prefix" value={phonenumberpre} onChange={handleInputChange} disabled={!editpage} />
-                                </Text>
-                                <Text strong>
-                                    Facebook: <Input id="facebook" type="text" className="form-control" placeholder="Facebook" value={facebook} onChange={handleInputChange} disabled={!editpage} />
-                                </Text>
-                                <Text strong>
-                                    Instagram: <Input id="instagram" type="text" className="form-control" placeholder="Instagram" value={instagram} onChange={handleInputChange} disabled={!editpage} />
-                                </Text>
-                                <Text strong>
-                                    Twitter: <Input id="twitter" type="text" className="form-control" placeholder="Twitter" value={twitter} onChange={handleInputChange} disabled={!editpage} />
-                                </Text>
-                                <Text strong>
-                                    LinkedIn: <Input id="linkedin" type="text" className="form-control" placeholder="LinkedIn" value={linkedIn} onChange={handleInputChange} disabled={!editpage} />
-                                </Text>
-                                <Text strong>
-                                    WhatsApp: <Input id="whatsapp" type="text" className="form-control" placeholder="WhatsApp" value={whatsapp} onChange={handleInputChange} disabled={!editpage} />
-                                </Text>
-                                <Text strong>
-                                    Avatar: 
-                                    {editpage ? (
-                                        <Upload
-                                            name="avatar"
-                                            action={`${backendUrl}/api/v1/upload`} // Update with your actual upload URL
-                                            listType="picture"
-                                            showUploadList={false}
-                                            onChange={handleAvatarUpload}
-                                        >
-                                            <AntButton icon={<UploadOutlined />}>Upload</AntButton>
-                                        </Upload>
-                                    ) : (
-                                        avatarUrl && <Avatar src={avatarUrl} alt="User Avatar" size={64} style={{ marginTop: '10px' }} />
-                                    )}
-                                </Text>
-                            </div>
-                        </Col>
-                    </Row>
-                    <Row justify="center" align="middle" style={{ marginTop: '30px' }}>
-                        {editpage ? (
-                            <Col>
-                                <Button text="Save Changes" icon={<SaveOutlined style={{ color: '#25D366' }} />} onClick={saveEdit} />
-                            </Col>
-                        ) : (
-                            <Col>
-                                <Button text="Edit User" onClick={() => setEditPage(true)} />
-                            </Col>
+            <Row justify="center" align="middle" style={{ marginBottom: '30px' }}>
+                <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+                    <div className='d-flex flex-column justify-content-between align-items-center ms-2 p-2' style={{ backgroundColor: '#d7d7e9' }}>
+                        <Avatar size={150} src={profileImage || "https://example.com/default-avatar.jpg"} />
+                        {editProfile && (
+                            <input type="file" accept="image/*" onChange={handleImageChange} />
                         )}
+                        <div className='d-flex flex-column justify-content-left'>
+                            <Title level={3}>{firstname}, {lastname}</Title>
+                            <Text className='mb-1'>{status}--{position}</Text>
+                            <Text className='mb-2'>joined:{joined_date}</Text>
+                            <Text className='mb-2'>last login:{last_login}</Text>
+                        </div>
+                    </div>
+                    <div className='my-2'>
+                        <Text strong>FirstName: <input id="firstname" type="text" className="form-control" placeholder={firstname} value={firstname} onChange={handleInputChange} disabled={!editProfile} /></Text>
+                    </div>
+                    <div className='my-2'>
+                        <Text strong>LastName: <input id="lastname" type="text" className="form-control" placeholder={lastname} value={lastname} onChange={handleInputChange} disabled={!editProfile} /></Text>
+                    </div>
+                </Col>
+                <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+                    <div className='d-flex flex-column justify-content-between ms-2'>
+                        
+                        <div className='my-2'>
+                            <Text strong>Email: <input id="email" type="email" className="form-control" placeholder={email} value={email} onChange={handleInputChange} disabled={!editProfile} /></Text>
+                        </div>
+                        <div className='my-2'>
+                            <Text strong>Phone Number: <Input addonBefore={selectBefore} id="phonenumber" placeholder={phoneNumber} value={phoneNumber} onChange={handleInputChange} disabled={!editProfile} /></Text>
+                        </div>
+                        <div className='my-2'>
+                            <Text strong>Address: <input id="address" type="text" className="form-control" placeholder={address} value={address} onChange={handleInputChange} disabled={!editProfile} /></Text>
+                        </div>
+                        <div className='my-2'>
+                            <Text strong>Position: <input id="position" type="text" className="form-control" placeholder={position} value={position} onChange={handleInputChange} disabled={!editProfile} /></Text>
+                        </div>
+                        <div className='my-2'>
+                            <Text strong>is Active: <Input addonBefore={activeBefore} id="is_active" placeholder={is_active} value={is_active} disabled={true} /></Text>
+                        </div>
+                        <div className='my-2'>
+                            <Text strong>is Staff: <Input addonBefore={staffBefore} id="is_staff" placeholder={is_staff} value={is_staff} disabled={true} /></Text>
+                        </div>
+                        <div className='my-2'>
+                            <Text strong>Date Joined: <DateTimeInput date={true} time={true} defaultValue={joined_date} onChange={joined_dateonChange} disabled={!editProfile} /></Text>
+                        </div>
+                        <div className='my-2'>
+                            <Text strong>Last Logged In: <DateTimeInput date={true} time={true} defaultValue={last_login} onChange={last_loginonChange} disabled={!editProfile} /></Text>
+                        </div>
+                    </div>
+                </Col>
+            </Row>
+            <Row justify="center" align="middle" style={{ marginBottom: '20px' }}>
+                <Col span={24}>
+                    <Row justify="center" className='p-0 m-0' gutter={[2, 8]}>
+                        <Col xs={24} sm={24} md={8}>
+                            <div className='mx-2'>
+                                <FacebookOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#1877F2' }}/>
+                                <input id="facebook" type="text" className="form-control" placeholder="Facebook" value={facebook} onChange={handleInputChange} disabled={!editProfile} />
+                            </div>
+                        </Col>
+                        <Col xs={24} sm={24} md={8}>
+                            <div className='mx-2'>
+                                <InstagramOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#E4405F' }}/>
+                                <input id="instagram" type="text" className="form-control" placeholder="Instagram" value={instagram} onChange={handleInputChange} disabled={!editProfile} />
+                            </div>
+                        </Col>
+                        <Col xs={24} sm={24} md={8}>
+                            <div className='mx-2'>
+                                <TwitterOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#1DA1F2' }}/>
+                                <input id="twitter" type="text" className="form-control" placeholder="Twitter" value={twitter} onChange={handleInputChange} disabled={!editProfile} />
+                            </div>
+                        </Col>
+                        <Col xs={24} sm={24} md={8}>
+                            <div className='mx-2'>
+                                <LinkedinOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#0077B5' }}/>
+                                <input id="linkedln" type="text" className="form-control" placeholder="LinkedIn" value={linkedIn} onChange={handleInputChange} disabled={!editProfile} />
+                            </div>
+                        </Col>
+                        <Col xs={24} sm={24} md={8}>
+                            <div className='mx-2'>
+                                <WhatsAppOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#25D366' }} />
+                                <input id="whatsapp" type="text" className="form-control" placeholder="WhatsApp" value={whatsapp} onChange={handleInputChange} disabled={!editProfile} />
+                            </div>
+                        </Col>
                     </Row>
-                </div>
-            </Content>
-        </Layout>
+                </Col>
+            </Row>
+            {editProfile && (
+                <Row justify="center">
+                    <Col>
+                        <Button type="primary" icon={<SaveOutlined />} htmlType="submit" onClick={saveEdit} loading={loading} style={{ width: '100%' }}>
+                            {loading ? 'Saving...' : 'Save Changes'}
+                        </Button>
+                    </Col>
+                </Row>
+            )}
+            <Text strong>Events:</Text>
+            <Row justify="center" align="middle" style={{ marginBottom: '20px' }}>
+            {events.map((event, index) => (
+                <Col xs={24} sm={24} md={8} key={index}>
+                    <div >{event.title}</div>
+                    <Row justify="center" className='p-0 m-0' gutter={[2, 8]}>
+                        {event.content.map((content, contentIndex) => (
+                            <Col xs={24} sm={24} md={24} key={contentIndex}>
+                                <div className='mx-2'>
+                                    <Text className="form-control">{content.name} - {content.date}</Text>
+                                </div>
+                            </Col>
+                        ))}
+                    </Row>
+                </Col>
+            ))}
+            </Row>
+        </div>
     );
 };
+
 
 export default User;

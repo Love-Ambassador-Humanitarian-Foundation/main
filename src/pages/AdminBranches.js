@@ -2,25 +2,27 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { backendUrl } from '../utils/utils';
 import { Link } from 'react-router-dom';
-import { DeleteOutlined, FilterOutlined , HomeOutlined, EditOutlined, BranchesOutlined } from '@ant-design/icons';
+import { DeleteOutlined, FilterOutlined , HomeOutlined, PlusOutlined, BankOutlined } from '@ant-design/icons';
 import { Card, Row, Col, Table, theme, Button, message,Layout, Breadcrumb  } from 'antd';
 
 const { Content} = Layout;
 
-const Branches = ({item}) => {
+const Branches = ({API_URL}) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     
-    const [editpage,SetEditPage] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [branches, setBranches] = useState([]);
     const [filteredBranches, setFilteredBranches] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [about, setAbout]  = useState(null);
 
     useEffect(() => {
-        axios.get(`${backendUrl}/api/v1/branches`)
+        axios.get(`${API_URL}/api/about`)
             .then(response => {
-                const fetchedBranches = response.data.data;
+                //console.log(response.data.response)
+                setAbout(response.data.response)
+                const fetchedBranches = response.data.response.branches ||response.data.data.branches;
                 setBranches(fetchedBranches);
                 setFilteredBranches(fetchedBranches);
                 setIsLoading(false);
@@ -28,24 +30,40 @@ const Branches = ({item}) => {
             .catch(error => {
                 console.error("There was an error fetching the branches!", error);
                 setIsLoading(false);
-                setBranches([{_id:'53545',name:"sfsdf",date:'2022-01-03'}]);
-                setFilteredBranches([{_id:'53545',name:"sfsdf",date:'2022-01-03'}]);
+                setBranches([{id:'53545',name:"sfsdf",date:'2022-01-03'}]);
+                setFilteredBranches([{id:'53545',name:"sfsdf",date:'2022-01-03'}]);
                 message.error("There was an error fetching the branches!", 5);
             });
-    }, []);
+    }, [API_URL]);
 
-    const deleteBranch = (id) => {
-        axios.delete(`${backendUrl}/api/v1/branches/${id}`)
-            .then(response => {
-                const newBranches = branches.filter(branch => branch._id !== id);
-                setBranches(newBranches);
-                setFilteredBranches(newBranches);
-                message.success("Branch deleted successfully!", 5);
-            })
-            .catch(error => {
-                console.error("There was an error deleting the branch!", error);
-                message.error("There was an error deleting the branch!", 5);
+    const deleteBranch = async(id) => {
+        setLoading(true);
+        const token = localStorage.getItem('lahf_access_token');
+
+        const formData = about;
+        formData.branches = branches.filter(branch => branch.id !== id)
+    
+        // Log the formData content for debugging
+        console.log(formData);
+    
+        try {
+            const response = await axios.put(`${API_URL}/api/about`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
             });
+            setAbout(response.data.response);
+            const about = response.data.response.branches || response.data.data.branches;
+            setBranches(about);
+            setFilteredBranches(about);
+            message.success('branch details updated');
+            //console.log('branch details updated:', about);
+        } catch (error) {
+            console.error('Error updating branch details:', error);
+            message.error('Error updating branch details');
+        }
+        setLoading(false);
     }
 
     const columns = [
@@ -54,7 +72,7 @@ const Branches = ({item}) => {
             dataIndex: 'name',
             key: 'name',
             render: (text, record) => (
-                <Link to={`/admin/branches/${record._id}`} className='text-decoration-none'>
+                <Link to={`/admin/branches/${record.id}`} className='text-decoration-none'>
                     <Button type="primary" >
                         {record.name}
                     </Button>
@@ -68,13 +86,13 @@ const Branches = ({item}) => {
         },
         {
             title: 'Date',
-            dataIndex: 'date',
-            key: 'date',
+            dataIndex: 'date_created',
+            key: 'date_created',
             render: (text) => new Date(text).toLocaleDateString(),
         },
         {
             render: (text, record) => (
-                <Button type="primary" icon={<DeleteOutlined />} onClick={() => deleteBranch(record._id)} />
+                <Button type="primary" icon={<DeleteOutlined />} loading={loading && record.id} onClick={() => deleteBranch(record.id)} />
             ),
         },
     ];
@@ -108,15 +126,15 @@ const Branches = ({item}) => {
                 <Breadcrumb
                     items={[
                         { href: '/', title: <HomeOutlined /> },
-                        { title: (<><BranchesOutlined /><span>Branches</span></>) },
+                        { title: (<><BankOutlined /><span>Branches</span></>) },
                     ]}
                 />
-                <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={()=>SetEditPage(!editpage)} />
+                <PlusOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
             </div>
             <Content className='m-2'>
                 <div
                     style={{
-                        padding: 24,
+                        padding: 10,
                         minHeight: 360,
                         background: colorBgContainer,
                         borderRadius: borderRadiusXS,
@@ -124,7 +142,7 @@ const Branches = ({item}) => {
                     }}
                 >
             <FilterComponent onSearch={filterBranches} name={true} date={true} />
-            <div className="site-layout-background" style={{ padding: 8, minHeight: 380 }}>
+            <div className="site-layout-background" style={{ padding: 2, minHeight: 380 }}>
                 <Row style={{ marginTop: 1 }}>
                     <Col span={24}>
                         <Card title="Branches" extra={<FilterOutlined style={{ cursor: 'pointer' }} />} bordered={true} style={{ borderRadius: '2px' }}>

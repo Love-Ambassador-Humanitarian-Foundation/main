@@ -50,81 +50,81 @@ const HeaderComponent = ({ Companyname,isloggedIn,userDetails }) => {
 
     return (
         <Navbar bg="white" expand="lg" fixed="top" className="m-0 p-0">
-                {isMobile ? (
-                    <Container>
-                        <Navbar.Brand href="/" className="">
-                            <img src={Logo} width="70" height="60" className="navbar-logo" alt="Lahf Logo" />{' '}
-                            <span className="navbar-title"> {Companyname}</span>
-                        </Navbar.Brand>
-                        <div className="d-flex justify-content-between align-items-center m-1" style={{marginLeft: 'auto'}}>
-                            <Dropdown overlay={profileMenu} placement="bottomLeft" trigger={['click']}>
-                                <Avatar size={30} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
-                            </Dropdown>
-                            {isMenuOpen ? (
-                                <IconButton hover={false} onClick={onClose} className="close-menu ms-0" icon={<CloseOutlined />} />
-                            ) : (
-                                <IconButton hover={false} onClick={showDrawer} className="open-menu ms-0" icon={<MenuOutlined />} />
-                            )}
-                        </div>
-                        <Drawer
-                            title="Basic Drawer"
-                            placement={'left'}
-                            closable={false}
-                            onClose={onClose}
-                            open={isMenuOpen}
-                            key={'left'}
-                            width={'70%'}
-                        >
-                            <NavLink to="/" text="Home" className="active m-2" />
-                            
-                            <NavLink to="/about" text="About" className="m-2"/>
-                            <NavLink to="/events" text="Events" className="m-2" />
-                            <NavLink to="/contact" text="Contact" className="m-2" />
-                            <Nav.Item className='nav-link'>
-                                <Link
-                                    
-                                    style={{
-                                        borderRadius: '4px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                        padding: '16px 6px', // Adjust padding as needed
-                                        textDecoration: 'none', // Remove text decoration for Links
-                                      }}
-                                    className={`btn`}
-                                    
-                                >
-                                    <Dropdown overlay={profileMenu} placement="bottomLeft" trigger={['click']}>
-                                        <Avatar src={(userDetails && userDetails.image)?userDetails.image:null} size={30} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
-                                    </Dropdown>
-                                </Link>
-                            </Nav.Item>
-                              
-                            <Button to="/contribute" text="Contribute" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
-                        </Drawer>
-
-                    </Container>
-                ) : (
-                    <Container>
-                        <Navbar.Brand href="#home" className="">
-                            <img src={Logo} width="70" height="60" className="navbar-logo" alt="Lahf Logo" />{' '}
-                            <span className="navbar-title"> {Companyname}</span>
-                        </Navbar.Brand>
-                        <Nav className="ms-auto navbar-nav-links d-flex justify-content-between align-items-center" activeKey="/home">
-                            
-                            
-                        </Nav>
+            {isMobile ? (
+                <Container>
+                    <Navbar.Brand href="/" className="">
+                        <img src={Logo} width="70" height="60" className="navbar-logo" alt="Lahf Logo" />{' '}
+                        <span className="navbar-title"> {Companyname}</span>
+                    </Navbar.Brand>
+                    <div className="d-flex justify-content-between align-items-center m-1" style={{marginLeft: 'auto'}}>
+                        <Dropdown overlay={profileMenu} placement="bottomLeft" trigger={['click']}>
+                            <Avatar size={30} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
+                        </Dropdown>
+                        {isMenuOpen ? (
+                            <IconButton hover={false} onClick={onClose} className="close-menu ms-0" icon={<CloseOutlined />} />
+                        ) : (
+                            <IconButton hover={false} onClick={showDrawer} className="open-menu ms-0" icon={<MenuOutlined />} />
+                        )}
+                    </div>
+                    <Drawer
+                        title="Basic Drawer"
+                        placement={'left'}
+                        closable={false}
+                        onClose={onClose}
+                        open={isMenuOpen}
+                        key={'left'}
+                        width={'70%'}
+                    >
                         <NavLink to="/" text="Home" className="active m-2" />
-                        <NavLink to="/about" text="About" className="m-2" />
+                        
+                        <NavLink to="/about" text="About" className="m-2"/>
                         <NavLink to="/events" text="Events" className="m-2" />
                         <NavLink to="/contact" text="Contact" className="m-2" />
-                        
-                        <Dropdown overlay={profileMenu} placement="bottomLeft" trigger={['click']}>
-                            <Avatar src={userDetails?userDetails.image:null} size={30} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
-                        </Dropdown>
+                        <Nav.Item className='nav-link'>
+                            <Link
+                                
+                                style={{
+                                    borderRadius: '4px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    padding: '16px 6px', // Adjust padding as needed
+                                    textDecoration: 'none', // Remove text decoration for Links
+                                    }}
+                                className={`btn`}
+                                
+                            >
+                                <Dropdown overlay={profileMenu} placement="bottomLeft" trigger={['click']}>
+                                    <Avatar src={(userDetails && userDetails.image)?userDetails.image:null} size={30} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
+                                </Dropdown>
+                            </Link>
+                        </Nav.Item>
+                            
                         <Button to="/contribute" text="Contribute" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
-                    </Container>
-                )}
+                    </Drawer>
+
+                </Container>
+            ) : (
+                <Container>
+                    <Navbar.Brand href="#home" className="">
+                        <img src={Logo} width="70" height="60" className="navbar-logo" alt="Lahf Logo" />{' '}
+                        <span className="navbar-title"> {Companyname}</span>
+                    </Navbar.Brand>
+                    <Nav className="ms-auto navbar-nav-links d-flex justify-content-between align-items-center" activeKey="/home">
+                        
+                        
+                    </Nav>
+                    <NavLink to="/" text="Home" className="active m-2" />
+                    <NavLink to="/about" text="About" className="m-2" />
+                    <NavLink to="/events" text="Events" className="m-2" />
+                    <NavLink to="/contact" text="Contact" className="m-2" />
+                    
+                    <Dropdown overlay={profileMenu} placement="bottomLeft" trigger={['click']}>
+                        <Avatar src={userDetails?userDetails.image:null} size={30} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
+                    </Dropdown>
+                    <Button to="/contribute" text="Contribute" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
+                </Container>
+            )}
         </Navbar>
     );
 };

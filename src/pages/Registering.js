@@ -9,7 +9,7 @@ const Registering = ({ API_URL })=>{
     //const [error, setError] = useState('');
     const navigate = useNavigate();
     const params = useParams();
-    //console.log('params:=',params)
+    console.log('params:=',params)
     useEffect(() =>{
         const fetchData = async () =>{
             try {
@@ -45,13 +45,13 @@ const Registering = ({ API_URL })=>{
     }, [API_URL, navigate, params]);
 
     if (loading) {
-            return (
-                <div  className='px-5'>
-                    <Button type="primary" htmlType="submit" loading={loading} style={{ width: '100%' }}>
-                        {loading ? 'Registering...' : ''}
-                    </Button>
-                </div>
-            );
+        return (
+            <div  className='px-5'>
+                <Button type="primary" htmlType="submit" loading={loading} style={{ width: '100%' }}>
+                    {loading ? 'Registering...' : ''}
+                </Button>
+            </div>
+        );
     }
 
     return (

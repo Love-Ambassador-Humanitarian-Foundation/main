@@ -131,6 +131,7 @@ const Dashboard = () => {
                                             <Card.Meta
                                                 avatar={<UserOutlined className='rounded-5 p-1' style={{backgroundColor:'#d7d7e9'}} />}
                                                 title={<span>{user.name}-<small style={styles.userDateTime}>({user.datetime})</small></span>}
+                                                style={{marginTop:'-16px'}}
                                             />
                                         </Card>
                                     </Link>

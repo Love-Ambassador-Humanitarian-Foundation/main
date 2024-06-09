@@ -2,12 +2,16 @@ import React, { useState, useEffect } from 'react';
 import HeaderComponent from '../components/AdminHeader';
 import { DashboardOutlined, UsergroupAddOutlined, InfoCircleOutlined, StarOutlined, CalendarOutlined,TeamOutlined, DollarOutlined, BankOutlined, UserOutlined } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
+import {useUpdateLoginStatus} from '../utils/hooks'
+import {fetchUserDetails} from '../utils/utils';
 import { Nav } from 'react-bootstrap';
 import { Link} from 'react-router-dom';
 
 const { Sider } = Layout;
 
-const AdminMain = ({ Companyname, isloggedIn, screen }) => {
+const AdminMain = ({ API_URL,Companyname, screen }) => {
+    const [userDetails, setUserDetails] = useState(null);
+    const isLoggedIn = useUpdateLoginStatus();
     //const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     
@@ -16,7 +20,7 @@ const AdminMain = ({ Companyname, isloggedIn, screen }) => {
         { url: '/admin/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
         { url: '/admin/profiles', icon: <UsergroupAddOutlined />, label: 'Profiles' },
         { url: '/admin/about', icon: <InfoCircleOutlined />, label: 'About' },
-        { url: '/admin/achievements', icon: <StarOutlined />, label: 'Achievements' },
+        { url: '/admin/scholarships', icon: <StarOutlined />, label: 'Scholarships' },
         { url: '/admin/partners', icon: <TeamOutlined />, label: 'Partners' },
         { url: '/admin/events', icon: <CalendarOutlined />, label: 'Events' },
         { url: '/admin/payments', icon: <DollarOutlined />, label: 'Payments' },
@@ -32,17 +36,22 @@ const AdminMain = ({ Companyname, isloggedIn, screen }) => {
         const handleResize = () => {
             setIsMobile(window.innerWidth < 768);
         };
-
+        const fetchDetails = async () => {
+            const d = await fetchUserDetails(API_URL);
+            setUserDetails(d);
+        };
+        fetchDetails();
         window.addEventListener('resize', handleResize);
+
 
         return () => {
             window.removeEventListener('resize', handleResize);
         };
-    }, []);
+    }, [API_URL]);
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
-            <HeaderComponent Companyname={Companyname} isloggedIn={isloggedIn} items={navItems} />
+            <HeaderComponent Companyname={Companyname} isloggedIn={isLoggedIn} items={navItems} userDetails={userDetails} />
             {isMobile ? null : (
                 <Sider
                     breakpoint="md"

@@ -12,7 +12,7 @@ import {
 } from '@ant-design/icons';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
-import { Row, Col, Avatar, Typography, Breadcrumb, Input, Select, Button } from 'antd';
+import { Row, Col, Avatar, Typography, Breadcrumb, Input, message,Select, Button } from 'antd';
 import { countryCodes, fetchUserDetails, convertImageToBase64 } from '../utils/utils';
 import { useUpdateLoginStatus } from '../utils/hooks';
 import { useParams } from 'react-router-dom';
@@ -41,6 +41,11 @@ const UserProfilePage = ({ API_URL }) => {
     const [twitter, setTwitter] = useState('');
     const [linkedIn, setLinkedIn] = useState('');
     const [whatsapp, setWhatsapp] = useState('');
+    const [events, setEvents] = useState([
+        { title: "Fundraiser", content: [{ name: 'Event 1', date: '2023-01-01' },{ name: 'Event 2', date: '2023-01-01' }] },
+        { title: "Donations", content: [{ name: 'Event 2', date: '2023-02-01' }] },
+        { title: "Seminars", content: [{ name: 'Event 3', date: '2023-03-01' }] }
+    ]);
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -62,6 +67,21 @@ const UserProfilePage = ({ API_URL }) => {
                 setProfileImage(user.profileImage);
             } catch (error) {
                 console.error('Error fetching user details:', error);
+            }
+
+            try {
+                const token = localStorage.getItem('lahf_access_token');
+                const id = userId || localStorage.getItem('lahf_user_id');
+                const response = await axios.get(`${API_URL}/api/events/participant/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                console.log(response.data);
+                setEvents(response.data.data)
+            } catch (error) {
+                console.error('Error fetching event details:', error);
             } finally {
                 setIsLoading(false);
             }
@@ -123,44 +143,42 @@ const UserProfilePage = ({ API_URL }) => {
     const saveEdit = async () => {
         setLoading(true);
         const token = localStorage.getItem('lahf_access_token');
-        const formData = new FormData();
         const [firstName, lastName] = name.split(' ');
-
-        formData.append('firstname', firstName || '');
-        formData.append('lastname', lastName || '');
-        formData.append('email', email);
-        formData.append('numberpre', phoneNumberPre);
-        formData.append('number', parseInt(phoneNumber, 10));
-        formData.append('address', address);
-        formData.append('facebook', facebook);
-        formData.append('instagram', instagram);
-        formData.append('twitter', twitter);
-        formData.append('linkedIn', linkedIn);
-        formData.append('whatsapp', whatsapp);
-        formData.append('is_active', status === 'Active');
-
-        if (profileImage) {
-            formData.append('profileImage', profileImage);
-        }
-
+    
+        const formData = {
+            firstname: firstName || '',
+            lastname: lastName || '',
+            email: email,
+            numberpre: phoneNumberPre,
+            number: parseInt(phoneNumber, 10),
+            address: address,
+            facebook: facebook,
+            instagram: instagram,
+            twitter: twitter,
+            linkedIn: linkedIn,
+            whatsapp: whatsapp,
+            is_active: status === 'Active',
+            profileImage:profileImage
+        };
+    
         // Log the formData content for debugging
-        // for (let [key, value] of formData.entries()) {
-        //     console.log(`${key}: ${value}===>`,userDetails.id);
-        // }
-
+        console.log(formData);
+    
         try {
             const response = await axios.patch(`${API_URL}/api/users/${userDetails.id}`, formData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'application/json'
                 }
             });
-
+    
             setUserDetails(response.data.data);
             setEditProfile(false);
+            message.success('User details updated')
             console.log('User details updated:', response.data.data);
         } catch (error) {
             console.error('Error updating user details:', error);
+            message.error('Error updating user details')
         }
         setLoading(false);
     };
@@ -181,12 +199,6 @@ const UserProfilePage = ({ API_URL }) => {
         </Select>
     );
 
-    const events = [
-        { title: "Fundraiser", content: [{ name: 'Event 1', date: '2023-01-01' },{ name: 'Event 2', date: '2023-01-01' }] },
-        { title: "Donations", content: [{ name: 'Event 2', date: '2023-02-01' }] },
-        { title: "Seminars", content: [{ name: 'Event 3', date: '2023-03-01' }] }
-    ];
-
     if (isLoading) {
         return <LoadingSpinner />;
     }
@@ -205,16 +217,21 @@ const UserProfilePage = ({ API_URL }) => {
                     <EditOutlined onClick={() => setEditProfile(!editProfile)} style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
                 </div>
                 <Row justify="center" align="middle" style={{ marginBottom: '30px' }}>
-                    <Col xs={24} sm={12} md={12} lg={12} xl={12} style={{ backgroundColor: '#d7d7e9' }}>
-                        <div className='d-flex flex-column justify-content-between align-items-center ms-2 p-2'>
+                    <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+                        <div className='d-flex flex-column justify-content-between align-items-center ms-2 p-2'  style={{ backgroundColor: '#d7d7e9' }}>
                             <Avatar size={150} src={profileImage || "https://example.com/default-avatar.jpg"} />
                             {editProfile && (
                                 <input type="file" accept="image/*" onChange={handleImageChange} />
                             )}
                             <div className='d-flex flex-column justify-content-left'>
                                 <Title level={3}>{userDetails?.firstname}, {userDetails?.lastname}</Title>
-                                <Text className='mb-2'>{status}</Text>
+                                <Text className='mb-1'>{status}--{userDetails?.position}</Text>
+                                <Text className='mb-2'>joined:{userDetails?.joined_date}</Text>
+                                <Text className='mb-2'>last login:{userDetails?.last_login}</Text>
                             </div>
+                        </div>
+                        <div className='my-2'>
+                            <Text strong>Name: <input id="name" type="text" className="form-control" placeholder={name} value={name} onChange={handleInputChange} disabled={!editProfile} /></Text>
                         </div>
                     </Col>
                     <Col xs={24} sm={12} md={12} lg={12} xl={12}>

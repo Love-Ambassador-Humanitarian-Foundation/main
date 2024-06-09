@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const backendUrl = 'http://localhost:5000';
-//export const backendUrl = 'https://durable-backend.herokuapp.com';
+
 export const countryCodes = [
     {
       code: "+1",
@@ -923,8 +923,10 @@ export const countryCodes = [
 export const fetchUserDetails = async (API_URL,userId) => {
   const token = localStorage.getItem('lahf_access_token');
   const id = userId || localStorage.getItem('lahf_user_id');
+  const url = API_URL || 'https://loveahfoundation.org/api' || 'https://loveahfoundation.org/backend';
+  //console.log(url,'===',localStorage)
   try {
-      const response = await axios.get(`${API_URL}/api/users/${id}`, {
+      const response = await axios.get(`${url}/api/users/${id}`, {
           headers: {
               'Authorization': `Bearer ${token}`
           }

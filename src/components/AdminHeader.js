@@ -10,7 +10,7 @@ import './Header.css';
 const HeaderComponent = ({ Companyname,isloggedIn, items,userDetails  }) => {
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    console.log(isloggedIn,':====')
+    //console.log(isloggedIn,':====')
     //const isAdmin = true;
 
     const showDrawer = () => {
@@ -19,10 +19,6 @@ const HeaderComponent = ({ Companyname,isloggedIn, items,userDetails  }) => {
 
     const onClose = () => {
         setIsMenuOpen(false);
-    };
-
-    const userdetails = {
-        email: 'oscarchiagoziem@gmail.com',
     };
 
     useEffect(() => {
@@ -44,22 +40,20 @@ const HeaderComponent = ({ Companyname,isloggedIn, items,userDetails  }) => {
         </Menu>
     );
 
-    const profileMenu = (
+    const profileMenu=(
         <Menu>
-            <Menu.Item key="1">
-                <Link to={`/profile/${userdetails.email}`} style={{ textDecoration: 'none' }}>
-                    View Profile
-                </Link>
+            {/* Your mail dropdown menu items */}
+            <Menu.Item key="1"><Link to={`/profile/${userDetails?userDetails.id:'-'}`} style={{textDecoration:'none'}}>Account</Link></Menu.Item>
+            
+            {userDetails?<Menu.Item key="2">{userDetails.email}</Menu.Item>:<></>}
+            {(userDetails && userDetails.is_staff)?<Menu.Item key="3" className='bg-success'>Admin</Menu.Item>:<></>}
+            <Menu.Item key="4"><Link to='/admin/dashboard' style={{textDecoration:'none'}}>View Dashboard</Link></Menu.Item>
+            <Menu.Item key="5">{isloggedIn?
+                <Link to="/logout" text="Logout" style={{textDecoration:'none'}}>Logout</Link>
+                :
+                <Link to="/login" text="Login" style={{textDecoration:'none'}}>Login</Link>}
             </Menu.Item>
-            <Menu.Item key="2">John Doe</Menu.Item>
-            <Menu.Item key="3">{userdetails.email}</Menu.Item>
-            <Menu.Item key="4">Usertype: Admin</Menu.Item>
-            <Menu.Item key="5">Activity Log</Menu.Item>
-            <Menu.Item key="6">{isloggedIn?
-                    <Link to="/logout" text="Logout" style={{textDecoration:'none'}}>Logout</Link>
-                    :
-                    <Link to="/login" text="Login" style={{textDecoration:'none'}}>Login</Link>}
-            </Menu.Item>
+            {/* Add more menu items as needed */}
         </Menu>
     );
 
