@@ -1,7 +1,7 @@
 
 
 # LAHF (Love Humanitarian Foundation)
-
+git clone --depth 1 https://github.com/Love-Ambassador-Humanitarian-Foundation/main.git
 A brief description of your project goes here.
 
 ## Table of Contents

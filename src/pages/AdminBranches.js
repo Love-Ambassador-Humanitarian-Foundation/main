@@ -73,7 +73,7 @@ const Branches = ({API_URL}) => {
             key: 'name',
             render: (text, record) => (
                 <Link to={`/admin/branches/${record.id}`} className='text-decoration-none'>
-                    <Button type="primary" >
+                    <Button type="primary" className='text-white' >
                         {record.name}
                     </Button>
                 </Link>
@@ -92,7 +92,7 @@ const Branches = ({API_URL}) => {
         },
         {
             render: (text, record) => (
-                <Button type="primary" icon={<DeleteOutlined />} loading={loading && record.id} onClick={() => deleteBranch(record.id)} />
+                <Button type="primary" icon={<DeleteOutlined className='text-white' />} loading={loading && record.id} onClick={() => deleteBranch(record.id)} />
             ),
         },
     ];

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const backendUrl = 'http://localhost:5000';
+export const backendUrl = 'https://loveahfoundation.org/'||'http://localhost:5000';
 
 export const countryCodes = [
     {

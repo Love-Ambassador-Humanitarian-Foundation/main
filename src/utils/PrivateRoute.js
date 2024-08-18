@@ -7,23 +7,22 @@ const PrivateRoute = ({ children, redirectUrl, API_URL }) => {
     const isLoggedIn = useUpdateLoginStatus();
     const [userDetails, setUserDetails] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        fetchUserData();
-    }, []);
-
-    const fetchUserData = () => {
-        fetchUserDetails(API_URL)
-            .then(userData => {
-                setUserDetails(userData);
-                setIsLoading(false);
-            })
-            .catch(error => {
-                console.error('Error fetching user details:', error);
-                setIsLoading(false);
-            });
-    };
     
+    useEffect(() => {
+        const fetchUserData = () => {
+            fetchUserDetails(API_URL)
+                .then(userData => {
+                    setUserDetails(userData);
+                    setIsLoading(false);
+                })
+                .catch(error => {
+                    console.error('Error fetching user details:', error);
+                    setIsLoading(false);
+                });
+        };
+        fetchUserData();
+    }, [API_URL]);
+
     if (isLoading) {
         return null; // or return loading indicator
     }

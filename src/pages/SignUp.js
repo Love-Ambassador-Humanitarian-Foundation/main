@@ -46,9 +46,17 @@ const SignUpPage = ({ API_URL }) => {
                 message.success(response.data.message || 'Sign up successful!');
                 
             } catch (error) {
-                console.log(error);
-                setError('Invalid credentials. Please try again.');
-                message.error('Invalid credentials. Please try again.');
+                console.log(error.response.data);
+                message.error(error.response.data.message);
+
+                // Iterate over the errors object
+                for (let k in error.response.data.errors) {
+                    if (error.response.data.errors.hasOwnProperty(k)) {
+                        // Join the error messages into a single string with each message on a new line
+                        message.error(error.response.data.errors[k].join('\n'));
+                    }
+                }
+
             } finally {
                 setLoading(false);
             }

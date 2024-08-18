@@ -290,7 +290,7 @@ const UserProfilePage = ({ API_URL }) => {
                 {editProfile && (
                     <Row justify="center">
                         <Col>
-                            <Button type="primary" icon={<SaveOutlined />} htmlType="submit" onClick={saveEdit} loading={loading} style={{ width: '100%' }}>
+                            <Button type="primary" className='text-white' icon={<SaveOutlined  className='text-white'/>} htmlType="submit" onClick={saveEdit} loading={loading} style={{ width: '100%' }}>
                                 {loading ? 'Saving...' : 'Save Changes'}
                             </Button>
                         </Col>

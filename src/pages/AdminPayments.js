@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Card, Row, Col, Table, Button, message, theme } from 'antd';
-import { DeleteOutlined, FilterOutlined, DollarOutlined } from '@ant-design/icons';
+import { Card, Table, Row, Col, theme,Button, message, Layout, Breadcrumb} from 'antd';
+import { DeleteOutlined, FilterOutlined, DollarOutlined, EditOutlined, HomeOutlined} from '@ant-design/icons';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { backendUrl } from '../utils/utils';
 import Payment from './AdminPaymentDetail';
 import { Link } from 'react-router-dom';
+const { Content} = Layout;
 
 const Payments = ({onSetContent}) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const [payments, setPayments] = useState([]);
     const [filteredPayments, setFilteredPayments] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [editpage,SetEditPage] = useState(false);
 
     useEffect(() => {
         axios.get(`${backendUrl}/api/v1/payments`)
@@ -52,7 +54,7 @@ const Payments = ({onSetContent}) => {
             key: 'name',
             render: (text, record) => (
                 <Link to={`/admin/payments`} className='text-decoration-none'>
-                    <Button type="primary" onClick={() => onSetContent({ url: '/admin/payments/23243', display: <Payment />, icon: <DollarOutlined />, label: record._id })}>
+                    <Button type="primary" className='text-white' onClick={() => onSetContent({ url: '/admin/payments/23243', display: <Payment />, icon: <DollarOutlined />, label: record._id })}>
                         {record.name}
                     </Button>
                 </Link>
@@ -71,7 +73,7 @@ const Payments = ({onSetContent}) => {
         },
         {
             render: (text, record) => (
-                <Button type="primary" icon={<DeleteOutlined />} onClick={() => deletePayment(record._id)} />
+                <Button type="primary" icon={<DeleteOutlined className='text-white' />} onClick={() => deletePayment(record._id)} />
             ),
         },
     ];
@@ -100,32 +102,46 @@ const Payments = ({onSetContent}) => {
     }
 
     return (
-        <div
-            style={{
-                padding: 24,
-                minHeight: 360,
-                background: colorBgContainer,
-                borderRadius: borderRadiusXS,
-                height: 'calc(100vh - 140px)'
-            }}
-        >
-            <FilterComponent onSearch={filterPayments} name={true} date={true} />
-            <div className="site-layout-background" style={{ padding: 8, minHeight: 380 }}>
-                <Row style={{ marginTop: 1 }}>
-                    <Col span={24}>
-                        <Card title="Payments" extra={<FilterOutlined style={{ cursor: 'pointer' }} />} bordered={true} style={{ borderRadius: '2px' }}>
-                            <Table
-                                dataSource={filteredPayments}
-                                columns={columns}
-                                pagination={true}
-                                rowClassName="editable-row"
-                                scroll={{ x: 'max-content' }}
-                            />
-                        </Card>
-                    </Col>
-                </Row>
+        <Layout style={{ marginTop: '70px', height: '100vh' }}>
+            <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{ backgroundColor: '#d7d7e9', borderRadius: '4px' }}>
+                <Breadcrumb
+                    items={[
+                        { href: '/', title: <HomeOutlined /> },
+                        { title: (<><DollarOutlined /><span>Payments</span></>) },
+                    ]}
+                />
+                <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={()=>SetEditPage(!editpage)} />
             </div>
-        </div>
+            <Content className='m-2'>
+            <div
+                    style={{
+                        padding: 24,
+                        minHeight: 360,
+                        background: colorBgContainer,
+                        borderRadius: borderRadiusXS,
+                        height: 'calc(100vh - 140px)'
+                    }}
+                >
+                    <FilterComponent onSearch={filterPayments} name={true} date={true} />
+                    <div className="site-layout-background" style={{ padding: 8, minHeight: 380 }}>
+                        <Row style={{ marginTop: 1 }}>
+                            <Col span={24}>
+                                <Card title="Payments" extra={<FilterOutlined style={{ cursor: 'pointer' }} />} bordered={true} style={{ borderRadius: '2px' }}>
+                                    <Table
+                                        dataSource={filteredPayments}
+                                        columns={columns}
+                                        pagination={true}
+                                        rowClassName="editable-row"
+                                        scroll={{ x: 'max-content' }}
+                                    />
+                                </Card>
+                            </Col>
+                        </Row>
+                    </div>
+                </div>
+            </Content>
+        </Layout>
+        
     );
 };
 

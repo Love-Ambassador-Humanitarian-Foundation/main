@@ -59,7 +59,7 @@ const Events = ({ onSetContent }) => {
             key: 'name',
             render: (text, record) => (
                 <Link to={`/admin/events/${record._id}`} className='text-decoration-none'>
-                    <Button type="link">
+                    <Button type="link" className='text-white'>
                         {record.name}
                     </Button>
                 </Link>
@@ -81,7 +81,7 @@ const Events = ({ onSetContent }) => {
             title: 'Action',
             key: 'action',
             render: (text, record) => (
-                <Button type="primary" icon={<DeleteOutlined />} onClick={() => deleteEvent(record._id)} />
+                <Button type="primary" icon={<DeleteOutlined className='text-white' />} onClick={() => deleteEvent(record._id)} />
             ),
         },
     ];

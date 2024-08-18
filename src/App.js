@@ -27,6 +27,8 @@ import Partner from './pages/AdminPartnerDetail';
 import Payment from './pages/AdminPaymentDetail';
 import Branch from './pages/AdminBranchDetail';
 import Event from './pages/AdminEventDetail';
+import Emails from './pages/AdminEmails';
+import Notifications from './pages/AdminNotifications';
 import PrivateRoute from './utils/PrivateRoute.js';
 import LogoutPage from './pages/Logout.js';
 import EmailVerificationPage from './pages/EmailVerificationPage.js';
@@ -68,6 +70,26 @@ const App = () => {
             <Route path="/admin/branches" element={<PrivateRoute redirectUrl={"/admin/branches"}><AdminMain API_URL={API_URL} Companyname={Companyname}  screen={<Branches API_URL={API_URL} />} /></PrivateRoute>} />
             <Route path="/admin/branches/:id" element={<PrivateRoute redirectUrl={"/admin/branches/:id"}><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<Branch API_URL={API_URL} />} /></PrivateRoute>} />
             <Route path="/admin/profile" element={<PrivateRoute redirectUrl={"/admin/profile"}><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<Profile API_URL={API_URL} />} /></PrivateRoute>} />
+
+
+            <Route 
+                path="/admin/emails" 
+                element={
+                    <PrivateRoute redirectUrl={"/admin/emails"}>
+                        <AdminMain API_URL={API_URL} Companyname={Companyname} screen={<Emails API_URL={API_URL} />} />
+                    </PrivateRoute>
+                }
+            />
+
+            <Route 
+              path="/admin/notifications" 
+              element={
+                  <PrivateRoute redirectUrl={"/admin/notifications"}>
+                      <AdminMain API_URL={API_URL} Companyname={Companyname} screen={<Notifications API_URL={API_URL} />} />
+                  </PrivateRoute>
+              }
+          />
+
             {/* Add other routes as needed */}
             {/* <Redirect from="/" to="/" /> */}
             

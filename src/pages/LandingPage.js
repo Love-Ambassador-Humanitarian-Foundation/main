@@ -50,69 +50,60 @@ const LandingPage = ({API_URL}) => {
     const [imgHeight, setImgHeight] = useState('40vh');
 
     const setHeights = () => {
-        const windowWidth = window.outerWidth;
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
         let imgHeight;
+    
         if (windowWidth <= 240) {
-          imgHeight = '215vh';
+            imgHeight = '215vh';
         } else if (windowWidth <= 330) {
-          imgHeight = '93vh';
-        }else if (windowWidth <= 360) {
-          imgHeight = '72vh';
+            imgHeight = '93vh';
+        } else if (windowWidth <= 360) {
+            imgHeight = '72vh';
         } else if (windowWidth <= 375) {
-          
-          if (window.outerHeight <= 670) {
-            imgHeight = '74vh';
-          }else if(window.outerHeight <= 813) {
-            imgHeight = '60vh';
-          }
+            if (windowHeight <= 670) {
+                imgHeight = '74vh';
+            } else if (windowHeight <= 813) {
+                imgHeight = '60vh';
+            } else {
+                imgHeight = '72vh'; // Default for this range
+            }
         } else if (windowWidth <= 390) {
-          imgHeight = '60vh';
-        } else if (windowWidth <= 416) {
-          imgHeight = '56vh';
-          if (window.outerHeight <= 800) {
-            imgHeight = '64vh';
-          }
-        }else if (windowWidth <= 430) {
-          imgHeight = '53vh';
-        } else if (windowWidth <= 459) {
-          imgHeight = '66vh';
-        } else if (windowWidth <= 574) {
-          imgHeight = '67vh';
-          
-        } else if (windowWidth <= 720) {
-          
-          imgHeight = '60vh';
-        }else if (windowWidth <= 768) {
-          imgHeight = '38vh';
-        } else if (windowWidth <= 820) {
-          imgHeight = '30vh';
-        }else if (windowWidth <= 912) {
-          imgHeight = '30vh';
-        } else if (windowWidth <= 1024) {
-          if (window.outerHeight <= 1200) {
-            
-            imgHeight = '62vh';
-          }else{
-            imgHeight = '28vh';
-          }
-        } else if (windowWidth <= 1400) {
-          console.log(window.outerHeight+'------===-------')
-          
-          if (window.outerHeight <= 720) {
             imgHeight = '60vh';
-          }else if (window.outerHeight <= 820) {
-            imgHeight = '50vh';
-          }else{
-            imgHeight = '34vh';
-          }
-        }else {
-          imgHeight = '40vh';
+        } else if (windowWidth <= 416) {
+            imgHeight = windowHeight <= 800 ? '64vh' : '56vh';
+        } else if (windowWidth <= 430) {
+            imgHeight = '53vh';
+        } else if (windowWidth <= 459) {
+            imgHeight = '66vh';
+        } else if (windowWidth <= 574) {
+            imgHeight = '67vh';
+        } else if (windowWidth <= 720) {
+            imgHeight = '60vh';
+        } else if (windowWidth <= 768) {
+            imgHeight = '38vh';
+        } else if (windowWidth <= 820) {
+            imgHeight = '30vh';
+        } else if (windowWidth <= 912) {
+            imgHeight = '30vh';
+        } else if (windowWidth <= 1024) {
+            imgHeight = windowHeight <= 1200 ? '62vh' : '28vh';
+        } else if (windowWidth <= 1400) {
+            if (windowHeight <= 720) {
+                imgHeight = '60vh';
+            } else if (windowHeight <= 820) {
+                imgHeight = '50vh';
+            } else {
+                imgHeight = '70vh';
+            }
+        } else {
+            imgHeight = '40vh';
         }
-        
-      
+    
         setImgHeight(imgHeight);
-        setIsMobile(window.innerWidth < 768);
-      };
+        setIsMobile(windowWidth < 768);
+    };
+    
 
     const images = [
         { img: img1 },

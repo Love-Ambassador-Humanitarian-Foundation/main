@@ -64,6 +64,7 @@ const Scholarships = ({ API_URL}) => {
                 <Link to={`/admin/scholarships/${record._id}`} className='text-decoration-none'>
                     <Button
                         type="primary"
+                         className='text-white'
                     >
                         {record.name}
                     </Button>
@@ -79,7 +80,7 @@ const Scholarships = ({ API_URL}) => {
         {
             key: 'actions',
             render: (text, record) => (
-                <Button type="primary" icon={<DeleteOutlined />} onClick={() => deleteScholarship(record._id)} />
+                <Button type="primary" icon={<DeleteOutlined className='text-white' />} onClick={() => deleteScholarship(record._id)} />
             ),
         },
     ];

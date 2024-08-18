@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import HeaderComponent from '../components/AdminHeader';
-import { DashboardOutlined, UsergroupAddOutlined, InfoCircleOutlined, StarOutlined, CalendarOutlined,TeamOutlined, DollarOutlined, BankOutlined, UserOutlined } from '@ant-design/icons';
-import { Layout, Menu } from 'antd';
+import { DashboardOutlined, UsergroupAddOutlined,MailOutlined, InfoCircleOutlined, StarOutlined, CalendarOutlined,TeamOutlined, DollarOutlined, BankOutlined, UserOutlined, BellOutlined } from '@ant-design/icons';
+import { Layout, Menu, Badge } from 'antd';
 import {useUpdateLoginStatus} from '../utils/hooks'
 import {fetchUserDetails} from '../utils/utils';
 import { Nav } from 'react-bootstrap';
@@ -17,20 +17,20 @@ const AdminMain = ({ API_URL,Companyname, screen }) => {
     
     
     const items = [
-        { url: '/admin/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
-        { url: '/admin/profiles', icon: <UsergroupAddOutlined />, label: 'Profiles' },
-        { url: '/admin/about', icon: <InfoCircleOutlined />, label: 'About' },
-        { url: '/admin/scholarships', icon: <StarOutlined />, label: 'Scholarships' },
-        { url: '/admin/partners', icon: <TeamOutlined />, label: 'Partners' },
-        { url: '/admin/events', icon: <CalendarOutlined />, label: 'Events' },
-        { url: '/admin/payments', icon: <DollarOutlined />, label: 'Payments' },
-        { url: '/admin/branches', icon: <BankOutlined />, label: 'Branches' },
-        { url: '/admin/profile', icon: <UserOutlined />, label: 'Profile' },
+        { url: '/admin/dashboard', icon: <DashboardOutlined />, label: 'Dashboard',badge:false },
+        { url: '/admin/profiles', icon: <UsergroupAddOutlined />, label: 'Profiles',badge:false },
+        { url: '/admin/about', icon: <InfoCircleOutlined />, label: 'About',badge:false },
+        { url: '/admin/scholarships', icon: <StarOutlined />, label: 'Scholarships',badge:false },
+        { url: '/admin/partners', icon: <TeamOutlined />, label: 'Partners',badge:false },
+        { url: '/admin/events', icon: <CalendarOutlined />, label: 'Events',badge:false },
+        { url: '/admin/payments', icon: <DollarOutlined />, label: 'Payments',badge:false },
+        { url: '/admin/branches', icon: <BankOutlined />, label: 'Branches',badge:false },
+        { url: '/admin/profile', icon: <UserOutlined />, label: 'Profile',badge:false },
+        { url: '/admin/emails', icon: <MailOutlined />, label: 'Emails',badge:true },
+        { url: '/admin/notifications', icon: <BellOutlined />, label: 'Notifications',badge:true },
     ];
     
     const navItems = [...items];
-
-    
 
     useEffect(() => {
         const handleResize = () => {
@@ -42,7 +42,6 @@ const AdminMain = ({ API_URL,Companyname, screen }) => {
         };
         fetchDetails();
         window.addEventListener('resize', handleResize);
-
 
         return () => {
             window.removeEventListener('resize', handleResize);
@@ -56,14 +55,34 @@ const AdminMain = ({ API_URL,Companyname, screen }) => {
                 <Sider
                     breakpoint="md"
                     collapsedWidth="0"
-                    style={{ marginTop: '70px', height: 'calc(100vh - 70px)' }}
+                    style={{ marginTop: '70px', height: 'calc(100vh - 70px)', backgroundColor: '#17172f' }} // Dark purple background
                 >
                     <div style={{ height: 'calc(100% - 48px)', overflowY: 'auto' }}>
-                        <Menu theme="dark" mode="inline" defaultSelectedKeys={['0']}>
+                        <Menu
+                            theme="dark"
+                            mode="inline"
+                            defaultSelectedKeys={['0']}
+                            style={{ backgroundColor: '#17172f' }} // Ensure menu background matches Sider
+                        >
                             {navItems.map((item, index) => (
-                                <Menu.Item key={index}>
+                                <Menu.Item
+                                    key={index}
+                                    //style={{ backgroundColor: 'red' }} // Ensure non-active items match Sider
+                                >
                                     <Nav.Item className='nav-link d-flex justify-content-left align-items-center'>
-                                        <span className='text-white'>{item.icon}</span>
+                                    {item.badge === true?
+                                        <Badge 
+                                            count={1} 
+                                            className="me-2" 
+                                            style={{ fontSize: '8px', padding: '0 4px', height: '12px', minWidth: '12px', lineHeight: '12px' }}
+                                        >
+                                            <span className='text-white'>{item.icon}</span>
+                                        </Badge>
+                                    :
+                                    <span className='text-white'>{item.icon}</span>
+                                    }  
+                                    
+
                                         <Link
                                             to={item.url}
                                             style={{
@@ -74,6 +93,7 @@ const AdminMain = ({ API_URL,Companyname, screen }) => {
                                                 justifyContent: 'space-between',
                                                 padding: '8px 8px',
                                                 textDecoration: 'none',
+                                                color: '#fff',
                                             }}
                                             className='btn text-white nav-link'
                                         >
@@ -85,6 +105,7 @@ const AdminMain = ({ API_URL,Companyname, screen }) => {
                         </Menu>
                     </div>
                 </Sider>
+            
             )}
             {screen}
         </Layout>

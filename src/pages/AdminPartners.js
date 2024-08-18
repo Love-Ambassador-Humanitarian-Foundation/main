@@ -4,9 +4,8 @@ import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { backendUrl } from '../utils/utils';
 import { DeleteOutlined,HomeOutlined, EditOutlined,TeamOutlined} from '@ant-design/icons';
-import { Card, Table, Row, Col, theme, message, Layout, Breadcrumb} from 'antd';
+import { Card, Table, Row, Col, theme, message, Layout, Breadcrumb, Button} from 'antd';
 import { Link } from 'react-router-dom';
-import { Button} from '../components/button';
 const { Content} = Layout;
 
 const Partners = ({onSetContent}) => {
@@ -55,7 +54,7 @@ const Partners = ({onSetContent}) => {
             key: 'name',
             render: (text, record) => (
                 <Link to={`/admin/partners/${record._id}`} className='text-decoration-none'>
-                    <Button type="primary">
+                    <Button type="primary" className='text-white'>
                         {record.name}
                     </Button>
                 </Link>
@@ -74,7 +73,7 @@ const Partners = ({onSetContent}) => {
         },
         {
             render: (text, record) => (
-                <Button type="primary" icon={<DeleteOutlined />} onClick={() => deletePartner(record._id)} />
+                <Button type="primary" icon={<DeleteOutlined className='text-white' />} onClick={() => deletePartner(record._id)} />
             ),
         },
     ];

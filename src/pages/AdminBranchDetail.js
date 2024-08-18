@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Input, Upload, Button as AntButton, theme, message, Layout, Breadcrumb } from 'antd';
-import { Button } from '../components/button';
-import { useParams, useNavigate } from 'react-router-dom';
+import { Row, Col, Typography, Input, Button , theme, message, Layout, Breadcrumb } from 'antd';
+import { useParams } from 'react-router-dom';
 import DateTimeInput from '../components/DateTimeSetter';
 import LoadingSpinner from '../components/LoadingSpinner';
 import axios from 'axios';
-import dayjs from 'dayjs';
-import { SaveOutlined, HomeOutlined, EditOutlined, EnvironmentOutlined, UploadOutlined, BankOutlined } from '@ant-design/icons';
+import { SaveOutlined, HomeOutlined, EditOutlined, EnvironmentOutlined, BankOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -14,7 +12,6 @@ const { Content } = Layout;
 const Branch = ({ API_URL }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const { id } = useParams();
-    const navigate = useNavigate();
     //console.log("==========",id);
     const [editpage, setEditPage] = useState(false);
     const [about, setAbout] = useState(null);
@@ -44,7 +41,7 @@ const Branch = ({ API_URL }) => {
                 setIsLoading(false);
                 message.error("There was an error fetching the branches!", 5);
             });
-    }, []);
+    }, [API_URL,id]);
 
     const saveEdit = async() => {
         setLoading(true);
@@ -164,11 +161,11 @@ const Branch = ({ API_URL }) => {
                     <Row justify="center" align="middle" style={{ marginTop: '30px' }}>
                         {editpage ? (
                             <Col>
-                                <Button text="Save Changes" isloading={loading} icon={<SaveOutlined style={{ color: '#25D366' }} />} onClick={saveEdit} />
+                                <Button type="primary" className='text-white' loading={loading} icon={<SaveOutlined className='text-white' />} onClick={saveEdit} >Save Changes</Button>  
                             </Col>
                         ) : (
                             <Col>
-                                <Button text="Edit Branch" onClick={() => setEditPage(true)} />
+                                <Button type="primary" className='text-white' onClick={() => setEditPage(true)} >Edit Branch</Button>
                             </Col>
                         )}
                     </Row>

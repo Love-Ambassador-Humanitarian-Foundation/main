@@ -94,7 +94,7 @@
 
 
 .ant-btn {
-  color:black;
+  color:white !important;
   border-color: #34356b;
   background-color: #34356b;
   cursor: pointer;
@@ -108,6 +108,7 @@
 }
 
 /* Styles for the button icon on hover */
+
 .ant-btn:hover .anticon,
 .ant-btn:focus .anticon,
 .ant-btn:active .anticon {

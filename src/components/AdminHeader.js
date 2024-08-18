@@ -75,12 +75,14 @@ const HeaderComponent = ({ Companyname,isloggedIn, items,userDetails  }) => {
                     </Navbar.Brand>
                     <div className="d-flex justify-content-between align-items-center m-1" style={{ marginLeft: 'auto' }}>
                         <Dropdown overlay={mailMenu} placement="bottomLeft" trigger={['click']}>
-                            <Badge count={1} className="me-3">
+                            <Badge count={1} className="me-2" 
+                                            style={{ fontSize: '8px', padding: '0 4px', height: '12px', minWidth: '12px', lineHeight: '12px' }}>
                                 <MailOutlined style={{ fontSize: '20px', cursor: 'pointer' }} />
                             </Badge>
                         </Dropdown>
                         <Dropdown overlay={notificationMenu} placement="bottomLeft" trigger={['click']}>
-                            <Badge count={2} className="me-4">
+                            <Badge count={2} className="me-2 ms-2" 
+                                            style={{ fontSize: '8px', padding: '0 4px', height: '12px', minWidth: '12px', lineHeight: '12px' }}>
                                 <BellOutlined style={{ fontSize: '20px', cursor: 'pointer' }} />
                             </Badge>
                         </Dropdown>
@@ -130,15 +132,18 @@ const HeaderComponent = ({ Companyname,isloggedIn, items,userDetails  }) => {
                             <div className="d-flex align-items-center" style={{ marginLeft: 'auto' }}>
                                 <NavLink to="/" text="Home" className="active m-2 text-success" />
                                 <Dropdown overlay={mailMenu} placement="bottomLeft" trigger={['click']}>
-                                    <Badge count={1} className="me-4">
+                                    <Badge count={1} className="me-2" 
+                                            style={{ fontSize: '8px', padding: '0 4px', height: '12px', minWidth: '12px', lineHeight: '12px' }}>
                                         <MailOutlined style={{ fontSize: '20px', cursor: 'pointer' }} />
                                     </Badge>
                                 </Dropdown>
                                 <Dropdown overlay={notificationMenu} placement="bottomLeft" trigger={['click']}>
-                                    <Badge count={2} className="me-4">
+                                    <Badge count={2} className="me-2 ms-2" 
+                                            style={{ fontSize: '8px', padding: '0 4px', height: '12px', minWidth: '12px', lineHeight: '12px' }}>
                                         <BellOutlined style={{ fontSize: '20px', cursor: 'pointer' }} />
                                     </Badge>
                                 </Dropdown>
+                                {userDetails?<small className="me-2 ms-2" style={{ cursor: 'pointer' }}>{userDetails.email}</small>:null}
                                 <Dropdown overlay={profileMenu} placement="bottomLeft" trigger={['click']}>
                                     <Avatar size={30} icon={<UserOutlined />} className="me-2" style={{ fontSize: '20px', cursor: 'pointer' }} />
                                 </Dropdown>

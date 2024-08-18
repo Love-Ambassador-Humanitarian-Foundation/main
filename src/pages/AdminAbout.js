@@ -42,8 +42,6 @@ const About = ({ API_URL }) => {
     const [editAbout, setEditAbout] = useState(false);
     const [form] = Form.useForm();
 
-    
-
     useEffect(() => {
         setIsLoading(true);
         const fetchAboutData = async () => {
@@ -200,12 +198,12 @@ const About = ({ API_URL }) => {
                                                     <Input placeholder="Branch Location" disabled={!editAbout} />
                                                 </Form.Item>
                                                 {editAbout && (
-                                                    <Button type="link" className='m-2 mt-1' onClick={() => remove(name)}>Remove</Button>
+                                                    <Button type="link" className='m-2 mt-1 text-white' onClick={() => remove(name)}>Remove</Button>
                                                 )}
                                             </div>
                                         ))}
                                         {editAbout && (
-                                            <Button type="dashed" className='m-2 mt-1' onClick={() => add()} block icon={<SaveOutlined />}>
+                                            <Button type="dashed" className='m-2 mt-1 text-white' onClick={() => add()} block icon={<SaveOutlined className='text-white' />}>
                                                 Add Branch
                                             </Button>
                                         )}
@@ -259,12 +257,12 @@ const About = ({ API_URL }) => {
                                                     <Input placeholder="Account Holder Name" disabled={!editAbout} />
                                                 </Form.Item>
                                                 {editAbout && (
-                                                    <Button type="link" className='m-2 mt-1' onClick={() => remove(name)}>Remove</Button>
+                                                    <Button type="link" className='m-2 mt-1 text-white' onClick={() => remove(name)}>Remove</Button>
                                                 )}
                                             </div>
                                         ))}
                                         {editAbout && (
-                                            <Button type="dashed" className='m-2 mt-1' onClick={() => add()} block icon={<SaveOutlined />}>
+                                            <Button type="dashed" className='m-2 mt-1 text-white' onClick={() => add()} block icon={<SaveOutlined  className='text-white' />}>
                                                 Add Account Detail
                                             </Button>
                                         )}
@@ -273,7 +271,7 @@ const About = ({ API_URL }) => {
                             </Form.List>
                             {editAbout && (
                                 <Form.Item style={{ marginTop: '30px' }}>
-                                    <Button type="primary" htmlType="submit" loading={loading} icon={<SaveOutlined />} style={{ marginRight: '10px' }}>Save Changes</Button>
+                                    <Button type="primary" className='text-white' htmlType="submit" loading={loading} icon={<SaveOutlined  className='text-white' />} style={{ marginRight: '10px' }}>Save Changes</Button>
                                 </Form.Item>
                             )}
                         </Form>

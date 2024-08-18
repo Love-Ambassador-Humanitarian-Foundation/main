@@ -13,7 +13,6 @@ const Profiles = ({ API_URL }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     //const navigate = useNavigate();
     const [users, setUsers] = useState([]);
-    const [editPage, setEditPage] = useState(false);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -130,7 +129,7 @@ const Profiles = ({ API_URL }) => {
         {
             render: (text, record) => (
                 <div>
-                    <Button type="primary" icon={<DeleteOutlined />} onClick={() => deleteUser(record._id)} />
+                    <Button type="primary" icon={<DeleteOutlined className='text-white'/>} onClick={() => deleteUser(record._id)} />
                 </div>
             ),
         },
