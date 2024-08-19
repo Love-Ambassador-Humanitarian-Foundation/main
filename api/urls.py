@@ -1,3 +1,9 @@
+"""Copyright (c) 2024 Esther Onyenoro
+
+This software is licensed under [Proprietary License].
+You may not modify, copy, or distribute this software without permission.
+For more details, see the LICENSE file in the root of the repository."""
+
 from django.urls import path
 from . import views
 
@@ -35,4 +41,12 @@ urlpatterns = [
     # Logs URLs
     path('logs', views.LogsListCreateView.as_view(), name='logs_list_create'),
     path('logs/<uuid:id>', views.LogsDetailView.as_view(), name='logs_detail'),
+
+    # Notification URLs
+    path('notifications', views.NotificationListCreateView.as_view(), name='notification-list-create'),
+    path('notifications/<uuid:id>', views.NotificationDetailView.as_view(), name='notification-detail'),
+
+    # Email URLs
+    path('emails', views.EmailListCreateView.as_view(), name='email-list-create'),
+    path('emails/<uuid:id>', views.EmailDetailView.as_view(), name='email-detail'),
 ]

@@ -1,6 +1,12 @@
+"""Copyright (c) 2024 Esther Onyenoro
+
+This software is licensed under [Proprietary License].
+You may not modify, copy, or distribute this software without permission.
+For more details, see the LICENSE file in the root of the repository."""
+
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import User, About, Partners, Event, Payments, Logs
+from .models import User, About, Partners, Event, Payments, Logs, Notification, Email
 
 class UserSerializer(serializers.ModelSerializer):
     """
@@ -99,3 +105,19 @@ class LogsSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'user', 'action', 'date_created', 'details'
         ]
+
+class NotificationSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Notification model.
+    """
+    class Meta:
+        model = Notification
+        fields = ['id', 'recipient', 'message', 'is_read', 'created_at']
+
+class EmailSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Email model.
+    """
+    class Meta:
+        model = Email
+        fields = ['id', 'sender', 'recipient', 'subject', 'body', 'sent_at', 'read']

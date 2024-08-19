@@ -1,3 +1,9 @@
+"""Copyright (c) 2024 Esther Onyenoro
+
+This software is licensed under [Proprietary License].
+You may not modify, copy, or distribute this software without permission.
+For more details, see the LICENSE file in the root of the repository."""
+
 """
 Django settings for backend project.
 
@@ -170,8 +176,3 @@ EMAIL_HOST_USER = 'info@loveahfoundation.org'
 EMAIL_HOST_PASSWORD = 'loveinfo_4_christ'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-
-
-
-
-

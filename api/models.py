@@ -1,3 +1,9 @@
+"""Copyright (c) 2024 Esther Onyenoro
+
+This software is licensed under [Proprietary License].
+You may not modify, copy, or distribute this software without permission.
+For more details, see the LICENSE file in the root of the repository."""
+
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.db.models.signals import pre_save
@@ -69,8 +75,8 @@ class About(models.Model):
     company_name = models.CharField(max_length=MAX_LENGTH)
     story = models.TextField(blank=True, null=True)
     logo = models.TextField(blank=True, null=True)
-    phonenumberpre = models.CharField(max_length=15)
-    phonenumber = models.CharField(max_length=15)
+    phonenumberpre = models.CharField(max_length=15, default=0)
+    phonenumber = models.CharField(max_length=15,default=0)
     emailone = models.EmailField(max_length=MAX_LENGTH)
     emailtwo = models.EmailField(max_length=MAX_LENGTH, blank=True, null=True)
     emailthree = models.EmailField(max_length=MAX_LENGTH, blank=True, null=True)
@@ -163,3 +169,31 @@ class Logs(models.Model):
 
     class Meta:
         ordering = ['-date_created', 'user', 'action']
+
+class Notification(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    recipient = models.CharField(max_length=255, blank=False, null=False)
+    message = models.CharField(max_length=255)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Notification for {self.recipient} - {self.message}"
+
+    class Meta:
+        ordering = ['-created_at']
+
+class Email(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    sender = models.CharField(max_length=255, blank=False, null=False)
+    recipient = models.CharField(max_length=255, blank=False, null=False)
+    subject = models.CharField(max_length=255, blank=False, null=False)
+    body = models.TextField(blank=False, null=False)
+    sent_at = models.DateTimeField(auto_now_add=True)
+    read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.subject} - {self.recipient}"
+
+    class Meta:
+        ordering = ['-sent_at', 'recipient']

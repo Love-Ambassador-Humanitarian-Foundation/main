@@ -1,12 +1,18 @@
+"""Copyright (c) 2024 Esther Onyenoro
+
+This software is licensed under [Proprietary License].
+You may not modify, copy, or distribute this software without permission.
+For more details, see the LICENSE file in the root of the repository."""
+
 import os
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from .models import User, About, Event, Partners, Payments, Logs
+from .models import User, About, Event, Partners, Payments, Logs, Notification, Email
 from .serializers import (
-    UserSerializer, AboutSerializer, EventSerializer,
+    UserSerializer, AboutSerializer, EventSerializer,NotificationSerializer,EmailSerializer,
     PartnersSerializer, PaymentsSerializer, LogsSerializer,UserRegistrationSerializer, UserLoginSerializer
 )
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -427,3 +433,116 @@ class LogsDetailView(generics.RetrieveUpdateDestroyAPIView):
         self.perform_destroy(instance)
         return Response({'success': True, 'message': 'Log deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 
+class NotificationListCreateView(generics.ListCreateAPIView):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({
+            'success': True,
+            'message': 'Notifications retrieved successfully',
+            'data': serializer.data
+        })
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response({
+            'success': True,
+            'message': 'Notification created successfully',
+            'data': serializer.data
+        }, status=status.HTTP_201_CREATED, headers=headers)
+
+class NotificationDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
+    lookup_field = 'id'
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response({
+            'success': True,
+            'message': 'Notification details retrieved successfully',
+            'data': serializer.data
+        })
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response({
+            'success': True,
+            'message': 'Notification updated successfully',
+            'data': serializer.data
+        })
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({
+            'success': True,
+            'message': 'Notification deleted successfully'
+        }, status=status.HTTP_204_NO_CONTENT)
+
+class EmailListCreateView(generics.ListCreateAPIView):
+    queryset = Email.objects.all()
+    serializer_class = EmailSerializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({
+            'success': True,
+            'message': 'Emails retrieved successfully',
+            'data': serializer.data
+        })
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response({
+            'success': True,
+            'message': 'Email created successfully',
+            'data': serializer.data
+        }, status=status.HTTP_201_CREATED, headers=headers)
+
+class EmailDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Email.objects.all()
+    serializer_class = EmailSerializer
+    lookup_field = 'id'
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response({
+            'success': True,
+            'message': 'Email details retrieved successfully',
+            'data': serializer.data
+        })
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response({
+            'success': True,
+            'message': 'Email updated successfully',
+            'data': serializer.data
+        })
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({
+            'success': True,
+            'message': 'Email deleted successfully'
+        }, status=status.HTTP_204_NO_CONTENT)
