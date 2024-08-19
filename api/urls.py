@@ -49,4 +49,8 @@ urlpatterns = [
     # Email URLs
     path('emails', views.EmailListCreateView.as_view(), name='email-list-create'),
     path('emails/<uuid:id>', views.EmailDetailView.as_view(), name='email-detail'),
+
+    # ReportURLs
+    path('reports/<str:rtype>', views.ReportView.as_view(), name='report-view'),
+
 ]

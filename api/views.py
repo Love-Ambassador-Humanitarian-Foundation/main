@@ -546,3 +546,32 @@ class EmailDetailView(generics.RetrieveUpdateDestroyAPIView):
             'success': True,
             'message': 'Email deleted successfully'
         }, status=status.HTTP_204_NO_CONTENT)
+
+class ReportView(APIView):
+    def _reportvolunteer(self):
+        data = []  # Your logic to generate volunteer report data
+        return Response({'success': True, 'message': "Volunteer report generated successfully", 'data': data}, status=status.HTTP_200_OK)
+    
+    def _reportevents(self):
+        data = []  # Your logic to generate events report data
+        return Response({'success': True, 'message': "Events report generated successfully", 'data': data}, status=status.HTTP_200_OK)
+    
+    def _reportloggedin(self):
+        data = []  # Your logic to generate logged-in users report data
+        return Response({'success': True, 'message': "Logged-in users report generated successfully", 'data': data}, status=status.HTTP_200_OK)
+
+    def get(self, request, rtype):
+        types = ['volunteers', 'events', 'loggedin']
+        
+        if rtype not in types:
+            return Response({'success': False, 'message': "The report type must be one of ['volunteer','events', 'loggedin']", 'data': None}, status=status.HTTP_400_BAD_REQUEST)
+
+        if rtype == 'volunteers':
+            return self._reportvolunteer()
+        elif rtype == 'events':
+            return self._reportevents()
+        elif rtype == 'loggedin':
+            return self._reportloggedin()
+        
+        # This return statement is technically unreachable now, but kept for safety.
+        return Response({'success': False, 'message': "The report type must be one of ['volunteer','events', 'loggedin']", 'data': None}, status=status.HTTP_400_BAD_REQUEST)  
