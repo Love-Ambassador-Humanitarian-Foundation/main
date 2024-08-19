@@ -5,6 +5,7 @@ You may not modify, copy, or distribute this software without permission.
 For more details, see the LICENSE file in the root of the repository."""
 
 import os
+from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics
@@ -548,30 +549,110 @@ class EmailDetailView(generics.RetrieveUpdateDestroyAPIView):
         }, status=status.HTTP_204_NO_CONTENT)
 
 class ReportView(APIView):
+    months = {
+        'Jan': 0,
+        'Feb': 0,
+        'Mar': 0,
+        'Apr': 0,
+        'May': 0,
+        'Jun': 0,
+        'Jul': 0,
+        'Aug': 0,
+        'Sep': 0,
+        'Oct': 0,
+        'Nov': 0,
+        'Dec': 0
+    }
+
     def _reportvolunteer(self):
-        data = []  # Your logic to generate volunteer report data
-        return Response({'success': True, 'message': "Volunteer report generated successfully", 'data': data}, status=status.HTTP_200_OK)
-    
+        # Fetch all volunteers
+        volunteers = User.objects.all()
+
+        # Create a copy of the months dictionary to hold the count of volunteers per month
+        monthly_report = self.months.copy()
+
+        # Iterate over volunteers and count them by month
+        for v in volunteers:
+            if v.joined_date:
+                month_name = v.joined_date.strftime('%b')  # Use abbreviated month name
+                if month_name in monthly_report:
+                    monthly_report[month_name] += 1
+
+        # Convert the report data into a list of dictionaries for better readability
+        data = [{'month': month, 'count': count} for month, count in monthly_report.items()]
+
+        return Response({
+            'success': True,
+            'message': 'Volunteer report retrieved successfully',
+            'data': data
+        }, status=status.HTTP_200_OK)
+
     def _reportevents(self):
-        data = []  # Your logic to generate events report data
-        return Response({'success': True, 'message': "Events report generated successfully", 'data': data}, status=status.HTTP_200_OK)
-    
-    def _reportloggedin(self):
-        data = []  # Your logic to generate logged-in users report data
-        return Response({'success': True, 'message': "Logged-in users report generated successfully", 'data': data}, status=status.HTTP_200_OK)
+        # Fetch all events
+        events = Event.objects.all()
+
+        # Create a copy of the months dictionary to hold the count of events per month
+        monthly_report = self.months.copy()
+
+        # Iterate over events and count them by month
+        for event in events:
+            if event.date:
+                month_name = event.date.strftime('%b')  # Use abbreviated month name
+                if month_name in monthly_report:
+                    monthly_report[month_name] += 1
+
+        # Convert the report data into a list of dictionaries for better readability
+        data = [{'month': month, 'count': count} for month, count in monthly_report.items()]
+
+        return Response({
+            'success': True,
+            'message': 'Events report retrieved successfully',
+            'data': data
+        }, status=status.HTTP_200_OK)
+
+    def _reportloggedin(self,request):
+        # Define a time range for "recently logged in" (e.g., last 30 days)
+        limit = request.query_params.get('limit')
+        if limit is None:
+            limit= 10
+        recent_time_threshold = timezone.now() - timezone.timedelta(days=int(limit))
+
+        # Fetch recently logged-in users
+        logged_in_users = User.objects.filter(last_login__gte=recent_time_threshold)
+
+        # Prepare the data with user details
+        data = [
+            {
+                'name': user.firstname+' '+user.lastname,  # Assuming User model has this method or property
+                'image': user.profileImage if user.profileImage else None,  # Assuming profile_image is a field in User model
+                'last_login': user.last_login.strftime('%Y-%m-%d %H:%M:%S')  # Formatting the last login timestamp
+            }
+            for user in logged_in_users
+        ]
+        return Response({
+            'success': True,
+            'message': f'Recently last {limit} logged-in users report retrieved successfully',
+            'data': data
+        }, status=status.HTTP_200_OK)
 
     def get(self, request, rtype):
-        types = ['volunteers', 'events', 'loggedin']
-        
+        types = ['volunteer', 'events', 'loggedin']
         if rtype not in types:
-            return Response({'success': False, 'message': "The report type must be one of ['volunteer','events', 'loggedin']", 'data': None}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                'success': False,
+                'message': "The report type must be one of ['volunteer', 'events', 'loggedin']",
+                'data': None
+            }, status=status.HTTP_400_BAD_REQUEST)
 
-        if rtype == 'volunteers':
+        if rtype == 'volunteer':
             return self._reportvolunteer()
         elif rtype == 'events':
             return self._reportevents()
         elif rtype == 'loggedin':
-            return self._reportloggedin()
-        
-        # This return statement is technically unreachable now, but kept for safety.
-        return Response({'success': False, 'message': "The report type must be one of ['volunteer','events', 'loggedin']", 'data': None}, status=status.HTTP_400_BAD_REQUEST)  
+            return self._reportloggedin(request)
+
+        return Response({
+            'success': False,
+            'message': "The report type must be one of ['volunteer', 'events', 'loggedin']",
+            'data': None
+        }, status=status.HTTP_400_BAD_REQUEST)
