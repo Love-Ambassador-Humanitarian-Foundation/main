@@ -10,43 +10,112 @@ import {
 } from '@ant-design/icons';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { Link } from 'react-router-dom';
-import { Card, Row, Col, theme, Layout, Breadcrumb } from 'antd';
-
+import { Card, Row, Col, theme, Layout, Breadcrumb, Button } from 'antd';
+import axios from 'axios';
 const { Content } = Layout;
+const { Meta } = Card;
 
-const Dashboard = () => {
+const Dashboard = ({API_URL}) => {
     const [barwidth, setBarWidth] = useState(350);
     const vref = useRef(null);
     const { token: { colorBgContainer, borderRadiusSM } } = theme.useToken();
-    const { Meta } = Card;
+    
+    const [volunteerloading, setIsVolunteerLoading] = useState(false);
+    const [volunteers, setVolunteers] = useState([]);
+    const [branchesloading, setIsBranchesLoading] = useState(false);
+    const [branches, setBranches] = useState([]);
+    const [eventsloading, setIsEventsLoading] = useState(false);
+    const [events, setEvents] = useState([]);
+    const [achievementsloading, setIsAchievementsLoading] = useState(false);
+    const [achievements, setAchievements] = useState([]);
+
+    useEffect(() => {
+        const fetchVolunteers = async () => {
+            setIsVolunteerLoading(true);
+            try {
+                const url = `${API_URL}/api/users`; // Make sure API_URL is defined in your environment
+                const response = await axios.get(url);
+                setVolunteers(response.data.data); // Assuming the response is an array of users
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                setIsVolunteerLoading(false);
+            }
+        };
+
+        fetchVolunteers();
+        const fetchBranches = async () => {
+            setIsBranchesLoading(true);
+            setIsAchievementsLoading(true);
+            try {
+                const url = `${API_URL}/api/about`; // Make sure API_URL is defined in your environment
+                const response = await axios.get(url);
+                setAchievements(response.data.response.achievements);
+                setBranches(response.data.response.branches); // Assuming the response is an array of users
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                setIsBranchesLoading(false);
+                setIsAchievementsLoading(false);
+            }
+        };
+
+        fetchBranches();
+        const fetchEvents = async () => {
+            setIsEventsLoading(true);
+            try {
+                const url = `${API_URL}/api/events`; // Make sure API_URL is defined in your environment
+                const response = await axios.get(url);
+                setEvents(response.data.response); // Assuming the response is an array of users
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                setIsEventsLoading(false);
+            }
+        };
+        fetchEvents();
+
+        const handleResize = () => {
+            if (vref.current) {
+                setBarWidth(vref.current.offsetWidth);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [API_URL]); // Empty dependency array to run effect only once on component mount
+    
 
     const cardData = [
         {
             url: '/admin/profiles',
-            icon: <UsergroupAddOutlined className='rounded-5 p-1' style={{ backgroundColor: '#fa5a7d' }} />,
+            icon: <UsergroupAddOutlined className="rounded-5 p-1" style={{ backgroundColor: '#fa5a7d' }} />,
             title: 'Volunteers',
-            description: 'Manage Profiles',
+            description: volunteerloading ? <Button className='bg-transparent border-0' loading={volunteerloading}></Button> : volunteers?volunteers.length:0,
             bgcolor: '#ffe2e6'
-        },
+        },        
         {
             url: '/admin/branches',
             icon: <BranchesOutlined className='rounded-5 p-1' style={{ backgroundColor: '#fe947a' }} />,
             title: 'Branches',
-            description: 'Manage branches',
+            description: branchesloading ? <Button className='bg-transparent border-0'  loading={branchesloading}></Button>: branches?branches.length:0,
             bgcolor: '#fff4de'
         },
         {
             url: '/admin/events',
             icon: <InteractionOutlined className='rounded-5 p-1' style={{ backgroundColor: '#3cd856' }} />,
             title: 'Events',
-            description: 'View event data',
+            description: eventsloading ? <Button className='bg-transparent border-0' loading={eventsloading}></Button> : events?events.length:0,
             bgcolor: '#dcfce7'
         },
         {
             url: '/admin/achievements',
             icon: <StarOutlined className='rounded-5 p-1' style={{ backgroundColor: '#bf83ff' }} />,
             title: 'Achievements',
-            description: 'View achievements',
+            description: achievementsloading ? <Button className='bg-transparent border-0'  loading={achievementsloading}></Button> : achievements ?achievements.length:0,
             bgcolor: '#f4e8ff'
         }
     ];
@@ -97,19 +166,7 @@ const Dashboard = () => {
         },
     };
 
-    useEffect(() => {
-        const handleResize = () => {
-            if (vref.current) {
-                setBarWidth(vref.current.offsetWidth);
-            }
-        };
-
-        window.addEventListener('resize', handleResize);
-
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
+    
 
     return (
         <Layout style={{ marginTop: '70px', height: '100vh' }}>
@@ -151,7 +208,7 @@ const Dashboard = () => {
                                                     justifyContent: 'space-between',
                                                 }}
                                             >
-                                                <Meta title={<>{card.icon}<br /> <span>{card.title}</span></>} description={card.description} />
+                                                <Meta title={<>{card.icon}<br /> <span>{card.title}</span></>} description={<strong className='text-black' style={{fontSize:'20px'}}>{card.description}</strong>} />
                                             </Card>
                                         </Link>
                                     </Col>

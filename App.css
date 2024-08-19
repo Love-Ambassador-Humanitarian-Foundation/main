@@ -149,6 +149,15 @@
   animation: spin 1s linear infinite;
   margin: 20px auto; /* Center the spinner */
 }
+.spinnersmall {
+  border: 2px solid #f3f3f3; /* Light grey */
+  border-top: 2px solid #34356b; /* Blue */
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  animation: spin 1s linear infinite;
+  margin: 10px auto; /* Center the spinner */
+}
 
 /* Spinner animation */
 @keyframes spin {

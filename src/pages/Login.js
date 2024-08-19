@@ -33,8 +33,10 @@ const LoginPage = ({ API_URL }) => {
             message.success('Login successful');
             
         } catch (error) {
-            setError('Invalid credentials. Please try again.');
-            message.error('Invalid credentials. Please try again.');
+            console.log(error,'=============');
+            message.error(error.message);
+
+            
         } finally {
             setLoading(false);
         }
