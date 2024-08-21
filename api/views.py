@@ -25,7 +25,6 @@ from django.contrib.auth import login
 from django.conf import settings
 from django.db import connection
 
-
 NAME = 'LAHF'
 VERSION = '1.0.0'
 
@@ -736,3 +735,5 @@ class ReportView(APIView):
             'message': "The report type must be one of ['volunteer', 'events', 'loggedin']",
             'data': None
         }, status=status.HTTP_400_BAD_REQUEST)
+    
+    
