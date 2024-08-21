@@ -27,6 +27,7 @@ import 'swiper/css/pagination';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
 const LandingPage = ({API_URL}) => {
+    console.log(API_URL,'------')
     const [userDetails, setUserDetails] = useState(null);
 
     const isLoggedIn = useUpdateLoginStatus();
@@ -103,7 +104,6 @@ const LandingPage = ({API_URL}) => {
         setIsMobile(windowWidth < 768);
     };
     
-
     const images = [
         { img: img1 },
         { img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80' },

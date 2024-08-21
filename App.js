@@ -20,11 +20,10 @@ import AdminMain from './pages/AdminMain';
 //const Companyname = 'LAHF';
 const App = ({API_URL}) => {
   const [isloggedIn, SetLoggedIn] = useState(true);
-  //api to fetch token
-  //if token is valid, SetLoggedIn
-  const handleCancel = () => {
-    SetLoggedIn(true);
-};
+    //if token is valid, SetLoggedIn
+    const handleCancel = () => {
+        SetLoggedIn(true);
+    };
   useEffect(() => {
     handleCancel();
 
@@ -37,7 +36,8 @@ const App = ({API_URL}) => {
       window.removeEventListener('load', handleCancel);
     };
   }, []);
-  console.log(API_URL,'------')
+  
+  
   return (
     <Router>
         <Routes>
@@ -58,12 +58,10 @@ const App = ({API_URL}) => {
           <Route path="/admin/payments/:id" component={Users}  ></Route>
           <Route path="/admin/reportlog/:id" element={<Dashboard API_URL={API_URL} isloggedIn={isloggedIn}/>}  ></Route>
           <Route path="/admin/events/:id" component={Users}  ></Route>
+          
           {/* <Redirect from="/" to="/" /> */}
-          
           <Route component={NotFound}  ></Route>
-          
-        </Routes>
-        
+        </Routes>   
     </Router>
   );
 };
