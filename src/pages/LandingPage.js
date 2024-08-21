@@ -18,7 +18,6 @@ import axios from 'axios';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import img1 from '../assets/landing.jpg';
 
-
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
