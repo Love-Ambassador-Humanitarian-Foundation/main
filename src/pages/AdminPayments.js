@@ -4,12 +4,11 @@ import { Card, Table, Row, Col, theme,Button, message, Layout, Breadcrumb} from 
 import { DeleteOutlined, FilterOutlined, DollarOutlined, EditOutlined, HomeOutlined} from '@ant-design/icons';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { backendUrl } from '../utils/utils';
 import Payment from './AdminPaymentDetail';
 import { Link } from 'react-router-dom';
 const { Content} = Layout;
 
-const Payments = ({onSetContent}) => {
+const Payments = ({onSetContent, API_URL}) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const [payments, setPayments] = useState([]);
     const [filteredPayments, setFilteredPayments] = useState([]);
@@ -17,7 +16,7 @@ const Payments = ({onSetContent}) => {
     const [editpage,SetEditPage] = useState(false);
 
     useEffect(() => {
-        axios.get(`${backendUrl}/api/v1/payments`)
+        axios.get(`${API_URL}/api/payments`)
             .then(response => {
                 const fetchedPayments = response.data.data;
                 setPayments(fetchedPayments);
@@ -31,10 +30,10 @@ const Payments = ({onSetContent}) => {
                 setIsLoading(false);
                 message.error("There was an error fetching the payments!", 5);
             });
-    }, []);
+    }, [API_URL]);
 
     const deletePayment = (id) => {
-        axios.delete(`${backendUrl}/api/v1/payments/${id}`)
+        axios.delete(`${API_URL}/api/payments/${id}`)
             .then(response => {
                 const newPayments = payments.filter(payment => payment._id !== id);
                 setPayments(newPayments);

@@ -11,7 +11,7 @@ const LoginPage = ({ API_URL }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const redirectUrl = location.state?.redirectUrl || '/';
-
+    
     const handleSubmit = async (values) => {
         setLoading(true);
         setError('');
@@ -33,8 +33,8 @@ const LoginPage = ({ API_URL }) => {
             message.success('Login successful');
             
         } catch (error) {
-            console.log(error,'=============');
-            message.error(error.message);
+            console.log(error,'=============',API_URL);
+            message.error(error.response.data.message);
 
             
         } finally {

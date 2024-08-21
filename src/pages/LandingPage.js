@@ -116,7 +116,7 @@ const LandingPage = ({API_URL}) => {
         { title: 'Partners', description: '1k', color: 'green' },
         { title: 'Volunteers', description: '29', color: 'orange' },
         { title: 'Achievements', description: '3', color: '#04364a' },
-        { title: 'Seminars', description: '7', color: 'red' },
+        { title: 'Events', description: '7', color: 'red' },
         { title: 'Branches', description: '1', color: 'orangered' }
         // Add more achievements as needed
     ];

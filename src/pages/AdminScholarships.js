@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { backendUrl } from '../utils/utils';
 import { DeleteOutlined, HomeOutlined, EditOutlined,StarOutlined } from '@ant-design/icons';
 import { Card, Row, Col, Table, theme, Button, message, Layout, Breadcrumb } from 'antd';
 import { Link } from 'react-router-dom';
@@ -34,7 +33,7 @@ const Scholarships = ({ API_URL}) => {
     }, [API_URL]);
 
     const deleteScholarship = (id) => {
-        axios.delete(`${backendUrl}/api/v1/scholarships/${id}`)
+        axios.delete(`${API_URL}/api/scholarships/${id}`)
             .then(response => {
                 const newScholarships = scholarships.filter(scholarship => scholarship._id !== id);
                 setScholarships(newScholarships);

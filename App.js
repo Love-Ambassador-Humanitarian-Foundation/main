@@ -16,10 +16,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import AdminMain from './pages/AdminMain';
 
-const URL = 'https://loveahfoundation.org/api';
-const API_URL = URL; //'http://127.0.0.1:8000';
+
 //const Companyname = 'LAHF';
-const App = () => {
+const App = ({API_URL}) => {
   const [isloggedIn, SetLoggedIn] = useState(true);
   //api to fetch token
   //if token is valid, SetLoggedIn
@@ -38,6 +37,7 @@ const App = () => {
       window.removeEventListener('load', handleCancel);
     };
   }, []);
+  console.log(API_URL,'------')
   return (
     <Router>
         <Routes>
@@ -45,11 +45,11 @@ const App = () => {
           <Route path="/about" element={<AboutPage API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
           <Route path="/events" element={<EventsPage API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
           <Route path="/contribute" element={<ContributePage API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
-          <Route path="/contact" element={<ContactUsPage/>} exact ></Route>
-          <Route path="/login" element={<LoginPage/>} exact ></Route>
-          <Route path="/signup" element={<SignUpPage/>} exact ></Route>
+          <Route path="/contact" element={<ContactUsPage API_URL={API_URL} />} exact ></Route>
+          <Route path="/login" element={<LoginPage API_URL={API_URL} />} exact ></Route>
+          <Route path="/signup" element={<SignUpPage API_URL={API_URL} />} exact ></Route>
           <Route path="/profile/:userid" element={<Profile API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
-          <Route path="/payment/:variable" element={<PaymentPage/>} ></Route>
+          <Route path="/payment/:variable" element={<PaymentPage API_URL={API_URL} />} ></Route>
           <Route path="/admin/:id" element={<AdminMain API_URL={API_URL} isloggedIn={isloggedIn}/>} ></Route>
           <Route path="/admin/users/:id" component={Users} ></Route>
           <Route path="/admin/achievement/:id" component={Users}  ></Route>

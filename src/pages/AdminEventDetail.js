@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { Row, Col, Typography, Input, Upload, Button as AntButton, theme, message, Layout, Breadcrumb } from 'antd';
 import { Button } from '../components/button';
 import { useNavigate } from 'react-router-dom';
-import { backendUrl } from '../utils/utils';
 import { SaveOutlined, HomeOutlined, EditOutlined, CalendarOutlined, UploadOutlined  } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
 
-const Event = ({ item }) => {
+const Event = ({ item, API_URL }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     //const { eventDetails } = useParams();
     const [editpage, setEditPage] = useState(false);
@@ -98,7 +97,7 @@ const Event = ({ item }) => {
                                     {editpage ? (
                                         <Upload
                                             name="image"
-                                            action={`${backendUrl}/api/v1/upload`} // Update with your actual upload URL
+                                            action={`${API_URL}/api/upload`} // Update with your actual upload URL
                                             listType="picture"
                                             multiple={true}
                                             showUploadList={false}

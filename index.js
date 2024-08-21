@@ -5,9 +5,11 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+//const URL = 'https://loveahfoundation.org/api';
+const API_URL = 'http://127.0.0.1:8000';
 root.render(
   <React.StrictMode>
-    <App />
+    <App API_URL={API_URL} />
   </React.StrictMode>
 );
 

@@ -4,12 +4,11 @@ import { Card, Table, Row, Col, theme, Button, message, Layout, Breadcrumb } fro
 import { DeleteOutlined, FilterOutlined, BellOutlined, EditOutlined, HomeOutlined } from '@ant-design/icons';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { backendUrl } from '../utils/utils';
 import NotificationDetail from './AdminNotificationDetail'; // Assume you have this component
 import { Link } from 'react-router-dom';
 const { Content } = Layout;
 
-const Notifications = ({ onSetContent }) => {
+const Notifications = ({ onSetContent, API_URL }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const [notifications, setNotifications] = useState([]);
     const [filteredNotifications, setFilteredNotifications] = useState([]);
@@ -17,7 +16,7 @@ const Notifications = ({ onSetContent }) => {
     const [editpage, SetEditPage] = useState(false);
 
     useEffect(() => {
-        axios.get(`${backendUrl}/api/v1/notifications`)
+        axios.get(`${API_URL}/api/notifications`)
             .then(response => {
                 const fetchedNotifications = response.data.data;
                 setNotifications(fetchedNotifications);
@@ -29,10 +28,10 @@ const Notifications = ({ onSetContent }) => {
                 message.error("There was an error fetching the notifications!", 5);
                 setIsLoading(false);
             });
-    }, []);
+    }, [API_URL]);
 
     const deleteNotification = (id) => {
-        axios.delete(`${backendUrl}/api/v1/notifications/${id}`)
+        axios.delete(`${API_URL}/api/notifications/${id}`)
             .then(response => {
                 const newNotifications = notifications.filter(notification => notification._id !== id);
                 setNotifications(newNotifications);

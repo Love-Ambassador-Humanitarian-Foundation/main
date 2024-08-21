@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { backendUrl } from '../utils/utils';
 import { DeleteOutlined,HomeOutlined, EditOutlined,TeamOutlined} from '@ant-design/icons';
 import { Card, Table, Row, Col, theme, message, Layout, Breadcrumb, Button} from 'antd';
 import { Link } from 'react-router-dom';
 const { Content} = Layout;
 
-const Partners = ({onSetContent}) => {
+const Partners = ({onSetContent, API_URL}) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     
     const [editpage,SetEditPage] = useState(false);
@@ -17,7 +16,7 @@ const Partners = ({onSetContent}) => {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        axios.get(`${backendUrl}/api/v1/partners`)
+        axios.get(`${API_URL}/api/partners`)
             .then(response => {
                 const fetchedPartners = response.data.data;
                 setPartners(fetchedPartners);
@@ -31,10 +30,10 @@ const Partners = ({onSetContent}) => {
                 setIsLoading(false);
                 message.error("There was an error fetching the partners!", 5);
             });
-    }, []);
+    }, [API_URL]);
 
     const deletePartner = (id) => {
-        axios.delete(`${backendUrl}/api/v1/partners/${id}`)
+        axios.delete(`${API_URL}/api/partners/${id}`)
             .then(response => {
                 const newPartners = partners.filter(partner => partner._id !== id);
                 setPartners(newPartners);

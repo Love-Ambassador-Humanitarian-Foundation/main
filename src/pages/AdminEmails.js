@@ -4,12 +4,11 @@ import { Card, Table, Row, Col, theme, Button, message, Layout, Breadcrumb } fro
 import { DeleteOutlined, FilterOutlined, MailOutlined, EditOutlined, HomeOutlined } from '@ant-design/icons';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { backendUrl } from '../utils/utils';
 import EmailDetail from './AdminEmailDetail'; // Assume you have this component
 import { Link } from 'react-router-dom';
 const { Content } = Layout;
 
-const Emails = ({ onSetContent }) => {
+const Emails = ({ onSetContent, API_URL }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const [emails, setEmails] = useState([]);
     const [filteredEmails, setFilteredEmails] = useState([]);
@@ -17,7 +16,7 @@ const Emails = ({ onSetContent }) => {
     const [editpage, SetEditPage] = useState(false);
 
     useEffect(() => {
-        axios.get(`${backendUrl}/api/v1/emails`)
+        axios.get(`${API_URL}/api/emails`)
             .then(response => {
                 const fetchedEmails = response.data.data;
                 setEmails(fetchedEmails);
@@ -29,10 +28,10 @@ const Emails = ({ onSetContent }) => {
                 message.error("There was an error fetching the emails!", 5);
                 setIsLoading(false);
             });
-    }, []);
+    }, [API_URL]);
 
     const deleteEmail = (id) => {
-        axios.delete(`${backendUrl}/api/v1/emails/${id}`)
+        axios.delete(`${API_URL}/api/emails/${id}`)
             .then(response => {
                 const newEmails = emails.filter(email => email._id !== id);
                 setEmails(newEmails);

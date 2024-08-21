@@ -3,12 +3,11 @@ import { Row, Col, Typography, Input, Upload, Button as AntButton, theme, messag
 import { SaveOutlined, NotificationOutlined, UploadOutlined, EditOutlined, HomeOutlined } from '@ant-design/icons';
 import { Button } from '../components/button';
 import { useNavigate } from 'react-router-dom';
-import { backendUrl } from '../utils/utils';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
 
-const AdminNotificationDetail = () => {
+const AdminNotificationDetail = ({API_URL}) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const [editPage, setEditPage] = useState(false);
     const navigate = useNavigate();
@@ -86,7 +85,7 @@ const AdminNotificationDetail = () => {
                                     {editPage ? (
                                         <Upload
                                             name="avatar"
-                                            action={`${backendUrl}/api/v1/upload`} // Update with your actual upload URL
+                                            action={`$${API_URL}/api/upload`} // Update with your actual upload URL
                                             listType="picture"
                                             showUploadList={false}
                                             onChange={handleAvatarUpload}

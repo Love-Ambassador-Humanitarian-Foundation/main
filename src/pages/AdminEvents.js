@@ -3,13 +3,12 @@ import axios from 'axios';
 import { DeleteOutlined, HomeOutlined, EditOutlined, CalendarOutlined } from '@ant-design/icons';
 import { Card, Row, Col, Table, theme, Button, message, Layout, Breadcrumb } from 'antd';
 import FilterComponent from '../components/Filter';
-import { backendUrl } from '../utils/utils'; // Import backendUrl for the API endpoint
 import LoadingSpinner from '../components/LoadingSpinner';
 import { Link } from 'react-router-dom';
 
 const { Content } = Layout;
 
-const Events = ({ onSetContent }) => {
+const Events = ({ onSetContent, API_URL }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const [editPage, setEditPage] = useState(false);
     const [events, setEvents] = useState([]);
@@ -17,7 +16,7 @@ const Events = ({ onSetContent }) => {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        axios.get(`${backendUrl}/api/v1/events`)
+        axios.get(`${API_URL}/api/events`)
             .then(response => {
                 const fetchedEvents = response.data.data;
                 setEvents(fetchedEvents);
@@ -36,10 +35,10 @@ const Events = ({ onSetContent }) => {
                 setIsLoading(false);
                 message.warning("Using dummy data due to error fetching events", 5);
             });
-    }, []);
+    }, [API_URL]);
 
     const deleteEvent = (id) => {
-        axios.delete(`${backendUrl}/api/v1/events/${id}`)
+        axios.delete(`${API_URL}/api/events/${id}`)
             .then(response => {
                 const newEvents = events.filter(event => event._id !== id);
                 setEvents(newEvents);
