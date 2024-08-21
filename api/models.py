@@ -275,5 +275,3 @@ class Scholarship(models.Model):
         unit = duration_parts[1]
         expiry_date = self.organisation_signature_date + amount * duration_mapping[unit]
         return timezone.now().date() > expiry_date
-
-    

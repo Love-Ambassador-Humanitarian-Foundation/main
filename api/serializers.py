@@ -136,8 +136,9 @@ class ScholarshipSerializer(serializers.ModelSerializer):
         try:
             amount, unit = value.split()
             amount = int(amount)
-            valid_units = ['years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds']
+            valid_units = ['year', 'month', 'week', 'day', 'hour', 'minute', 'second','years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds']
             if unit not in valid_units:
+                print(unit,'===')
                 raise serializers.ValidationError("Invalid duration format.")
         except ValueError:
             raise serializers.ValidationError("Duration must be in the format 'amount unit', e.g., '1 year'.")
@@ -149,4 +150,3 @@ class ScholarshipSerializer(serializers.ModelSerializer):
         if sum(data[field] for field in education_fields) > 1:
             raise serializers.ValidationError("Only one of Nursery, Primary, Secondary, or Tertiary can be True.")
         return data
-    
