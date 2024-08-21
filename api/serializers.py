@@ -6,7 +6,7 @@ For more details, see the LICENSE file in the root of the repository."""
 
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import User, About, Partners, Event, Payments, Logs, Notification, Email
+from .models import User, About, Partners, Event, Payments, Logs, Notification, Email, Scholarship
 
 class UserSerializer(serializers.ModelSerializer):
     """
@@ -121,3 +121,32 @@ class EmailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Email
         fields = ['id', 'sender', 'recipient', 'subject', 'body', 'sent_at', 'read']
+
+class ScholarshipSerializer(serializers.ModelSerializer):
+    DATE_FORMAT = '%d/%m/%Y'
+    birthday = serializers.DateField(format=DATE_FORMAT, input_formats=[DATE_FORMAT])
+    organisation_signature_date = serializers.DateField(format=DATE_FORMAT, input_formats=[DATE_FORMAT])
+    candidate_signature_date = serializers.DateField(format=DATE_FORMAT, input_formats=[DATE_FORMAT])
+
+    class Meta:
+        model = Scholarship
+        fields = '__all__'
+
+    def validate_duration(self, value):
+        try:
+            amount, unit = value.split()
+            amount = int(amount)
+            valid_units = ['years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds']
+            if unit not in valid_units:
+                raise serializers.ValidationError("Invalid duration format.")
+        except ValueError:
+            raise serializers.ValidationError("Duration must be in the format 'amount unit', e.g., '1 year'.")
+        return value
+    
+    def validate(self, data):
+        # Ensure only one educational background field is True
+        education_fields = ['nursery', 'primary', 'secondary', 'tertiary']
+        if sum(data[field] for field in education_fields) > 1:
+            raise serializers.ValidationError("Only one of Nursery, Primary, Secondary, or Tertiary can be True.")
+        return data
+    

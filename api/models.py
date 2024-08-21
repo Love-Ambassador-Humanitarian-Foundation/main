@@ -4,16 +4,22 @@ This software is licensed under [Proprietary License].
 You may not modify, copy, or distribute this software without permission.
 For more details, see the LICENSE file in the root of the repository."""
 
+import uuid
+import re
 from django.db import models
+from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager, Group, Permission
 from django.db import models
-import uuid
+from .currencies import CURRENCY_CHOICES  # Import currency choices
+from datetime import datetime, timedelta
+
 
 # Define a more reasonable maximum length for char fields
-MAX_LENGTH = 255
+MAX_LENGTH = 2555
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -172,8 +178,8 @@ class Logs(models.Model):
 
 class Notification(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    recipient = models.CharField(max_length=255, blank=False, null=False)
-    message = models.CharField(max_length=255)
+    recipient = models.CharField(max_length=MAX_LENGTH, blank=False, null=False)
+    message = models.CharField(max_length=MAX_LENGTH)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -185,9 +191,9 @@ class Notification(models.Model):
 
 class Email(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    sender = models.CharField(max_length=255, blank=False, null=False)
-    recipient = models.CharField(max_length=255, blank=False, null=False)
-    subject = models.CharField(max_length=255, blank=False, null=False)
+    sender = models.CharField(max_length=MAX_LENGTH, blank=False, null=False)
+    recipient = models.CharField(max_length=MAX_LENGTH, blank=False, null=False)
+    subject = models.CharField(max_length=MAX_LENGTH, blank=False, null=False)
     body = models.TextField(blank=False, null=False)
     sent_at = models.DateTimeField(auto_now_add=True)
     read = models.BooleanField(default=False)
@@ -197,3 +203,77 @@ class Email(models.Model):
 
     class Meta:
         ordering = ['-sent_at', 'recipient']
+
+
+class Scholarship(models.Model):
+    # Class Level Choices
+    NURSERY = 'Nursery'
+    PRIMARY = 'Primary'
+    JSS = 'JSS'
+    SSS = 'SSS'
+    TERTIARY = 'Tertiary'
+    
+    CLASS_LEVEL_CHOICES = [
+        (NURSERY, 'Nursery'),
+        (PRIMARY, 'Primary'),
+        (JSS, 'Junior Secondary School'),
+        (SSS, 'Senior Secondary School'),
+        (TERTIARY, 'Tertiary'),
+    ]
+
+    # Personal Information
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    first_name = models.CharField(max_length=MAX_LENGTH)
+    middle_name = models.CharField(max_length=MAX_LENGTH, blank=True, null=True)
+    last_name = models.CharField(max_length=MAX_LENGTH)
+    profile_picture = models.TextField(blank=True, null=True)
+    birthday = models.DateField()
+    home_address = models.CharField(max_length=MAX_LENGTH)
+    email = models.EmailField(max_length=MAX_LENGTH)
+    phone_number = models.CharField(max_length=MAX_LENGTH)
+
+    # Guardian/Parent Information
+    guardian_parent_name = models.CharField(max_length=MAX_LENGTH)
+    guardian_parent_home_address = models.CharField(max_length=MAX_LENGTH)
+    guardian_parent_email = models.EmailField(max_length=MAX_LENGTH)
+    guardian_parent_phone_number = models.CharField(max_length=MAX_LENGTH)
+
+    # Educational Background
+    nursery = models.BooleanField(default=False)
+    primary = models.BooleanField(default=False)
+    secondary = models.BooleanField(default=False)
+    tertiary = models.BooleanField(default=False)
+    name_of_institution = models.CharField(max_length=MAX_LENGTH)
+    address_of_institution = models.CharField(max_length=MAX_LENGTH)
+    class_level = models.CharField(max_length=MAX_LENGTH, choices=CLASS_LEVEL_CHOICES)
+
+    # Scholarship Details
+    amount_approved = models.DecimalField(max_digits=MAX_LENGTH, decimal_places=2)
+    year = models.PositiveIntegerField()
+    currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='NGN')
+    duration = models.CharField(max_length=MAX_LENGTH)  # Duration as a string, e.g., "1 year", "6 months"
+    organisation_signature_date = models.DateField()
+    candidate_signature_date = models.DateField()
+    barcode  =  models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name} - {self.year}'
+    
+    @property
+    def is_expired(self):
+        duration_mapping = {
+            'years': timedelta(days=365),
+            'months': timedelta(days=30),
+            'weeks': timedelta(weeks=1),
+            'days': timedelta(days=1),
+            'hours': timedelta(hours=1),
+            'minutes': timedelta(minutes=1),
+            'seconds': timedelta(seconds=1),
+        }
+        duration_parts = self.duration.split()
+        amount = int(duration_parts[0])
+        unit = duration_parts[1]
+        expiry_date = self.organisation_signature_date + amount * duration_mapping[unit]
+        return timezone.now().date() > expiry_date
+
+    

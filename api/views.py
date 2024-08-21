@@ -11,14 +11,13 @@ from rest_framework.response import Response
 from rest_framework import status, generics
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from .models import User, About, Event, Partners, Payments, Logs, Notification, Email
+from .models import User, About, Event, Partners, Payments, Logs, Notification, Email, Scholarship
 from .serializers import (
     UserSerializer, AboutSerializer, EventSerializer,NotificationSerializer,EmailSerializer,
-    PartnersSerializer, PaymentsSerializer, LogsSerializer,UserRegistrationSerializer, UserLoginSerializer
+    PartnersSerializer, PaymentsSerializer, LogsSerializer,UserRegistrationSerializer, UserLoginSerializer, ScholarshipSerializer
 )
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.mail import send_mail
-from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
@@ -548,6 +547,87 @@ class EmailDetailView(generics.RetrieveUpdateDestroyAPIView):
             'message': 'Email deleted successfully'
         }, status=status.HTTP_204_NO_CONTENT)
 
+class ScholarshipListCreateView(generics.ListCreateAPIView):
+    queryset = Scholarship.objects.all()
+    serializer_class = ScholarshipSerializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({
+            'success': True,
+            'message': 'Scholarships retrieved successfully',
+            'data': serializer.data
+        })
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response({
+            'success': True,
+            'message': 'Scholarship created successfully',
+            'data': serializer.data
+        }, status=status.HTTP_201_CREATED, headers=headers)
+
+class ScholarshipListCreateView(generics.ListCreateAPIView):
+    queryset = Scholarship.objects.all()
+    serializer_class = ScholarshipSerializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response({
+            'success': True,
+            'message': 'Scholarships retrieved successfully',
+            'data': serializer.data
+        })
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response({
+            'success': True,
+            'message': 'Scholarship created successfully',
+            'data': serializer.data
+        }, status=status.HTTP_201_CREATED, headers=headers)
+
+class ScholarshipDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Scholarship.objects.all()
+    serializer_class = ScholarshipSerializer
+    lookup_field = 'id'
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response({
+            'success': True,
+            'message': 'Scholarship details retrieved successfully',
+            'data': serializer.data
+        })
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response({
+            'success': True,
+            'message': 'Scholarship updated successfully',
+            'data': serializer.data
+        })
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({
+            'success': True,
+            'message': 'Scholarship deleted successfully'
+        }, status=status.HTTP_204_NO_CONTENT)
+    
 class ReportView(APIView):
     months = {
         'Jan': 0,

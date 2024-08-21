@@ -50,6 +50,10 @@ urlpatterns = [
     path('emails', views.EmailListCreateView.as_view(), name='email-list-create'),
     path('emails/<uuid:id>', views.EmailDetailView.as_view(), name='email-detail'),
 
+    # Scholarship URLs
+    path('scholarships/', views.ScholarshipListCreateView.as_view(), name='scholarship-list-create'),
+    path('scholarships/<uuid:id>/', views.ScholarshipDetailView.as_view(), name='scholarship-detail'),
+    
     # ReportURLs
     path('reports/<str:rtype>', views.ReportView.as_view(), name='report-view'),
 
