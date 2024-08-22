@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Row, Col } from 'react-bootstrap';
-import { Modal,message, Card as AntCard} from 'antd';
+import { Modal, message, Card as AntCard} from 'antd';
 import LandingPageImg from '../assets/landingimg.jpg';
 import VolunteerImg from '../assets/volunteerimg.jpg';
 import { HeartFilled, BookFilled, ArrowRightOutlined, PlusOutlined} from '@ant-design/icons';
@@ -159,8 +159,6 @@ const LandingPage = ({API_URL}) => {
                 message.success(response.data.response.message)
             } catch (error) {
                 setIsLoading(false);
-                console.log(error.response.data.message)
-                message.error(error.response.data.message)
             }
         };
 
