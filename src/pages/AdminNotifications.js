@@ -8,7 +8,7 @@ import NotificationDetail from './AdminNotificationDetail'; // Assume you have t
 import { Link } from 'react-router-dom';
 const { Content } = Layout;
 
-const Notifications = ({ onSetContent, API_URL }) => {
+const Notifications = ({ onSetContent,API_URL  }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const [notifications, setNotifications] = useState([]);
     const [filteredNotifications, setFilteredNotifications] = useState([]);

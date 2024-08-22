@@ -7,7 +7,7 @@ import { SaveOutlined, HomeOutlined, EditOutlined, CalendarOutlined, UploadOutli
 const { Title, Text } = Typography;
 const { Content } = Layout;
 
-const Event = ({ item, API_URL }) => {
+const Event = ({ item,API_URL }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     //const { eventDetails } = useParams();
     const [editpage, setEditPage] = useState(false);

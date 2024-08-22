@@ -35,8 +35,8 @@ import EmailVerificationPage from './pages/EmailVerificationPage.js';
 import Registering from './pages/Registering.js';
 import UserProfilePage from './pages/Profile';
 
-const URL = 'https://loveahfoundation.org/api';
-const API_URL = URL; //'http://127.0.0.1:8000';
+//const URL = 'https://loveahfoundation.org/api';
+const API_URL = 'http://127.0.0.1:8000';
 const Companyname = 'LAHF';
 const App = () => {
   

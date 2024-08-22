@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 
 const { Content } = Layout;
 
-const Events = ({ onSetContent, API_URL }) => {
+const Events = ({ onSetContent,API_URL }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const [editPage, setEditPage] = useState(false);
     const [events, setEvents] = useState([]);

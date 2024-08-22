@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Row, Col, Typography, Input, Upload, Button as AntButton, theme, message,Layout,Breadcrumb } from 'antd';
 import { Button } from '../components/button';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom'
 import { SaveOutlined, TrophyOutlined, UploadOutlined , HomeOutlined, EditOutlined, StarOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const { Content} = Layout;
 
-const Scholarship = ({ item,API_URL }) => {
+const Scholarship = ({ item, API_URL }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const { achievementDetails } = useParams();
     console.log(achievementDetails + "==========");

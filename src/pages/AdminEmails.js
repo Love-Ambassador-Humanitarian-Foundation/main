@@ -8,7 +8,7 @@ import EmailDetail from './AdminEmailDetail'; // Assume you have this component
 import { Link } from 'react-router-dom';
 const { Content } = Layout;
 
-const Emails = ({ onSetContent, API_URL }) => {
+const Emails = ({ onSetContent,API_URL }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const [emails, setEmails] = useState([]);
     const [filteredEmails, setFilteredEmails] = useState([]);

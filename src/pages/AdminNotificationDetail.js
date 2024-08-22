@@ -85,7 +85,7 @@ const AdminNotificationDetail = ({API_URL}) => {
                                     {editPage ? (
                                         <Upload
                                             name="avatar"
-                                            action={`$${API_URL}/api/upload`} // Update with your actual upload URL
+                                            action={`${API_URL}/api/upload`} // Update with your actual upload URL
                                             listType="picture"
                                             showUploadList={false}
                                             onChange={handleAvatarUpload}

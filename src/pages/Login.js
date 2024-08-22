@@ -34,9 +34,7 @@ const LoginPage = ({ API_URL }) => {
             
         } catch (error) {
             console.log(error,'=============',API_URL);
-            message.error(error.response.data.message);
-
-            
+            message.error(error.response.data.message);     
         } finally {
             setLoading(false);
         }
