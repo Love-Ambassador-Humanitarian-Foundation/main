@@ -33,7 +33,7 @@ const LoginPage = ({ API_URL }) => {
             message.success('Login successful');
             
         } catch (error) {
-            console.log(error,'=============',API_URL);
+            console.log(error,'=============');
             message.error(error.response.data.message);     
         } finally {
             setLoading(false);

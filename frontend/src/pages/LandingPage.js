@@ -159,11 +159,11 @@ const LandingPage = ({API_URL}) => {
                 message.success(response.data.response.message)
             } catch (error) {
                 setIsLoading(false);
-                console.log(error);
-                try{
+                if (error.response){
+                    message.error(error.response.data.message);
+                }
+                else{
                     message.error(error.message);
-                }catch{
-                    message.error(error.response.data.response.message);
                 }   
             }
         };
