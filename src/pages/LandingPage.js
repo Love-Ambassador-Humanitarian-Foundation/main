@@ -159,6 +159,12 @@ const LandingPage = ({API_URL}) => {
                 message.success(response.data.response.message)
             } catch (error) {
                 setIsLoading(false);
+                console.log(error);
+                try{
+                    message.error(error.message);
+                }catch{
+                    message.error(error.response.data.response.message);
+                }   
             }
         };
 
@@ -192,7 +198,7 @@ const LandingPage = ({API_URL}) => {
             
             <Container className="py-5" style={{ zIndex: '1', position: 'absolute', top: '200px', left: '50%', transform: 'translate(-50%, -50%)' }}>
                 <div className="mt-5 mb-5"></div>
-                <h1 className="text-center text-white mb-4 mt-5">Welcome to Our {data.name}</h1>
+                <h1 className="text-center text-white mb-4 mt-5">Welcome to Our {data != null?data.name:'LAHF'}</h1>
                 <p className="text-center text-white mb-5">This is where we strive to create positive change and <br />support humanitarian causes around the globe.</p>
                 <div className="d-flex justify-content-center">
                     <Button to="/signup" text="Contribute" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
@@ -467,7 +473,7 @@ const LandingPage = ({API_URL}) => {
 
     
             </div>  
-        <Footer Companyname={data.name} /> {/* Include the footer component */}
+        <Footer Companyname={data != null?data.name:'LAHF'} /> {/* Include the footer component */}
     </>
   );
 };
