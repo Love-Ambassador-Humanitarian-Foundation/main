@@ -735,5 +735,3 @@ class ReportView(APIView):
             'message': "The report type must be one of ['volunteer', 'events', 'loggedin']",
             'data': None
         }, status=status.HTTP_400_BAD_REQUEST)
-    
-    
