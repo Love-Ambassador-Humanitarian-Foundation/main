@@ -152,8 +152,9 @@ const LandingPage = ({API_URL}) => {
         window.addEventListener('load', setHeights);
         const fetchData = async () => {
             try {
-                const response = await axios.get(API_URL + '/api/');
+                const response = await axios.get(API_URL + '/api/about');
                 setData(response.data.response);
+                console.log(response.data.response,'====')
                 setIsLoading(false);
             } catch (error) {
                 setIsLoading(false);
