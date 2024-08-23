@@ -34,7 +34,7 @@ class HomeView(APIView):
         data = {
             'success': 'true',
             'message': 'Welcome to ' + NAME + ' version ' + VERSION,
-            'response': {
+            'data': {
                 'name': NAME,
                 'version': VERSION
             }
@@ -47,14 +47,14 @@ class AboutAPIView(APIView):
         about = About.objects.first()
         if about:
             serializer = AboutSerializer(about)
-            return Response({'success': 'true', 'message': 'Retrieved the company details', 'response': serializer.data}, status=status.HTTP_200_OK)
+            return Response({'success': 'true', 'message': 'Retrieved the company details', 'data': serializer.data}, status=status.HTTP_200_OK)
         return Response({'success': 'false', 'message': 'No company details found'}, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
         serializer = AboutSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({'success': 'true', 'message': 'Company details created successfully', 'response': serializer.data}, status=status.HTTP_201_CREATED)
+            return Response({'success': 'true', 'message': 'Company details created successfully', 'data': serializer.data}, status=status.HTTP_201_CREATED)
         return Response({'success': 'false', 'message': 'Failed to create company details', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     def put(self, request):
         about = About.objects.first()
@@ -63,7 +63,7 @@ class AboutAPIView(APIView):
             if serializer.is_valid():
                 serializer.save()
 
-                return Response({'success': 'true', 'message': 'Event updated successfully', 'response': serializer.data}, status=status.HTTP_200_OK)
+                return Response({'success': 'true', 'message': 'Event updated successfully', 'data': serializer.data}, status=status.HTTP_200_OK)
             return Response({'success': 'false', 'message': 'Failed to update event', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'success': 'false', 'message': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -84,7 +84,7 @@ class EventAPIView(APIView):
         serializer = EventSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({'success': 'true', 'message': 'Event created successfully', 'response': serializer.data}, status=status.HTTP_201_CREATED)
+            return Response({'success': 'true', 'message': 'Event created successfully', 'data': serializer.data}, status=status.HTTP_201_CREATED)
         return Response({'success': 'false', 'message': 'Failed to create event', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     
 class EventDetailAPIView(APIView):
@@ -106,12 +106,12 @@ class EventDetailAPIView(APIView):
             event = self.get_object(id)
             if event:
                 serializer = EventSerializer(event)
-                return Response({'success': 'true', 'message': 'Event retrieved successfully', 'response': serializer.data}, status=status.HTTP_200_OK)
+                return Response({'success': 'true', 'message': 'Event retrieved successfully', 'data': serializer.data}, status=status.HTTP_200_OK)
         elif participant_id:
             events = self.get_objects_by_participant(participant_id)
             if events.exists():
                 serializer = EventSerializer(events, many=True)
-                return Response({'success': 'true', 'message': 'Events retrieved successfully', 'response': serializer.data}, status=status.HTTP_200_OK)
+                return Response({'success': 'true', 'message': 'Events retrieved successfully', 'data': serializer.data}, status=status.HTTP_200_OK)
         return Response({'success': 'false', 'message': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, id):
@@ -120,7 +120,7 @@ class EventDetailAPIView(APIView):
             serializer = EventSerializer(event, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
-                return Response({'success': 'true', 'message': 'Event updated successfully', 'response': serializer.data}, status=status.HTTP_200_OK)
+                return Response({'success': 'true', 'message': 'Event updated successfully', 'data': serializer.data}, status=status.HTTP_200_OK)
             return Response({'success': 'false', 'message': 'Failed to update event', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'success': 'false', 'message': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -697,11 +697,12 @@ class ReportView(APIView):
         recent_time_threshold = timezone.now() - timezone.timedelta(days=int(limit))
 
         # Fetch recently logged-in users
-        logged_in_users = User.objects.filter(last_login__gte=recent_time_threshold)
+        logged_in_users = User.objects.filter(last_login__gte=recent_time_threshold).order_by('-last_login')
 
         # Prepare the data with user details
         data = [
             {
+                'id': user.id,
                 'name': user.firstname+' '+user.lastname,  # Assuming User model has this method or property
                 'image': user.profileImage if user.profileImage else None,  # Assuming profile_image is a field in User model
                 'last_login': user.last_login.strftime('%Y-%m-%d %H:%M:%S')  # Formatting the last login timestamp
