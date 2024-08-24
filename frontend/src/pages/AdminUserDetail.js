@@ -10,7 +10,7 @@ import {
     WhatsAppOutlined,
     LinkedinOutlined
 } from '@ant-design/icons';
-import { Row, Col, Typography, Input, Button, message, Breadcrumb,Select, Avatar } from 'antd';
+import { Layout,Row, Col, Typography, Input, Button, message, Breadcrumb,Select, Avatar } from 'antd';
 import { countryCodes, fetchUserDetails, convertImageToBase64 } from '../utils/utils';
 import { useParams } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -23,7 +23,7 @@ dayjs.extend(buddhistEra);
 
 const { Option } = Select;
 const { Title, Text } = Typography;
-
+const { Content } = Layout;
 const User = ({ API_URL }) => {
     const { userId } = useParams();
     const [userDetails, setUserDetails] = useState(null);
@@ -115,7 +115,8 @@ const User = ({ API_URL }) => {
                 });
                 
                 console.log(response.data);
-                setEvents(response.data.data)
+                setEvents(response.data.data);
+                console.log(events)
             } catch (error) {
                 console.error('Error fetching event details:', error);
             } finally {
@@ -124,7 +125,7 @@ const User = ({ API_URL }) => {
         };
 
         fetchDetails();
-    }, [API_URL, userId]);
+    }, [API_URL, userId, events]);
 
     const handleInputChange = (e) => {
         const { id, value } = e.target;
@@ -300,14 +301,14 @@ const User = ({ API_URL }) => {
     }
 
     return (
-        <div className='mt-5 p-4 pt-5 bg-white '>
-            <div className='d-flex justify-content-between align-items-center p-2 mb-4' style={{ backgroundColor: '#d7d7e9' }}>
+        <Layout style={{ marginTop: '70px', height: '100vh' }}>
+            <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{ backgroundColor: '#d7d7e9', borderRadius: '4px' }}>
                 
                 <Breadcrumb>
                     <Breadcrumb.Item href="/">
                         <HomeOutlined />
                     </Breadcrumb.Item>
-                    <Breadcrumb.Item href='/#/admin/profiles' className='text-decoration-none'>
+                    <Breadcrumb.Item href='/#/admin/users' className='text-decoration-none'>
                         <UserOutlined />
                         <span>Users</span>
                     </Breadcrumb.Item>
@@ -317,120 +318,132 @@ const User = ({ API_URL }) => {
                 </Breadcrumb>
                 <EditOutlined onClick={() => setEditProfile(!editProfile)} style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
             </div>
-            <Row justify="center" align="middle" style={{ marginBottom: '30px' }}>
-                <Col xs={24} sm={12} md={12} lg={12} xl={12}>
-                    <div className='d-flex flex-column justify-content-between align-items-center ms-2 p-2' style={{ backgroundColor: '#d7d7e9' }}>
-                        <Avatar size={150} src={profileImage || "https://example.com/default-avatar.jpg"} />
-                        {editProfile && (
-                            <input type="file" accept="image/*" onChange={handleImageChange} />
-                        )}
-                        <div className='d-flex flex-column justify-content-left'>
-                            <Title level={3}>{firstname}, {lastname}</Title>
-                            <Text className='mb-1'>{status}--{position}</Text>
-                            <Text className='mb-2'>joined:{joined_date}</Text>
-                            <Text className='mb-2'>last login:{last_login}</Text>
-                        </div>
-                    </div>
-                    <div className='my-2'>
-                        <Text strong>FirstName: <input id="firstname" type="text" className="form-control" placeholder={firstname} value={firstname} onChange={handleInputChange} disabled={!editProfile} /></Text>
-                    </div>
-                    <div className='my-2'>
-                        <Text strong>LastName: <input id="lastname" type="text" className="form-control" placeholder={lastname} value={lastname} onChange={handleInputChange} disabled={!editProfile} /></Text>
-                    </div>
-                </Col>
-                <Col xs={24} sm={12} md={12} lg={12} xl={12}>
-                    <div className='d-flex flex-column justify-content-between ms-2'>
-                        
-                        <div className='my-2'>
-                            <Text strong>Email: <input id="email" type="email" className="form-control" placeholder={email} value={email} onChange={handleInputChange} disabled={!editProfile} /></Text>
-                        </div>
-                        <div className='my-2'>
-                            <Text strong>Phone Number: <Input addonBefore={selectBefore} id="phonenumber" placeholder={phoneNumber} value={phoneNumber} onChange={handleInputChange} disabled={!editProfile} /></Text>
-                        </div>
-                        <div className='my-2'>
-                            <Text strong>Address: <input id="address" type="text" className="form-control" placeholder={address} value={address} onChange={handleInputChange} disabled={!editProfile} /></Text>
-                        </div>
-                        <div className='my-2'>
-                            <Text strong>Position: <input id="position" type="text" className="form-control" placeholder={position} value={position} onChange={handleInputChange} disabled={!editProfile} /></Text>
-                        </div>
-                        <div className='my-2'>
-                            <Text strong>is Active: <Input addonBefore={activeBefore} id="is_active" placeholder={is_active} value={is_active} disabled={true} /></Text>
-                        </div>
-                        <div className='my-2'>
-                            <Text strong>is Staff: <Input addonBefore={staffBefore} id="is_staff" placeholder={is_staff} value={is_staff} disabled={true} /></Text>
-                        </div>
-                        <div className='my-2'>
-                            <Text strong>Date Joined: <DateTimeInput date={true} time={true} defaultValue={joined_date} onChange={joined_dateonChange} disabled={!editProfile} /></Text>
-                        </div>
-                        <div className='my-2'>
-                            <Text strong>Last Logged In: <DateTimeInput date={true} time={true} defaultValue={last_login} onChange={last_loginonChange} disabled={!editProfile} /></Text>
-                        </div>
-                    </div>
-                </Col>
-            </Row>
-            <Row justify="center" align="middle" style={{ marginBottom: '20px' }}>
-                <Col span={24}>
-                    <Row justify="center" className='p-0 m-0' gutter={[2, 8]}>
-                        <Col xs={24} sm={24} md={8}>
-                            <div className='mx-2'>
-                                <FacebookOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#1877F2' }}/>
-                                <input id="facebook" type="text" className="form-control" placeholder="Facebook" value={facebook} onChange={handleInputChange} disabled={!editProfile} />
-                            </div>
-                        </Col>
-                        <Col xs={24} sm={24} md={8}>
-                            <div className='mx-2'>
-                                <InstagramOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#E4405F' }}/>
-                                <input id="instagram" type="text" className="form-control" placeholder="Instagram" value={instagram} onChange={handleInputChange} disabled={!editProfile} />
-                            </div>
-                        </Col>
-                        <Col xs={24} sm={24} md={8}>
-                            <div className='mx-2'>
-                                <TwitterOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#1DA1F2' }}/>
-                                <input id="twitter" type="text" className="form-control" placeholder="Twitter" value={twitter} onChange={handleInputChange} disabled={!editProfile} />
-                            </div>
-                        </Col>
-                        <Col xs={24} sm={24} md={8}>
-                            <div className='mx-2'>
-                                <LinkedinOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#0077B5' }}/>
-                                <input id="linkedln" type="text" className="form-control" placeholder="LinkedIn" value={linkedIn} onChange={handleInputChange} disabled={!editProfile} />
-                            </div>
-                        </Col>
-                        <Col xs={24} sm={24} md={8}>
-                            <div className='mx-2'>
-                                <WhatsAppOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#25D366' }} />
-                                <input id="whatsapp" type="text" className="form-control" placeholder="WhatsApp" value={whatsapp} onChange={handleInputChange} disabled={!editProfile} />
-                            </div>
-                        </Col>
-                    </Row>
-                </Col>
-            </Row>
-            {editProfile && (
-                <Row justify="center">
-                    <Col>
-                        <Button type="primary" icon={<SaveOutlined />} htmlType="submit" onClick={saveEdit} loading={loading} style={{ width: '100%' }}>
-                            {loading ? 'Saving...' : 'Save Changes'}
-                        </Button>
-                    </Col>
-                </Row>
-            )}
-            <Text strong>Events:</Text>
-            <Row justify="center" align="middle" style={{ marginBottom: '20px' }}>
-            {events.map((event, index) => (
-                <Col xs={24} sm={24} md={8} key={index}>
-                    <div >{event.title}</div>
-                    <Row justify="center" className='p-0 m-0' gutter={[2, 8]}>
-                        {event.content.map((content, contentIndex) => (
-                            <Col xs={24} sm={24} md={24} key={contentIndex}>
-                                <div className='mx-2'>
-                                    <Text className="form-control">{content.name} - {content.date}</Text>
+            <Content className='m-2'>
+                <div
+                    style={{
+                        padding: 12,
+                        minHeight: 360,
+                        background: '#fff',
+                        borderRadius: '4px',
+                        height: 'calc(100vh - 140px)'
+                    }}
+                >
+                    <Row justify="center" align="middle" style={{ marginBottom: '30px' }}>
+                        <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+                            <div className='d-flex flex-column justify-content-between align-items-center ms-2 p-2' style={{ backgroundColor: '#d7d7e9' }}>
+                                <Avatar size={150} src={profileImage || "https://example.com/default-avatar.jpg"} />
+                                {editProfile && (
+                                    <input type="file" accept="image/*" onChange={handleImageChange} />
+                                )}
+                                <div className='d-flex flex-column justify-content-left'>
+                                    <Title level={3}>{firstname}, {lastname}</Title>
+                                    <Text className='mb-1'>{status}--{position}</Text>
+                                    <Text className='mb-2'>joined:{joined_date}</Text>
+                                    <Text className='mb-2'>last login:{last_login}</Text>
                                 </div>
-                            </Col>
-                        ))}
+                            </div>
+                            <div className='my-2'>
+                                <Text strong>FirstName: <input id="firstname" type="text" className="form-control" placeholder={firstname} value={firstname} onChange={handleInputChange} disabled={!editProfile} /></Text>
+                            </div>
+                            <div className='my-2'>
+                                <Text strong>LastName: <input id="lastname" type="text" className="form-control" placeholder={lastname} value={lastname} onChange={handleInputChange} disabled={!editProfile} /></Text>
+                            </div>
+                        </Col>
+                        <Col xs={24} sm={12} md={12} lg={12} xl={12}>
+                            <div className='d-flex flex-column justify-content-between ms-2'>
+                                
+                                <div className='my-2'>
+                                    <Text strong>Email: <input id="email" type="email" className="form-control" placeholder={email} value={email} onChange={handleInputChange} disabled={!editProfile} /></Text>
+                                </div>
+                                <div className='my-2'>
+                                    <Text strong>Phone Number: <Input addonBefore={selectBefore} id="phonenumber" placeholder={phoneNumber} value={phoneNumber} onChange={handleInputChange} disabled={!editProfile} /></Text>
+                                </div>
+                                <div className='my-2'>
+                                    <Text strong>Address: <input id="address" type="text" className="form-control" placeholder={address} value={address} onChange={handleInputChange} disabled={!editProfile} /></Text>
+                                </div>
+                                <div className='my-2'>
+                                    <Text strong>Position: <input id="position" type="text" className="form-control" placeholder={position} value={position} onChange={handleInputChange} disabled={!editProfile} /></Text>
+                                </div>
+                                <div className='my-2'>
+                                    <Text strong>is Active: <Input addonBefore={activeBefore} id="is_active" placeholder={is_active} value={is_active} disabled={true} /></Text>
+                                </div>
+                                <div className='my-2'>
+                                    <Text strong>is Staff: <Input addonBefore={staffBefore} id="is_staff" placeholder={is_staff} value={is_staff} disabled={true} /></Text>
+                                </div>
+                                <div className='my-2'>
+                                    <Text strong>Date Joined: <DateTimeInput date={true} time={true} defaultValue={joined_date} onChange={joined_dateonChange} disabled={!editProfile} /></Text>
+                                </div>
+                                <div className='my-2'>
+                                    <Text strong>Last Logged In: <DateTimeInput date={true} time={true} defaultValue={last_login} onChange={last_loginonChange} disabled={!editProfile} /></Text>
+                                </div>
+                            </div>
+                        </Col>
                     </Row>
-                </Col>
-            ))}
-            </Row>
-        </div>
+                    <Row justify="center" align="middle" style={{ marginBottom: '20px' }}>
+                        <Col span={24}>
+                            <Row justify="center" className='p-0 m-0' gutter={[2, 8]}>
+                                <Col xs={24} sm={24} md={8}>
+                                    <div className='mx-2'>
+                                        <FacebookOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#1877F2' }}/>
+                                        <input id="facebook" type="text" className="form-control" placeholder="Facebook" value={facebook} onChange={handleInputChange} disabled={!editProfile} />
+                                    </div>
+                                </Col>
+                                <Col xs={24} sm={24} md={8}>
+                                    <div className='mx-2'>
+                                        <InstagramOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#E4405F' }}/>
+                                        <input id="instagram" type="text" className="form-control" placeholder="Instagram" value={instagram} onChange={handleInputChange} disabled={!editProfile} />
+                                    </div>
+                                </Col>
+                                <Col xs={24} sm={24} md={8}>
+                                    <div className='mx-2'>
+                                        <TwitterOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#1DA1F2' }}/>
+                                        <input id="twitter" type="text" className="form-control" placeholder="Twitter" value={twitter} onChange={handleInputChange} disabled={!editProfile} />
+                                    </div>
+                                </Col>
+                                <Col xs={24} sm={24} md={8}>
+                                    <div className='mx-2'>
+                                        <LinkedinOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#0077B5' }}/>
+                                        <input id="linkedln" type="text" className="form-control" placeholder="LinkedIn" value={linkedIn} onChange={handleInputChange} disabled={!editProfile} />
+                                    </div>
+                                </Col>
+                                <Col xs={24} sm={24} md={8}>
+                                    <div className='mx-2'>
+                                        <WhatsAppOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#25D366' }} />
+                                        <input id="whatsapp" type="text" className="form-control" placeholder="WhatsApp" value={whatsapp} onChange={handleInputChange} disabled={!editProfile} />
+                                    </div>
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
+                    {editProfile && (
+                        <Row justify="center">
+                            <Col>
+                                <Button type="primary" className='text-white' icon={<SaveOutlined className='text-white'/>} htmlType="submit" onClick={saveEdit} loading={loading} style={{ width: '100%' }}>
+                                    {loading ? 'Saving...' : 'Save Changes'}
+                                </Button>
+                            </Col>
+                        </Row>
+                    )}
+                    {/* <Text strong>Events:</Text>
+                    <Row justify="center" align="middle" style={{ marginBottom: '20px' }}>
+                    {events.map((event, index) => (
+                        <Col xs={24} sm={24} md={8} key={index}>
+                            <div >{event.title}</div>
+                            <Row justify="center" className='p-0 m-0' gutter={[2, 8]}>
+                                {event.content.map((content, contentIndex) => (
+                                    <Col xs={24} sm={24} md={24} key={contentIndex}>
+                                        <div className='mx-2'>
+                                            <Text className="form-control">{content.name} - {content.date}</Text>
+                                        </div>
+                                    </Col>
+                                ))}
+                            </Row>
+                        </Col>
+                    ))}
+                    </Row> */}
+                </div>
+            </Content>
+        </Layout>  
     );
 };
 

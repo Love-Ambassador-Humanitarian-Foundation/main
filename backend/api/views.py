@@ -78,7 +78,7 @@ class EventAPIView(APIView):
     def get(self, request):
         events = Event.objects.all()
         serializer = EventSerializer(events, many=True)
-        return Response({'success': 'true', 'message': 'Retrieved all events', 'response': serializer.data}, status=status.HTTP_200_OK)
+        return Response({'success': 'true', 'message': 'Retrieved all events', 'data': serializer.data}, status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = EventSerializer(data=request.data)
@@ -682,7 +682,7 @@ class ReportView(APIView):
 
         # Convert the report data into a list of dictionaries for better readability
         data = [{'month': month, 'count': count} for month, count in monthly_report.items()]
-
+        
         return Response({
             'success': True,
             'message': 'Events report retrieved successfully',

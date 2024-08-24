@@ -4,18 +4,20 @@ This software is licensed under [Proprietary License].
 You may not modify, copy, or distribute this software without permission.
 For more details, see the LICENSE file in the root of the repository."""
 
-import uuid
-import re
+from io import BytesIO
+
+from datetime import datetime, timedelta
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager, Group, Permission
-from django.db import models
 from .currencies import CURRENCY_CHOICES  # Import currency choices
-from datetime import datetime, timedelta
-
+from PIL import Image
+import uuid
+import qrcode
+import base64
 
 # Define a more reasonable maximum length for char fields
 MAX_LENGTH = 2555
@@ -252,15 +254,80 @@ class Scholarship(models.Model):
     year = models.PositiveIntegerField()
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='NGN')
     duration = models.CharField(max_length=MAX_LENGTH)  # Duration as a string, e.g., "1 year", "6 months"
+
+    organisation_approved = models.BooleanField(default=False)
     organisation_signature_date = models.DateField()
     candidate_signature_date = models.DateField()
-    barcode  =  models.TextField(blank=True, null=True)
+    qrcode  =  models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name} - {self.year}'
     
+    def save(self, *args, **kwargs):
+        if not self.qrcode:
+            self.qrcode = self.generate_qr_code()
+        super().save(*args, **kwargs)
+
+    
+
+    def generate_qr_code(self):
+        """
+        Generates a QR code for the scholarship instance using its ID, encodes the QR code image in base64, and returns it.
+
+        The generated QR code is based on the scholarship ID encoded in a URL that can be used to view the 
+        scholarship details. The QR code is generated using the `qrcode` library and customized with specific dimensions.
+
+        Returns:
+            str: A base64-encoded string representing the QR code image.
+        """
+        # Generate QR code using the scholarship ID encoded in a URL
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(f'http://localhost:3000/#/admin/scholarships/{self.id}')
+        qr.make(fit=True)
+
+        # Create an image of the QR code
+        img = qr.make_image(fill='black', back_color='white')
+        # Load the logo image
+        logo = Image.open('./api/logo.jpg')
+
+        # Ensure the logo has a white background (in case of transparency)
+        logo = logo.convert("RGBA")
+        white_background = Image.new("RGBA", logo.size, "WHITE")
+        logo = Image.alpha_composite(white_background, logo).convert("RGBA")
+
+        # Calculate the logo size relative to the QR code
+        logo_size = int(min(img.size) / 4)
+
+        # Resize the logo
+        logo = logo.resize((logo_size, logo_size))
+
+        # Calculate the position to place the logo at the center
+        logo_position = (
+            (img.size[0] - logo_size) // 2,
+            (img.size[1] - logo_size) // 2
+        )
+
+        # Paste the logo image onto the QR code, with a mask to handle transparency
+        img.paste(logo, logo_position, mask=logo)
+        # Save to memory
+        buffer = BytesIO()
+        img.save(buffer, format='PNG')
+
+        # Encode the image to base64 to store as text
+        qr_code_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+        return qr_code_base64
+
+    
     @property
     def is_expired(self):
+        """
+        calculating is exprired.
+        """
         duration_mapping = {
             'years': timedelta(days=365),
             'months': timedelta(days=30),

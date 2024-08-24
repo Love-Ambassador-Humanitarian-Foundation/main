@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { DeleteOutlined, HomeOutlined, EditOutlined,StarOutlined } from '@ant-design/icons';
+import { DeleteOutlined, HomeOutlined, PlusOutlined, SolutionOutlined } from '@ant-design/icons';
 import { Card, Row, Col, Table, theme, Button, message, Layout, Breadcrumb } from 'antd';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 const { Content } = Layout;
 
-const Scholarships = ({ API_URL}) => {
+const Scholarships = ({ API_URL }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
+    const navigate = useNavigate();
 
-    const [isEditPage, setIsEditPage] = useState(false);
     const [scholarships, setScholarships] = useState([]);
     const [filteredScholarships, setFilteredScholarships] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -26,8 +27,6 @@ const Scholarships = ({ API_URL}) => {
             .catch(error => {
                 console.error("There was an error fetching the scholarships!", error);
                 setIsLoading(false);
-                setScholarships([{ _id: '53545', name: "Sample Scholarship", date: '2022-01-03', picture: 'url/to/sample.jpg' }]);
-                setFilteredScholarships([{ _id: '53545', name: "Sample Scholarship", date: '2022-01-03', picture: 'url/to/sample.jpg' }]);
                 message.error("There was an error fetching the scholarships!", 5);
             });
     }, [API_URL]);
@@ -35,51 +34,65 @@ const Scholarships = ({ API_URL}) => {
     const deleteScholarship = (id) => {
         axios.delete(`${API_URL}/api/scholarships/${id}`)
             .then(response => {
-                const newScholarships = scholarships.filter(scholarship => scholarship._id !== id);
+                const newScholarships = scholarships.filter(scholarship => scholarship.id !== id);
                 setScholarships(newScholarships);
                 setFilteredScholarships(newScholarships);
                 message.success("Scholarship deleted successfully!", 5);
             })
             .catch(error => {
-                console.error("There was an error deleting the scholarship!", error);
+                console.error("There was an error deleting the scholarship!", error.response);
                 message.error("There was an error deleting the scholarship!", 5);
             });
     };
 
+    const handleRowClick = (record) => {
+        navigate(`/admin/scholarships/${record.id}`);
+    };
+
     const columns = [
         {
-            title: 'Picture',
-            dataIndex: 'picture',
-            key: 'picture',
-            render: (url) => (
-                <img src={url} alt="scholarship" style={{ width: 50, height: 50 }} />
+            title: 'First Name',
+            dataIndex: 'first_name',
+            key: 'first_name',
+        },
+        {
+            title: 'Last Name',
+            dataIndex: 'last_name',
+            key: 'last_name',
+        },
+        {
+            title: 'Organisation Approved',
+            dataIndex: 'organisation_approved',
+            key: 'organisation_approved',
+            render: (approved) => (
+                <span>{approved ? <span className='text-success'>Approved</span> : 'Not Approved'}</span>
             ),
         },
         {
-            title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
-            render: (text, record) => (
-                <Link to={`/admin/scholarships/${record._id}`} className='text-decoration-none'>
-                    <Button
-                        type="primary"
-                         className='text-white'
-                    >
-                        {record.name}
-                    </Button>
-                </Link>
+            title: 'Class Level',
+            dataIndex: 'class_level',
+            key: 'class_level',
+        },
+        {
+            title: 'Amount',
+            dataIndex: 'amount_approved',
+            key: 'amount_approved',
+            render: (amount, record) => (
+                <span>{record.currency} {amount}</span>
             ),
         },
         {
-            title: 'Date',
-            dataIndex: 'date',
-            key: 'date',
-            render: (text) => new Date(text).toLocaleDateString(),
+            title: 'Year',
+            dataIndex: 'year',
+            key: 'year',
         },
         {
             key: 'actions',
             render: (text, record) => (
-                <Button type="primary" icon={<DeleteOutlined className='text-white' />} onClick={() => deleteScholarship(record._id)} />
+                <Button type="primary" icon={<DeleteOutlined className='text-white' />} onClick={(e) => {
+                    e.stopPropagation(); // Prevent triggering row click
+                    deleteScholarship(record._id);
+                }} />
             ),
         },
     ];
@@ -89,14 +102,14 @@ const Scholarships = ({ API_URL}) => {
 
         if (itemName) {
             filtered = filtered.filter(scholarship =>
-                scholarship.name.toLowerCase().includes(itemName.toLowerCase())
+                (scholarship.first_name + ' ' + scholarship.last_name).toLowerCase().includes(itemName.toLowerCase())
             );
         }
 
         if (dateRange && dateRange.length === 2) {
             filtered = filtered.filter(scholarship => {
-                const scholarshipDate = new Date(scholarship.date);
-                return scholarshipDate >= dateRange[0] && scholarshipDate <= dateRange[1];
+                const scholarshipDate = new Date(scholarship.year);
+                return scholarshipDate >= dateRange[0] && dateRange[1] >= scholarshipDate;
             });
         }
 
@@ -113,10 +126,10 @@ const Scholarships = ({ API_URL}) => {
                 <Breadcrumb
                     items={[
                         { href: '/', title: <HomeOutlined /> },
-                        { title: (<><StarOutlined /><span>Scholarships</span></>) },
+                        { title: (<><SolutionOutlined /><span>Scholarships</span></>) },
                     ]}
                 />
-                <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={() => setIsEditPage(!isEditPage)} />
+                <PlusOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
             </div>
             <Content className='m-2'>
                 <div
@@ -136,9 +149,12 @@ const Scholarships = ({ API_URL}) => {
                                     <Table
                                         dataSource={filteredScholarships}
                                         columns={columns}
-                                        pagination={true}
-                                        rowClassName="editable-row"
+                                        pagination={{pageSize: 10 }}
+                                        rowClassName="clickable-row"
                                         scroll={{ x: 'max-content' }}
+                                        onRow={(record) => ({
+                                            onClick: () => handleRowClick(record),
+                                        })}
                                     />
                                 </Card>
                             </Col>

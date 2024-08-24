@@ -1,4 +1,33 @@
 import axios from 'axios';
+import jsQR from 'jsqr';
+
+/**
+ * Decodes QR code from an image URL or base64 string.
+ * @param {string} imageSrc - The URL or base64 string of the QR code image.
+ * @returns {Promise<string>} - The decoded text from the QR code.
+ */
+
+export const decodeQRCode = async (imageSrc) => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = imageSrc;
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            context.drawImage(img, 0, 0, img.width, img.height);
+            const imageData = context.getImageData(0, 0, img.width, img.height);
+            const code = jsQR(imageData.data, img.width, img.height);
+            if (code) {
+                resolve(code.data);
+            } else {
+                reject('QR code not detected');
+            }
+        };
+        img.onerror = (error) => reject(error);
+    });
+};
 
 export const countryCodes = [
     {
@@ -918,6 +947,7 @@ export const countryCodes = [
       name: "Zimbabwe"
     }
 ];
+
 export const fetchUserDetails = async (API_URL,userId) => {
   const token = localStorage.getItem('lahf_access_token');
   const id = userId || localStorage.getItem('lahf_user_id');
@@ -929,14 +959,12 @@ export const fetchUserDetails = async (API_URL,userId) => {
               'Authorization': `Bearer ${token}`
           }
       });
-      console.log(response.data.data,'====')
       return response.data.data;
   } catch (error) {
       console.error('Error fetching user details:', error);
       return null;
   }
 };
-
 
 export const convertImageToBase64 = (file) => {
   return new Promise((resolve, reject) => {
@@ -947,6 +975,7 @@ export const convertImageToBase64 = (file) => {
   });
   
 };
+
 export const convertVideoToBase64 = (file) => {
   return new Promise((resolve, reject) => {
       const reader = new FileReader();

@@ -5,7 +5,8 @@ import {
 } from '@ant-design/icons';
 import axios from 'axios';
 import LoadingSpinner from '../components/LoadingSpinner';
-import {Typography, Input, Button, Form, message,
+import {
+    Typography, Input, Button, Form, message,
     Layout, Breadcrumb, Avatar
 } from 'antd';
 import { convertImageToBase64 } from '../utils/utils';
@@ -47,14 +48,16 @@ const About = ({ API_URL }) => {
         const fetchAboutData = async () => {
             try {
                 const response = await axios.get(`${API_URL}/api/about`);
-                setAboutData(response.data.response);
-                form.setFieldsValue(response.data.response);
+                setAboutData(response.data.data);
+                form.setFieldsValue(response.data.data);
             } catch (error) {
                 console.error('Error fetching the about data:', error);
+                message.error('Error fetching the about data.');
+            } finally {
+                setIsLoading(false);
             }
         };
         fetchAboutData();
-        setIsLoading(false);
     }, [API_URL, form]);
 
     const handleLogoChange = async (e) => {
@@ -66,6 +69,7 @@ const About = ({ API_URL }) => {
                 form.setFieldsValue({ logo: base64 });
             } catch (error) {
                 console.error('Error converting file to Base64:', error);
+                message.error('Error converting image.');
             }
         }
     };
@@ -74,28 +78,31 @@ const About = ({ API_URL }) => {
         setLoading(true);
         const token = localStorage.getItem('lahf_access_token');
         try {
-            if (aboutData.id) {
-                await axios.put(`${API_URL}/api/about`, values, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
+            const headers = {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            };
+            if (aboutData._id) {
+                await axios.put(`${API_URL}/api/about/${aboutData._id}`, values, { headers });
             } else {
-                await axios.post(`${API_URL}/api/about`, values, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
+                await axios.post(`${API_URL}/api/about`, values, { headers });
             }
+            setAboutData(values);
             setEditAbout(false);
-            message.success('About data has been saved successfully!');
+            message.success('About data saved successfully!');
         } catch (error) {
             console.error('Error saving about data:', error);
             message.error('Failed to save about data.');
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
+    };
+
+    const validatePhoneNumber = (_, value) => {
+        if (!value || /^\d{10,15}$/.test(value)) {
+            return Promise.resolve();
+        }
+        return Promise.reject(new Error('Invalid phone number!'));
     };
 
     if (isLoading) {
@@ -111,7 +118,10 @@ const About = ({ API_URL }) => {
                         { title: (<><InfoCircleOutlined /><span>About</span></>) },
                     ]}
                 />
-                <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={() => setEditAbout(!editAbout)} />
+                <EditOutlined
+                    style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }}
+                    onClick={() => setEditAbout(!editAbout)}
+                />
             </div>
             <Content className='m-2'>
                 <div
@@ -136,34 +146,84 @@ const About = ({ API_URL }) => {
                                     <input type="file" accept="image/*" className='mt-2' onChange={handleLogoChange} />
                                 )}
                             </Form.Item>
-                            <Form.Item label="Company Name" name="company_name">
+                            <Form.Item
+                                label="Company Name"
+                                name="company_name"
+                                rules={[{ required: true, message: 'Please enter the company name' }]}
+                            >
                                 <Input placeholder="Enter Company Name" disabled={!editAbout} />
                             </Form.Item>
-                            <Form.Item label="Story" name="story">
+                            <Form.Item
+                                label="Story"
+                                name="story"
+                                rules={[{ required: true, message: 'Please enter the company story' }]}
+                            >
                                 <Input.TextArea rows={4} placeholder="Enter Company Story" disabled={!editAbout} />
                             </Form.Item>
-                            <Form.Item label="Phone Number" name="phonenumber">
+                            <Form.Item
+                                label="Phone Number"
+                                name="phonenumber"
+                                rules={[
+                                    { required: true, message: 'Please enter the phone number' },
+                                    { validator: validatePhoneNumber }
+                                ]}
+                            >
                                 <Input placeholder="Enter Phone Number" disabled={!editAbout} />
                             </Form.Item>
-                            <Form.Item label="Email One" name="emailone">
+                            <Form.Item
+                                label="Email One"
+                                name="emailone"
+                                rules={[
+                                    { required: true, message: 'Please enter the first email' },
+                                    { type: 'email', message: 'Please enter a valid email' }
+                                ]}
+                            >
                                 <Input placeholder="Enter Email One" disabled={!editAbout} />
                             </Form.Item>
-                            <Form.Item label="Email Two" name="emailtwo">
+                            <Form.Item
+                                label="Email Two"
+                                name="emailtwo"
+                                rules={[
+                                    { type: 'email', message: 'Please enter a valid email' }
+                                ]}
+                            >
                                 <Input placeholder="Enter Email Two" disabled={!editAbout} />
                             </Form.Item>
-                            <Form.Item label="Email Three" name="emailthree">
+                            <Form.Item
+                                label="Email Three"
+                                name="emailthree"
+                                rules={[
+                                    { type: 'email', message: 'Please enter a valid email' }
+                                ]}
+                            >
                                 <Input placeholder="Enter Email Three" disabled={!editAbout} />
                             </Form.Item>
-                            <Form.Item label="Address" name="address">
+                            <Form.Item
+                                label="Address"
+                                name="address"
+                                rules={[{ required: true, message: 'Please enter the address' }]}
+                            >
                                 <Input placeholder="Enter Address" disabled={!editAbout} />
                             </Form.Item>
-                            <Form.Item label="Mission" name="mission">
+                            <Form.Item
+                                label="Mission"
+                                name="mission"
+                                rules={[{ required: true, message: 'Please enter the mission statement' }]}
+                            >
                                 <Input.TextArea rows={4} placeholder="Enter Mission Statement" disabled={!editAbout} />
                             </Form.Item>
-                            <Form.Item label="Values" name="values">
+                            <Form.Item
+                                label="Values"
+                                name="values"
+                                rules={[{ required: true, message: 'Please enter the company values' }]}
+                            >
                                 <Input.TextArea rows={4} placeholder="Enter Company Values" disabled={!editAbout} />
                             </Form.Item>
-                            <Form.Item label="Policies" name="policies">
+                            <Form.Item
+                                label="Policies"
+                                name="policies"
+                                rules={[{ required: true, message: 'Please enter the policies' }]}
+                            >
                                 <Input.TextArea rows={4} placeholder="Enter Policies" disabled={!editAbout} />
                             </Form.Item>
                             <Form.Item label="Facebook" name={['socials', 'facebook']}>
@@ -175,7 +235,7 @@ const About = ({ API_URL }) => {
                             <Form.Item label="Instagram" name={['socials', 'instagram']}>
                                 <Input placeholder="Enter Instagram URL" disabled={!editAbout} />
                             </Form.Item>
-                            <Text>Branches</Text>
+                            <Text>Branches: {aboutData.branches.length}</Text>
                             <Form.List name="branches">
                                 {(fields, { add, remove }) => (
                                     <>
@@ -185,7 +245,7 @@ const About = ({ API_URL }) => {
                                                     {...restField}
                                                     name={[name, 'name']}
                                                     fieldKey={[fieldKey, 'name']}
-                                                    rules={[{ required: true, message: 'Missing branch name' }]}
+                                                    rules={[{ required: true, message: 'Please enter the branch name' }]}
                                                 >
                                                     <Input placeholder="Branch Name" disabled={!editAbout} />
                                                 </Form.Item>
@@ -193,7 +253,7 @@ const About = ({ API_URL }) => {
                                                     {...restField}
                                                     name={[name, 'location']}
                                                     fieldKey={[fieldKey, 'location']}
-                                                    rules={[{ required: true, message: 'Missing branch location' }]}
+                                                    rules={[{ required: true, message: 'Please enter the branch location' }]}
                                                 >
                                                     <Input placeholder="Branch Location" disabled={!editAbout} />
                                                 </Form.Item>
@@ -210,7 +270,7 @@ const About = ({ API_URL }) => {
                                     </>
                                 )}
                             </Form.List>
-                            <Text>Account Details</Text>
+                            <Text>Account Details: {aboutData.account_details.length}</Text>
                             <Form.List name="account_details">
                                 {(fields, { add, remove }) => (
                                     <>
@@ -220,7 +280,7 @@ const About = ({ API_URL }) => {
                                                     {...restField}
                                                     name={[name, 'currency']}
                                                     fieldKey={[fieldKey, 'currency']}
-                                                    rules={[{ required: true, message: 'Missing currency' }]}
+                                                    rules={[{ required: true, message: 'Please enter the currency' }]}
                                                 >
                                                     <Input placeholder="Currency" disabled={!editAbout} />
                                                 </Form.Item>
@@ -228,7 +288,7 @@ const About = ({ API_URL }) => {
                                                     {...restField}
                                                     name={[name, 'number']}
                                                     fieldKey={[fieldKey, 'number']}
-                                                    rules={[{ required: true, message: 'Missing account number' }]}
+                                                    rules={[{ required: true, message: 'Please enter the account number' }]}
                                                 >
                                                     <Input placeholder="Account Number" disabled={!editAbout} />
                                                 </Form.Item>
@@ -236,7 +296,7 @@ const About = ({ API_URL }) => {
                                                     {...restField}
                                                     name={[name, 'sortcode']}
                                                     fieldKey={[fieldKey, 'sortcode']}
-                                                    rules={[{ required: true, message: 'Missing sort code' }]}
+                                                    rules={[{ required: true, message: 'Please enter the sort code' }]}
                                                 >
                                                     <Input placeholder="Sort Code" disabled={!editAbout} />
                                                 </Form.Item>
@@ -244,7 +304,7 @@ const About = ({ API_URL }) => {
                                                     {...restField}
                                                     name={[name, 'bankname']}
                                                     fieldKey={[fieldKey, 'bankname']}
-                                                    rules={[{ required: true, message: 'Missing bank name' }]}
+                                                    rules={[{ required: true, message: 'Please enter the bank name' }]}
                                                 >
                                                     <Input placeholder="Bank Name" disabled={!editAbout} />
                                                 </Form.Item>
@@ -252,7 +312,7 @@ const About = ({ API_URL }) => {
                                                     {...restField}
                                                     name={[name, 'holdername']}
                                                     fieldKey={[fieldKey, 'holdername']}
-                                                    rules={[{ required: true, message: 'Missing account holder name' }]}
+                                                    rules={[{ required: true, message: 'Please enter the account holder name' }]}
                                                 >
                                                     <Input placeholder="Account Holder Name" disabled={!editAbout} />
                                                 </Form.Item>
@@ -262,7 +322,7 @@ const About = ({ API_URL }) => {
                                             </div>
                                         ))}
                                         {editAbout && (
-                                            <Button type="dashed" className='m-2 mt-1 text-white' onClick={() => add()} block icon={<SaveOutlined  className='text-white' />}>
+                                            <Button type="dashed" className='m-2 mt-1 text-white' onClick={() => add()} block icon={<SaveOutlined className='text-white' />}>
                                                 Add Account Detail
                                             </Button>
                                         )}
@@ -271,7 +331,7 @@ const About = ({ API_URL }) => {
                             </Form.List>
                             {editAbout && (
                                 <Form.Item style={{ marginTop: '30px' }}>
-                                    <Button type="primary" className='text-white' htmlType="submit" loading={loading} icon={<SaveOutlined  className='text-white' />} style={{ marginRight: '10px' }}>Save Changes</Button>
+                                    <Button type="primary" className='text-white' htmlType="submit" loading={loading} icon={<SaveOutlined className='text-white' />} style={{ marginRight: '10px' }}>Save Changes</Button>
                                 </Form.Item>
                             )}
                         </Form>
@@ -280,6 +340,6 @@ const About = ({ API_URL }) => {
             </Content>
         </Layout>
     );
-}
+};
 
 export default About;

@@ -1,8 +1,7 @@
 import React from 'react';
 import { SaveOutlined, FacebookOutlined, InstagramOutlined, TwitterOutlined, WhatsAppOutlined, LinkedinOutlined,HomeOutlined, EditOutlined, UserOutlined  } from '@ant-design/icons';
-import { Row, Col, Avatar, Typography,Input, theme, Select, Layout, Breadcrumb   } from 'antd';
+import { Row, Col, Avatar, Typography,Input, theme, Select, Layout, Breadcrumb, Button   } from 'antd';
 
-import { Button} from '../components/button';
 import { useParams } from 'react-router-dom';
 import {countryCodes} from '../utils/utils';
 
@@ -203,7 +202,7 @@ const Profile = ({onSetScreen}) => {
                 <Row justify="center" align="middle" style={{ marginTop: '30px' }}>
                     {editprofile ?
                     <Col>
-                        <Button text="Save Changes" icon={<SaveOutlined style={{ color: '#25D366' }} />} onClick={saveEdit} />
+                        <Button type="primary" className='text-white' icon={<SaveOutlined className='text-white' />} onClick={saveEdit} >Save Changes</Button>
                     </Col>
                     :
                     <>

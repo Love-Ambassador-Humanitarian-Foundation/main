@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { DeleteOutlined, HomeOutlined, PlusOutlined, UsergroupAddOutlined} from '@ant-design/icons';
-import { Layout, Breadcrumb } from 'antd';
+import { DeleteOutlined, HomeOutlined, PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import { Layout, Breadcrumb, Card, Row, Col, Table, Avatar, Button, message } from 'antd';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
-import { Card, Row, Col, Table, theme, Avatar, Button, message } from 'antd';
+import { Link, useNavigate} from 'react-router-dom';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 const { Content } = Layout;
 
-const Profiles = ({ API_URL }) => {
-    const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
-    //const navigate = useNavigate();
+const Users = ({ API_URL }) => {
+    const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -35,22 +33,13 @@ const Profiles = ({ API_URL }) => {
     useEffect(() => {
         axios.get(`${API_URL}/api/users`)
             .then(response => {
-                //console.log(response);
                 const fetchedUsers = response.data.data;
                 setUsers(fetchedUsers);
                 setFilteredUsers(fetchedUsers);
                 setIsLoading(false);
-                console.log(fetchedUsers)
             })
             .catch(error => {
                 console.error("There was an error fetching the users!", error);
-                const dummyData = [
-                    { id: '1', name: 'Oscar', email: 'oscar@example.com', role: 'admin', status: 'active', artworks: 5, phonenumber: '1234567890', address: '123 Street', image: 'https://i.pravatar.cc/150?img=1' },
-                    { id: '2', name: 'John Doe', email: 'john@example.com', role: 'user', status: 'inactive', artworks: 2, phonenumber: '0987654321', address: '456 Avenue', image: 'https://i.pravatar.cc/150?img=2' },
-                    { id: '3', name: 'Jane Smith', email: 'jane@example.com', role: 'artist', status: 'active', artworks: 8, phonenumber: '5678901234', address: '789 Boulevard', image: 'https://i.pravatar.cc/150?img=3' }
-                ];
-                setUsers(dummyData);
-                setFilteredUsers(dummyData);
                 setIsLoading(false);
                 message.error("There was an error fetching the users!", 5);
             });
@@ -59,10 +48,9 @@ const Profiles = ({ API_URL }) => {
     const deleteUser = (id) => {
         axios.delete(`${API_URL}/api/users/${id}`)
             .then(response => {
-                const newUsers = users.filter(user => user._id !== id);
+                const newUsers = users.filter(user => user.id !== id);
                 setUsers(newUsers);
                 setFilteredUsers(newUsers);
-                console.log(newUsers)
                 message.success("User deleted successfully!", 5);
             })
             .catch(error => {
@@ -70,24 +58,23 @@ const Profiles = ({ API_URL }) => {
                 message.error("There was an error deleting the user!", 5);
             });
     };
+    const handleRowClick = (record) => {
+        navigate(`/admin/users/${record.id}`);
+    };
 
     const columns = [
         {
             title: 'Profile Pic',
-            dataIndex: 'image',
-            key: 'image',
+            dataIndex: 'profileImage',
+            key: 'profileImage',
             render: (text, record) => (
-                <Link to={`/admin/profiles/${record.id}`} className='text-decoration-none'>
-                    <Button type="primary" className='p-1 m-0' style={{ width: '40px', backgroundColor: 'transparent', height: '40px' }}>
-                        {record.profileImage ? (
-                            <Avatar src={record.profileImage} />
-                        ) : (
-                            <div className={`rounded-5 ${getRandomBgColorClass()} m-0 p-0`} style={{ textAlign: 'center', color: getRandomBgColorClass().includes('dark') ? 'white' : 'black' }}>
-                                {record.email.slice(0, 1).toUpperCase()}
-                            </div>
-                        )}
-                    </Button>
-                </Link>
+                <>{record.profileImage ? (
+                    <Avatar src={record.profileImage} />
+                ) : (
+                    <div className={`rounded-5 ${getRandomBgColorClass()} m-0 p-0`} style={{ textAlign: 'center', color: getRandomBgColorClass().includes('dark') ? 'white' : 'black' }}>
+                        {record.email.slice(0, 1).toUpperCase()}
+                    </div>
+                )}</>
             ),
         },
         {
@@ -115,7 +102,7 @@ const Profiles = ({ API_URL }) => {
             dataIndex: 'is_active',
             key: 'is_active',
             render: (text, record) => (
-                <>{record.is_active?<span className='text-success'>Active</span>:<span className='text-secondary'>In Active</span>}</>
+                <>{record.is_active ? <span className='text-success'>Active</span> : <span className='text-secondary'>Inactive</span>}</>
             )
         },
         {
@@ -123,14 +110,12 @@ const Profiles = ({ API_URL }) => {
             dataIndex: 'is_staff',
             key: 'is_staff',
             render: (text, record) => (
-                <>{record.is_staff?<span className='text-success'>Admin</span>:<span className='text-secondary'>Non Admin</span>}</>
+                <>{record.is_staff ? <span className='text-success'>Admin</span> : <span className='text-secondary'>Non Admin</span>}</>
             )
         },
         {
             render: (text, record) => (
-                <div>
-                    <Button type="primary" icon={<DeleteOutlined className='text-white'/>} onClick={() => deleteUser(record._id)} />
-                </div>
+                <Button type="primary" icon={<DeleteOutlined className='text-white' />} onClick={() => deleteUser(record.id)} />
             ),
         },
     ];
@@ -139,34 +124,40 @@ const Profiles = ({ API_URL }) => {
         let filtered = users;
 
         if (itemName) {
+            const lowerItemName = itemName.toLowerCase();
+
             filtered = filtered.filter(user => {
-                console.log(user,"====")
-                const lowerName = user.name.toLowerCase();
-                const lowerEmail = user.email.toLowerCase();
-                const lowerRole = user.role.toLowerCase();
-                const lowerAddress = user.address.toLowerCase();
-                const phoneNumber = user.phonenumber; // Assuming phonenumber is a string
+                const lowerFirstName = user.firstname ? user.firstname.toLowerCase() : '';
+                const lowerLastName = user.lastname ? user.lastname.toLowerCase() : '';
+                const lowerEmail = user.email ? user.email.toLowerCase() : '';
+                const lowerAddress = user.address ? user.address.toLowerCase() : '';
+                const phoneNumber = user.number ? String(user.number) : '';
+                const lowerPosition = user.position ? user.position.toLowerCase() : '';
 
                 return (
-                    lowerName.includes(itemName.toLowerCase()) ||
-                    lowerEmail.includes(itemName.toLowerCase()) ||
-                    lowerRole.includes(itemName.toLowerCase()) ||
-                    lowerAddress.includes(itemName.toLowerCase()) ||
-                    phoneNumber.includes(itemName)
+                    lowerFirstName.includes(lowerItemName) ||
+                    lowerLastName.includes(lowerItemName) ||
+                    lowerEmail.includes(lowerItemName) ||
+                    lowerAddress.includes(lowerItemName) ||
+                    phoneNumber.includes(itemName) ||
+                    lowerPosition.includes(lowerItemName)
                 );
             });
         }
 
-        // Filter by date range
         if (dateRange && dateRange.length === 2) {
+            const [startDate, endDate] = dateRange;
+
             filtered = filtered.filter(user => {
-                const matchesDate = new Date(user.createdAt) >= dateRange[0] && new Date(user.createdAt) <= dateRange[1];
-                return matchesDate;
+                const joinedDate = new Date(user.joined_date);
+                return joinedDate >= startDate && joinedDate <= endDate;
             });
         }
 
         setFilteredUsers(filtered);
     };
+    
+
 
     if (isLoading) {
         return <LoadingSpinner />;
@@ -181,15 +172,17 @@ const Profiles = ({ API_URL }) => {
                         { title: (<><UsergroupAddOutlined /><span>Users</span></>) },
                     ]}
                 />
-                <PlusOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
+                <Link to='/admin/users/add' style={{textDecoration:'none'}}>
+                    <PlusOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
+                </Link>
             </div>
             <Content className='m-2'>
                 <div
                     style={{
                         padding: 12,
                         minHeight: 360,
-                        background: colorBgContainer,
-                        borderRadius: borderRadiusXS,
+                        background: '#fff',
+                        borderRadius: '4px',
                         height: 'calc(100vh - 140px)'
                     }}
                 >
@@ -202,8 +195,11 @@ const Profiles = ({ API_URL }) => {
                                         dataSource={filteredUsers}
                                         columns={columns}
                                         pagination={{ pageSize: 10 }}
-                                        rowClassName="editable-row"
+                                        rowClassName="clickable-row"
                                         scroll={{ x: 'max-content' }}
+                                        onRow={(record) => ({
+                                            onClick: () => handleRowClick(record),
+                                        })}
                                     />
                                 </Card>
                             </Col>
@@ -215,4 +211,4 @@ const Profiles = ({ API_URL }) => {
     );
 };
 
-export default Profiles;
+export default Users;

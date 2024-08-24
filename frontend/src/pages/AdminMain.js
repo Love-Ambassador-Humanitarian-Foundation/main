@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import HeaderComponent from '../components/AdminHeader';
-import { DashboardOutlined, UsergroupAddOutlined,MailOutlined, InfoCircleOutlined, StarOutlined, CalendarOutlined,TeamOutlined, DollarOutlined, BankOutlined, UserOutlined, BellOutlined } from '@ant-design/icons';
+import { DashboardOutlined, UsergroupAddOutlined,MailOutlined, InfoCircleOutlined,CalendarOutlined,TeamOutlined, DollarOutlined, BankOutlined, UserOutlined, BellOutlined, SolutionOutlined } from '@ant-design/icons';
 import { Layout, Menu, Badge } from 'antd';
 import {useUpdateLoginStatus} from '../utils/hooks'
 import {fetchUserDetails} from '../utils/utils';
@@ -18,9 +18,9 @@ const AdminMain = ({ API_URL,Companyname, screen }) => {
     
     const items = [
         { url: '/admin/dashboard', icon: <DashboardOutlined />, label: 'Dashboard',badge:false },
-        { url: '/admin/profiles', icon: <UsergroupAddOutlined />, label: 'Profiles',badge:false },
+        { url: '/admin/users', icon: <UsergroupAddOutlined />, label: 'Users',badge:false },
         { url: '/admin/about', icon: <InfoCircleOutlined />, label: 'About',badge:false },
-        { url: '/admin/scholarships', icon: <StarOutlined />, label: 'Scholarships',badge:false },
+        { url: '/admin/scholarships', icon: <SolutionOutlined />, label: 'Scholarships',badge:false },
         { url: '/admin/partners', icon: <TeamOutlined />, label: 'Partners',badge:false },
         { url: '/admin/events', icon: <CalendarOutlined />, label: 'Events',badge:false },
         { url: '/admin/payments', icon: <DollarOutlined />, label: 'Payments',badge:false },

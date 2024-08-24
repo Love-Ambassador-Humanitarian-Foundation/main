@@ -40,7 +40,7 @@ const Button = ({ to, props, isloading, style, text, onClick, icon }) => {
       {to ? (
         <Link
           to={{ pathname: to, state: { item: { customProp: props } } }}
-          className='btn'
+          className='btn '
           style={buttonStyle}
           onClick={onClick}
           onMouseEnter={handleMouseEnter}
@@ -52,12 +52,13 @@ const Button = ({ to, props, isloading, style, text, onClick, icon }) => {
         </Link>
       ) : (
         <BtnComponent
-          className='btn'
-          style={{ border: '0px', color: 'black', ...buttonStyle }}
+          className='btn '
+          style={{ border: '0px', color:'black',...buttonStyle }}
           onClick={onClick}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           isloading={isloading}
+          type="primary"
         >
           <span className='me-2'>{text}</span>
           {icon}

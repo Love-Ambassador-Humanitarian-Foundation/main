@@ -4,8 +4,17 @@ This software is licensed under [Proprietary License].
 You may not modify, copy, or distribute this software without permission.
 For more details, see the LICENSE file in the root of the repository."""
 
+import qrcode
+from PIL import Image
+import io
+import base64
+from colorama import Fore, Style, init
+from pyzbar.pyzbar import decode
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
+
+# Initialize colorama
+init(autoreset=True)
 
 class EmailBackend(ModelBackend):
     """

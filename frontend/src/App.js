@@ -19,10 +19,9 @@ import Payments from './pages/AdminPayments';
 import Branches from './pages/AdminBranches';
 import Scholarship from './pages/AdminScholarshipdetail';
 import About from './pages/AdminAbout.js';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
-import Profiles from './pages/AdminUsers';
+import Users from './pages/AdminUsers';
 import User from './pages/AdminUserDetail';
+import AddUser from './pages/AdminAddUser.js';
 import Partner from './pages/AdminPartnerDetail';
 import Payment from './pages/AdminPaymentDetail';
 import Branch from './pages/AdminBranchDetail';
@@ -34,6 +33,9 @@ import LogoutPage from './pages/Logout.js';
 import EmailVerificationPage from './pages/EmailVerificationPage.js';
 import Registering from './pages/Registering.js';
 import UserProfilePage from './pages/Profile';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
 
 const Companyname = 'LAHF';
 const App = ({API_URL}) => {
@@ -69,8 +71,9 @@ const App = ({API_URL}) => {
             <Route path="/email/registration/:uid/:token" element={<Registering API_URL={API_URL} isloggedIn={isloggedIn}/>} exact ></Route>
             <Route path="/profile/:userid" element={<PrivateRoute redirectUrl={"/profile/:userid"} API_URL={API_URL} ><UserProfilePage API_URL={API_URL} isloggedIn={isloggedIn}/></PrivateRoute>} exact ></Route>
             <Route path="/payment/:variable" element={<PrivateRoute redirectUrl={"/admin/payment/:variable"}><PaymentPage API_URL={API_URL} isloggedIn={isloggedIn}/></PrivateRoute>} ></Route>
-            <Route path="/admin/profiles" element={<PrivateRoute redirectUrl={"/admin/profiles"}><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<Profiles API_URL={API_URL} isloggedIn={isloggedIn}/>} /></PrivateRoute>} />
-            <Route path="/admin/profiles/:id" element={<PrivateRoute redirectUrl={"/admin/profiles/:id"}><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<User API_URL={API_URL} isloggedIn={isloggedIn}/>} /></PrivateRoute>} />
+            <Route path="/admin/users" element={<PrivateRoute redirectUrl={"/admin/users"}><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<Users API_URL={API_URL} isloggedIn={isloggedIn}/>} /></PrivateRoute>} />
+            <Route path="/admin/users/add" element={<PrivateRoute redirectUrl={"/admin/users/add"}><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<AddUser API_URL={API_URL} isloggedIn={isloggedIn}/>} /></PrivateRoute>} />
+            <Route path="/admin/users/:id" element={<PrivateRoute redirectUrl={"/admin/users/:id"}><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<User API_URL={API_URL} isloggedIn={isloggedIn}/>} /></PrivateRoute>} />
             <Route path="/admin/dashboard" element={<PrivateRoute redirectUrl={"/admin/dashboard"}><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<Dashboard API_URL={API_URL} isloggedIn={isloggedIn}/>} /></PrivateRoute>} />
             <Route path="/admin/about" element={<PrivateRoute redirectUrl={"/admin/about"}><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<About API_URL={API_URL} isloggedIn={isloggedIn}/>} /></PrivateRoute>} />
             <Route path="/admin/scholarships" element={<PrivateRoute redirectUrl={"/admin/scholarships"}><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<Scholarships API_URL={API_URL} isloggedIn={isloggedIn}/>} /></PrivateRoute>} />

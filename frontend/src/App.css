@@ -48,11 +48,21 @@
 .ant-picker,
 .ant-input-outlined,
 .ant-select,
+.ant-select-selector,
 .ant-select-single {
   border: 1.5px solid transparent !important;
   background-color: whitesmoke !important;
   border-radius: 0%;
   height: 2.4rem;
+}
+.ant-checkbox .ant-checkbox-inner{
+  border: 1.5px solid whitesmoke !important;
+  border-radius: 0%;
+}
+.ant-checkbox-checked .ant-checkbox-inner{
+  border: 1.5px solid #34356b !important;
+  background-color: #34356b !important;
+  border-radius: 0%;
 }
 .form-control:hover,
 .form-control:focus,
@@ -60,6 +70,8 @@
 .ant-input-outlined:hover,
 .ant-input-outlined:focus,
 .ant-input-outlined:active,
+.ant-select-selector:active,
+.ant-select-selector:focus,
 .ant-select:hover,
 .ant-select:focus,
 .ant-select:active,
@@ -73,6 +85,7 @@
   background-color: whitesmoke !important;
   border-color: #34356b !important;
 }
+
 .form-control:disabled,
 .ant-input-outlined:disabled,
 .ant-select:disabled,
@@ -103,7 +116,7 @@
 
 
 .ant-btn {
-  color:black;
+  color:white;
   border-color: #34356b;
   background-color: #34356b;
   cursor: pointer;
@@ -116,11 +129,16 @@
   border-color: #34356b !important;
 }
 
+
+.ant-btn-icon .anticon {
+  color: white !important;
+}
 /* Styles for the button icon on hover */
-.ant-btn:hover .anticon,
-.ant-btn:focus .anticon,
-.ant-btn:active .anticon {
-  color: black !important; /* Change icon color to black on hover, focus, and active */
+
+.ant-btn-icon .anticon :hover,
+.ant-btn-icon .anticon :focus,
+.ant-btn-icon .anticon :active {
+  color: black !important;
 }
 
 
@@ -157,6 +175,15 @@
   animation: spin 1s linear infinite;
   margin: 20px auto; /* Center the spinner */
 }
+/* Loading spinner */
+.spinnersmall {
+  border: 1.5px solid #f3f3f3; /* Light grey */
+  border-top: 1.5px solid #34356b; /* Blue */
+  border-radius: 50%;
+  height: 14px;
+  width: 14px;
+  animation: spin 1s linear infinite;
+}
 
 /* Spinner animation */
 @keyframes spin {
@@ -166,4 +193,12 @@
 
 #accountdetails {
   margin-top: 80px; /* Adjust as needed */
+}
+
+.ant-breadcrumb-link{
+  text-decoration: none;
+}
+
+.clickable-row {
+  cursor: pointer;
 }
