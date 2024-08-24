@@ -18,6 +18,7 @@ from PIL import Image
 import uuid
 import qrcode
 import base64
+import urllib.parse
 
 # Define a more reasonable maximum length for char fields
 MAX_LENGTH = 2555
@@ -287,13 +288,22 @@ class Scholarship(models.Model):
             box_size=10,
             border=4,
         )
-        qr.add_data(f'http://localhost:3000/#/admin/scholarships/{self.id}')
+        # Construct the URL for the QR code
+        url = f'http://localhost:3000/#/admin/scholarships/{self.id}'
+        
+        # URL encode the URL to ensure it's properly formatted
+        
+        qr.add_data(url)
         qr.make(fit=True)
 
         # Create an image of the QR code
-        img = qr.make_image(fill='black', back_color='white')
+        img = qr.make_image(fill='black', back_color='white').convert('RGB')
+
         # Load the logo image
-        logo = Image.open('./api/logo.jpg')
+        try:
+            logo = Image.open('./api/logo.jpg')
+        except IOError:
+            raise Exception("Logo image not found.")
 
         # Ensure the logo has a white background (in case of transparency)
         logo = logo.convert("RGBA")
@@ -301,10 +311,10 @@ class Scholarship(models.Model):
         logo = Image.alpha_composite(white_background, logo).convert("RGBA")
 
         # Calculate the logo size relative to the QR code
-        logo_size = int(min(img.size) / 4)
+        logo_size = int(min(img.size) / 6)  # Resize logo to be smaller
 
         # Resize the logo
-        logo = logo.resize((logo_size, logo_size))
+        logo = logo.resize((logo_size, logo_size), Image.Resampling.LANCZOS)
 
         # Calculate the position to place the logo at the center
         logo_position = (
@@ -314,6 +324,7 @@ class Scholarship(models.Model):
 
         # Paste the logo image onto the QR code, with a mask to handle transparency
         img.paste(logo, logo_position, mask=logo)
+
         # Save to memory
         buffer = BytesIO()
         img.save(buffer, format='PNG')
@@ -321,8 +332,6 @@ class Scholarship(models.Model):
         # Encode the image to base64 to store as text
         qr_code_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
         return qr_code_base64
-
-    
     @property
     def is_expired(self):
         """

@@ -11,6 +11,7 @@ import { useParams,Link } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import axios from 'axios';
 import { decodeQRCode } from '../utils/utils'; // Ensure this is the correct path
+import logo from '../assets/logo.jpg';
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -142,18 +143,42 @@ const Scholarship = ({ API_URL }) => {
     };
 
     const generatePdf = async () => {
-        console.log('Generating PDF...');
+        
         setPdfLoading(true);
 
         try {
             const doc = new jsPDF();
 
-            // Add content to the PDF
-            doc.text('Hello world!', 10, 10);
-            doc.text('This is a sample PDF generated with jsPDF.', 10, 20);
+            // Define some dimensions and positions
+            const logoWidth = 34; // Width of the logo
+            const logoHeight = 30; // Height of the logo
+            const passportBoxSize = 30; // Size of the passport box
+            const companyNameFontSize = 17; // Font size for company name
+            const titleFontSize = 14; // Font size for the title
 
+            // Add the logo to the top left
+            console.log(logo)
+            doc.addImage(logo, 'PNG', 10, 10, logoWidth, logoHeight);
+
+            // Add the company name to the top center
+            doc.setFontSize(companyNameFontSize);
+            //console.log(doc.getFontList())
+            doc.setFont('Helvetica','bold')
+            doc.text('LOVE AMBASSADORS HUMANITARIAN', doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
+            doc.text('FOUNDATION (LAHF)', doc.internal.pageSize.getWidth() / 2, 28, { align: 'center' });
+
+            // Add a box for the passport photo to the top right
+            doc.rect(doc.internal.pageSize.getWidth() - passportBoxSize - 10, 10, passportBoxSize, passportBoxSize);
+            
+            // Add the title of the form
+            doc.setFont('Aria','normal')
+            doc.setFontSize(titleFontSize);
+            doc.text('Scholarship Form', doc.internal.pageSize.getWidth() / 2, 38, { align: 'center' });
+
+            doc.addImage(formData.qrcode, 'PNG', doc.internal.pageSize.getWidth() - logoWidth, doc.internal.pageSize.getHeight() - logoHeight, logoWidth, logoHeight);
             // Save the PDF
             doc.save(`scholarship_${formData.first_name}_${formData.last_name}.pdf`);
+            
         } catch (error) {
             console.error('Error generating PDF:', error);
         } finally {
@@ -181,10 +206,7 @@ const Scholarship = ({ API_URL }) => {
                 </Breadcrumb>
                 <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
                     
-                    {pdfloading && (
-                        
-                        <div className='spinnersmall'></div>
-                    )}
+                    {pdfloading ? <div className='spinnersmall'></div>: null}
                     <FilePdfOutlined onClick={generatePdf}  className='mx-2 text-danger' style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
                     <EditOutlined onClick={() => setEditScholarship(!editScholarship)} className='mx-2' style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
                 </span>
