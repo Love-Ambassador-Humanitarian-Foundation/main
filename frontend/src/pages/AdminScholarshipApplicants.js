@@ -61,22 +61,30 @@ const ScholarshipApplicants = ({ API_URL }) => {
         navigate(`/admin/scholarships/${id}/applicants/${record.id}`, {state:{scholarshipName:scholarship.name}});
     };
 
-    const filterApplicants = useCallback(({ name, email }) => {
+    const filterApplicants = useCallback(({ itemName,dateRange }) => {
         let filtered = applicants;
 
-        if (name) {
-            const searchTerm = name.toLowerCase();
-            filtered = filtered.filter(applicant =>
-                applicant.first_name.toLowerCase().includes(searchTerm) ||
-                applicant.last_name.toLowerCase().includes(searchTerm)
+        if (itemName) {
+            const searchTerms = itemName ? itemName.toLowerCase().split(' ').filter(itemName => itemName): '';
+            filtered = filtered.filter(applicant => {
+                return ( searchTerms.every(searchTerm =>
+                    applicant.first_name.toLowerCase().includes(searchTerm) ||
+                    applicant.last_name.toLowerCase().includes(searchTerm) ||
+                    applicant.email.toLowerCase().includes(searchTerm) ||
+                    applicant.home_address.toLowerCase().includes(searchTerm) ||
+                    applicant.class_level.toLowerCase().includes(searchTerm) ||
+                    applicant.phone_number.toLowerCase().includes(searchTerm))
+                );
+            }
             );
         }
 
-        if (email) {
-            const emailTerm = email.toLowerCase();
-            filtered = filtered.filter(applicant =>
-                applicant.email.toLowerCase().includes(emailTerm)
-            );
+        if (dateRange && dateRange.length === 2) {
+            const [startDate, endDate] = dateRange;
+            filtered = filtered.filter(applicant=> {
+                const applicantDate = new Date(applicant.candidate_signature_date);
+                return applicantDate >= startDate && applicantDate <= endDate;
+            });
         }
 
         setFilteredApplicants(filtered);
@@ -111,13 +119,11 @@ const ScholarshipApplicants = ({ API_URL }) => {
         },
         {
             title: 'Application Date',
-            dataIndex: 'signature_date',
-            key: 'signature_date',
-            render: (date) => (date ? dayjs(date) : 'N/A'),
+            dataIndex: 'candidate_signature_date',
+            key: 'candidate_signature_date',
         },
         
         {
-            
             key: 'actions',
             render: (_, record) => (
                 <>
@@ -163,7 +169,7 @@ const ScholarshipApplicants = ({ API_URL }) => {
                         height: 'calc(100vh - 140px)',
                     }}
                 >
-                    <FilterComponent onSearch={filterApplicants} name email /> {/* Include filter options */}
+                    <FilterComponent onSearch={filterApplicants} name date /> {/* Include filter options */}
                     <Card title="Applicants" bordered style={{ borderRadius: '2px' }}>
                         <Table
                             dataSource={filteredApplicants}
