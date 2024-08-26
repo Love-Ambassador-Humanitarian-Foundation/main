@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import FilterComponent from '../components/Filter';
-import LoadingSpinner from '../components/LoadingSpinner';
+import { useNavigate, Link } from 'react-router-dom';
 import { DeleteOutlined, HomeOutlined, PlusOutlined, SolutionOutlined } from '@ant-design/icons';
 import { Card, Row, Col, Table, theme, Button, message, Layout, Breadcrumb } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import FilterComponent from '../components/Filter';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const { Content } = Layout;
 
@@ -16,70 +16,77 @@ const Scholarships = ({ API_URL }) => {
     const [filteredScholarships, setFilteredScholarships] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        axios.get(`${API_URL}/api/scholarships`)
-            .then(response => {
-                const fetchedScholarships = response.data.data;
-                setScholarships(fetchedScholarships);
-                setFilteredScholarships(fetchedScholarships);
-                setIsLoading(false);
-            })
-            .catch(error => {
-                console.error("There was an error fetching the scholarships!", error);
-                setIsLoading(false);
-                message.error("There was an error fetching the scholarships!", 5);
-            });
+    // Fetch scholarships from the API
+    const fetchScholarships = useCallback(async () => {
+        try {
+            const currentDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
+            const response = await axios.get(`${API_URL}/api/scholarships?current_date=${currentDate}`);
+            const fetchedScholarships = response.data.data;
+            setScholarships(fetchedScholarships);
+            setFilteredScholarships(fetchedScholarships);
+        } catch (error) {
+            console.error("Error fetching scholarships", error);
+            message.error("There was an error fetching the scholarships!", 5);
+        } finally {
+            setIsLoading(false);
+        }
     }, [API_URL]);
 
-    const deleteScholarship = (id) => {
-        axios.delete(`${API_URL}/api/scholarships/${id}`)
-            .then(response => {
-                const newScholarships = scholarships.filter(scholarship => scholarship.id !== id);
-                setScholarships(newScholarships);
-                setFilteredScholarships(newScholarships);
-                message.success("Scholarship deleted successfully!", 5);
-            })
-            .catch(error => {
-                console.error("There was an error deleting the scholarship!", error.response);
-                message.error("There was an error deleting the scholarship!", 5);
-            });
+    useEffect(() => {
+        fetchScholarships();
+    }, [fetchScholarships]);
+
+    // Handle deletion of a scholarship
+    const deleteScholarship = async (id) => {
+        try {
+            await axios.delete(`${API_URL}/api/scholarships/${id}`);
+            const updatedScholarships = scholarships.filter(scholarship => scholarship.id !== id);
+            setScholarships(updatedScholarships);
+            setFilteredScholarships(updatedScholarships);
+            navigate(`/admin/scholarships`);
+            message.success("Scholarship deleted successfully!", 5);
+        } catch (error) {
+            console.error("Error deleting scholarship", error.response);
+            message.error("There was an error deleting the scholarship!", 5);
+        }
     };
 
+    // Handle row click to navigate to scholarship details
     const handleRowClick = (record) => {
         navigate(`/admin/scholarships/${record.id}`);
     };
 
+    // Filter scholarships based on search criteria
+    const filterScholarships = useCallback(({ itemName, dateRange }) => {
+        let filtered = scholarships;
+
+        if (itemName) {
+            const searchTerm = itemName.toLowerCase();
+            filtered = filtered.filter(scholarship =>
+                scholarship.name.toLowerCase().includes(searchTerm) ||
+                scholarship.year.toString().includes(searchTerm) ||
+                scholarship.amount_approved.toLowerCase().includes(searchTerm) ||
+                scholarship.currency.toLowerCase().includes(searchTerm) ||
+                scholarship.duration.toLowerCase().includes(searchTerm)
+            );
+        }
+
+        if (dateRange && dateRange.length === 2) {
+            const [startDate, endDate] = dateRange;
+            filtered = filtered.filter(scholarship => {
+                const scholarshipDate = new Date(scholarship.created_date);
+                return scholarshipDate >= startDate && scholarshipDate <= endDate;
+            });
+        }
+
+        setFilteredScholarships(filtered);
+    }, [scholarships]);
+
     const columns = [
         {
-            title: 'First Name',
-            dataIndex: 'first_name',
-            key: 'first_name',
-        },
-        {
-            title: 'Last Name',
-            dataIndex: 'last_name',
-            key: 'last_name',
-        },
-        {
-            title: 'Organisation Approved',
-            dataIndex: 'organisation_approved',
-            key: 'organisation_approved',
-            render: (approved) => (
-                <span>{approved ? <span className='text-success'>Approved</span> : 'Not Approved'}</span>
-            ),
-        },
-        {
-            title: 'Class Level',
-            dataIndex: 'class_level',
-            key: 'class_level',
-        },
-        {
-            title: 'Amount',
-            dataIndex: 'amount_approved',
-            key: 'amount_approved',
-            render: (amount, record) => (
-                <span>{record.currency} {amount}</span>
-            ),
+            title: 'Name',
+            dataIndex: 'name',
+            key: 'name',
         },
         {
             title: 'Year',
@@ -87,34 +94,46 @@ const Scholarships = ({ API_URL }) => {
             key: 'year',
         },
         {
-            key: 'actions',
+            title: 'Amount',
+            dataIndex: 'amount_approved',
+            key: 'amount_approved',
+            render: (amount, record) => `${record.currency} ${amount}`,
+        },
+        {
+            title: 'Duration',
+            dataIndex: 'duration',
+            key: 'duration',
             render: (text, record) => (
-                <Button type="primary" icon={<DeleteOutlined className='text-white' />} onClick={(e) => {
-                    e.stopPropagation(); // Prevent triggering row click
-                    deleteScholarship(record._id);
-                }} />
+                <span>
+                    {record.is_expired ? <>
+                        {text} ({<span className='text-danger'>Expired</span>})
+                    </>
+                        
+                    : 
+                        <>{text} ({<span className='text-success'>Ongoing</span>})</>
+                    }
+                </span>
+            ),
+        },
+        {
+            title: 'Created Date',
+            dataIndex: 'created_date',
+            key: 'created_date',
+        },
+        {
+            key: 'actions',
+            render: (_, record) => (
+                <Button
+                    type="primary"
+                    icon={<DeleteOutlined className="text-danger" />}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        deleteScholarship(record.id);
+                    }}
+                />
             ),
         },
     ];
-
-    const filterScholarships = ({ itemName, dateRange }) => {
-        let filtered = scholarships;
-
-        if (itemName) {
-            filtered = filtered.filter(scholarship =>
-                (scholarship.first_name + ' ' + scholarship.last_name).toLowerCase().includes(itemName.toLowerCase())
-            );
-        }
-
-        if (dateRange && dateRange.length === 2) {
-            filtered = filtered.filter(scholarship => {
-                const scholarshipDate = new Date(scholarship.year);
-                return scholarshipDate >= dateRange[0] && dateRange[1] >= scholarshipDate;
-            });
-        }
-
-        setFilteredScholarships(filtered);
-    };
 
     if (isLoading) {
         return <LoadingSpinner />;
@@ -122,44 +141,47 @@ const Scholarships = ({ API_URL }) => {
 
     return (
         <Layout style={{ marginTop: '70px', height: '100vh' }}>
-            <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{ backgroundColor: '#d7d7e9', borderRadius: '4px' }}>
-                <Breadcrumb
-                    items={[
-                        { href: '/', title: <HomeOutlined /> },
-                        { title: (<><SolutionOutlined /><span>Scholarships</span></>) },
-                    ]}
-                />
-                <PlusOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
+            <div className="d-flex justify-content-between align-items-center p-2 m-2" style={{ backgroundColor: '#d7d7e9', borderRadius: '4px' }}>
+                <Breadcrumb>
+                    <Breadcrumb.Item href="/">
+                        <HomeOutlined />
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item>
+                        <SolutionOutlined />
+                        <span>Scholarships</span>
+                    </Breadcrumb.Item>
+                </Breadcrumb>
+                <Link to='/admin/scholarships/add' style={{textDecoration:'none'}}>
+                    <PlusOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
+                </Link>
             </div>
-            <Content className='m-2'>
+            <Content className="m-2">
                 <div
                     style={{
                         padding: 24,
                         minHeight: 360,
                         background: colorBgContainer,
                         borderRadius: borderRadiusXS,
-                        height: 'calc(100vh - 140px)'
+                        height: 'calc(100vh - 140px)',
                     }}
                 >
-                    <FilterComponent onSearch={filterScholarships} name={true} date={true} />
-                    <div className="site-layout-background" style={{ padding: 8, minHeight: 380 }}>
-                        <Row style={{ marginTop: 1 }}>
-                            <Col span={24}>
-                                <Card title="Scholarships" bordered={true} style={{ borderRadius: '2px' }}>
-                                    <Table
-                                        dataSource={filteredScholarships}
-                                        columns={columns}
-                                        pagination={{pageSize: 10 }}
-                                        rowClassName="clickable-row"
-                                        scroll={{ x: 'max-content' }}
-                                        onRow={(record) => ({
-                                            onClick: () => handleRowClick(record),
-                                        })}
-                                    />
-                                </Card>
-                            </Col>
-                        </Row>
-                    </div>
+                    <FilterComponent onSearch={filterScholarships} name date />
+                    <Row style={{ marginTop: 1 }}>
+                        <Col span={24}>
+                            <Card title="Scholarships" bordered style={{ borderRadius: '2px' }}>
+                                <Table
+                                    dataSource={filteredScholarships}
+                                    columns={columns}
+                                    pagination={{ pageSize: 10 }}
+                                    rowClassName="clickable-row"
+                                    scroll={{ x: 'max-content' }}
+                                    onRow={(record) => ({
+                                        onClick: () => handleRowClick(record),
+                                    })}
+                                />
+                            </Card>
+                        </Col>
+                    </Row>
                 </div>
             </Content>
         </Layout>

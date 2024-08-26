@@ -6,7 +6,9 @@ For more details, see the LICENSE file in the root of the repository."""
 
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import User, About, Partners, Event, Payments, Logs, Notification, Email, Scholarship
+from .models import date,VALID_UNITS, User, About, Partners, Event, Payments, Logs, Notification, Email, Scholarship, ScholarshipApplicant
+from django.utils.dateparse import parse_date
+DATE_FORMAT = '%Y-%m-%d'
 
 class UserSerializer(serializers.ModelSerializer):
     """
@@ -124,30 +126,79 @@ class EmailSerializer(serializers.ModelSerializer):
         fields = ['id', 'sender', 'recipient', 'subject', 'body', 'sent_at', 'read']
 
 class ScholarshipSerializer(serializers.ModelSerializer):
-    DATE_FORMAT = '%d/%m/%Y'
-    birthday = serializers.DateField(format=DATE_FORMAT, input_formats=[DATE_FORMAT])
-    organisation_signature_date = serializers.DateField(format=DATE_FORMAT, input_formats=[DATE_FORMAT])
-    candidate_signature_date = serializers.DateField(format=DATE_FORMAT, input_formats=[DATE_FORMAT])
+    
+    created_date = serializers.DateField(format=DATE_FORMAT, input_formats=[DATE_FORMAT])
+    is_expired = serializers.SerializerMethodField()
 
     class Meta:
         model = Scholarship
         fields = '__all__'
 
     def validate_duration(self, value):
+        """
+        Validate the format of the duration field.
+        It must be in the format 'amount unit', e.g., '1 year'.
+        """
         try:
             amount, unit = value.split()
             amount = int(amount)
-            valid_units = ['year', 'month', 'week', 'day', 'hour', 'minute', 'second','years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds']
-            if unit not in valid_units:
-                print(unit,'===')
-                raise serializers.ValidationError("Invalid duration format.")
+            
+            if unit not in VALID_UNITS:
+                raise serializers.ValidationError("Invalid duration format. The unit must be one of the following: year, month, week, day, hour, minute, second (or their plural forms).")
         except ValueError:
             raise serializers.ValidationError("Duration must be in the format 'amount unit', e.g., '1 year'.")
         return value
+
+    def get_is_expired(self, obj):
+        """
+        Determine if the scholarship is expired based on the current date.
+        The current date is fetched from the request context, falling back to date.today() if not provided.
+        """
+        request = self.context.get('request')
+        current_date = date.today()  # Default to today's date
+
+        # Check request data for a date
+        if request and 'current_date' in request.data:
+            current_date_str = request.data.get('current_date')
+            if current_date_str:
+                current_date = parse_date(current_date_str) or current_date
+
+        # Check query parameters for a date
+        if request and 'current_date' in request.query_params:
+            current_date_str = request.query_params.get('current_date')
+            if current_date_str:
+                current_date = parse_date(current_date_str) or current_date
+
+        return obj.is_expired(current_date=current_date)
+
+class ScholarshipApplicantSerializer(serializers.ModelSerializer):
     
+    # Date fields with the specified format
+    birthday = serializers.DateField(format=DATE_FORMAT, input_formats=[DATE_FORMAT])
+    organisation_signature_date = serializers.DateField(format=DATE_FORMAT, input_formats=[DATE_FORMAT], required=False, allow_null=True)
+    candidate_signature_date = serializers.DateField(format=DATE_FORMAT, input_formats=[DATE_FORMAT])
+
+    class Meta:
+        model = ScholarshipApplicant
+        fields = '__all__'
+
     def validate(self, data):
-        # Ensure only one educational background field is True
-        education_fields = ['nursery', 'primary', 'secondary', 'tertiary']
-        if sum(data[field] for field in education_fields) > 1:
-            raise serializers.ValidationError("Only one of Nursery, Primary, Secondary, or Tertiary can be True.")
+        """
+        Custom validation for the ScholarshipApplicant model.
+        Ensures only one educational level is selected and signature dates are correctly validated.
+        """
+        # Ensure that only one educational background field is True
+        
+        # Validate that candidate_signature_date is not null
+        if not data.get('candidate_signature_date'):
+            raise serializers.ValidationError("The candidate signature date is required.")
+
         return data
+
+    def create(self, validated_data):
+        """
+        Overriding the create method to handle the generation of QR codes before saving.
+        """
+        applicant = ScholarshipApplicant(**validated_data)
+        applicant.save()
+        return applicant

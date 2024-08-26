@@ -11,11 +11,15 @@ Markdown==3.7
 numpy==2.0.1
 opencv-python==4.10.0.84
 pillow==10.4.0
+pycountry==24.6.1
 PyJWT==2.9.0
 pypng==0.20220715.0
+python-barcode==0.15.1
+python-dateutil==2.9.0.post0
 python-Levenshtein==0.25.1
 qrcode==7.4.2
 rapidfuzz==3.9.6
+six==1.16.0
 sqlparse==0.4.4
 typing_extensions==4.12.2
 tzdata==2024.1

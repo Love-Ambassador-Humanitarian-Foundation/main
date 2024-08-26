@@ -51,6 +51,7 @@ const Users = ({ API_URL }) => {
                 const newUsers = users.filter(user => user.id !== id);
                 setUsers(newUsers);
                 setFilteredUsers(newUsers);
+                navigate(`/admin/users`);
                 message.success("User deleted successfully!", 5);
             })
             .catch(error => {
@@ -115,7 +116,7 @@ const Users = ({ API_URL }) => {
         },
         {
             render: (text, record) => (
-                <Button type="primary" icon={<DeleteOutlined className='text-white' />} onClick={() => deleteUser(record.id)} />
+                <Button type="primary" icon={<DeleteOutlined className='text-danger' />} onClick={() => deleteUser(record.id)} />
             ),
         },
     ];
@@ -124,8 +125,8 @@ const Users = ({ API_URL }) => {
         let filtered = users;
 
         if (itemName) {
-            const lowerItemName = itemName.toLowerCase();
-
+            const lowerItemNames = itemName ? itemName.toLowerCase().split(' ').filter(itemName => itemName): '';
+            
             filtered = filtered.filter(user => {
                 const lowerFirstName = user.firstname ? user.firstname.toLowerCase() : '';
                 const lowerLastName = user.lastname ? user.lastname.toLowerCase() : '';
@@ -134,13 +135,13 @@ const Users = ({ API_URL }) => {
                 const phoneNumber = user.number ? String(user.number) : '';
                 const lowerPosition = user.position ? user.position.toLowerCase() : '';
 
-                return (
+                return ( lowerItemNames.every(lowerItemName =>
                     lowerFirstName.includes(lowerItemName) ||
                     lowerLastName.includes(lowerItemName) ||
                     lowerEmail.includes(lowerItemName) ||
                     lowerAddress.includes(lowerItemName) ||
                     phoneNumber.includes(itemName) ||
-                    lowerPosition.includes(lowerItemName)
+                    lowerPosition.includes(lowerItemName))
                 );
             });
         }

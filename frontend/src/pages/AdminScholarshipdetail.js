@@ -3,112 +3,85 @@ import {
     HomeOutlined,
     EditOutlined,
     SaveOutlined,
-    FilePdfOutlined
+    FilePdfOutlined,
+    SolutionOutlined,
+    UserOutlined
 } from '@ant-design/icons';
 import jsPDF from 'jspdf';
-import { Row, Col, Typography, Input, Button, message, Breadcrumb, Select, Layout, Form, Avatar } from 'antd';
-import { useParams,Link } from 'react-router-dom';
+import {
+    Row, Col, Typography, Input, Button, message,
+    Breadcrumb, Select, Layout, Form, DatePicker,
+    Checkbox, Tooltip
+} from 'antd';
+import { useParams, Link } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import axios from 'axios';
-import { decodeQRCode } from '../utils/utils'; // Ensure this is the correct path
+import currencyCodes from 'currency-codes';
 import logo from '../assets/logo.jpg';
+import dayjs from 'dayjs';  // Import dayjs for date formatting
 
 const { Option } = Select;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 const { Content } = Layout;
+
+const singularUnits = [
+    'year', 'month', 'week', 'day', 'hour', 'minute', 'second'
+];
+
+const pluralUnits = [
+    'years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds'
+];
+
+const years = Array.from({ length: 20 }, (_, i) => dayjs().year() - i); // Example: last 20 years
 
 const Scholarship = ({ API_URL }) => {
     const { id } = useParams();
     const [editScholarship, setEditScholarship] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [loading, setLoading] = useState(false);
-    const [pdfloading, setPdfLoading] = useState(false);
-    const [decodedText, setDecodedText] = useState('');
-
-    // State variables
+    const [pdfLoading, setPdfLoading] = useState(false);
+    const currentDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
     const [formData, setFormData] = useState({
-        first_name: '',
-        middle_name: '',
-        last_name: '',
-        birthday: '',
-        home_address: '',
-        email: '',
-        phone_number: '',
-        guardian_parent_name: '',
-        guardian_parent_home_address: '',
-        guardian_parent_email: '',
-        guardian_parent_phone_number: '',
-        nursery: false,
-        primary: false,
-        secondary: false,
-        tertiary: false,
-        name_of_institution: '',
-        address_of_institution: '',
-        class_level: '',
+        id:"",
+        name: '',
+        description:'',
+        year: dayjs().year(),
         amount_approved: '',
-        year: 2024,
-        currency: 'NGN',
+        currency: 'USD',
         duration: '',
-        organisation_approved: true,
-        organisation_signature_date: '',
-        candidate_signature_date: '',
-        qrcode:''
+        durationUnit: 'months',
+        created_date: null,
     });
 
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-                const response = await axios.get(`${API_URL}/api/scholarships/${id}`);
+                
+                const response = await axios.get(`${API_URL}/api/scholarships/${id}?current_date=${currentDate}`);
                 const data = response.data.data;
 
-                //console.log(data);
-
-                // Update state with fetched data
                 setFormData({
-                    first_name: data.first_name || '',
-                    middle_name: data.middle_name || '',
-                    last_name: data.last_name || '',
-                    birthday: data.birthday || '',
-                    home_address: data.home_address || '',
-                    email: data.email || '',
-                    phone_number: data.phone_number || '',
-                    guardian_parent_name: data.guardian_parent_name || '',
-                    guardian_parent_home_address: data.guardian_parent_home_address || '',
-                    guardian_parent_email: data.guardian_parent_email || '',
-                    guardian_parent_phone_number: data.guardian_parent_phone_number || '',
-                    nursery: data.nursery || false,
-                    primary: data.primary || false,
-                    secondary: data.secondary || false,
-                    tertiary: data.tertiary || false,
-                    name_of_institution: data.name_of_institution || '',
-                    address_of_institution: data.address_of_institution || '',
-                    class_level: data.class_level || '',
+                    id:data.id ||'',
+                    name: data.name || '',
+                    description:data.description||'',
+                    year: data.year || dayjs().year(),
                     amount_approved: data.amount_approved || '',
-                    year: data.year || 2024,
-                    currency: data.currency || 'NGN',
-                    duration: data.duration || '',
-                    organisation_approved: data.organisation_approved || true,
-                    organisation_signature_date: data.organisation_signature_date || '',
-                    candidate_signature_date: data.candidate_signature_date || '',
-                    qrcode: `data:image/png;base64,${data.qrcode}` || ''
+                    currency: data.currency || 'USD',
+                    duration: data.duration ? data.duration.split(' ')[0] : '',
+                    durationUnit: data.duration ? data.duration.split(' ')[1] : 'months',
+                    created_date: data.created_date ? dayjs(data.created_date) : null,
+                    is_expired: data.is_expired || null
                 });
-                var text = await decodeQRCode(`data:image/png;base64,${data.qrcode}` || '');
-                
-                const domainName = window.location.hostname;
-                const protocol = window.location.protocol;
-                const port = window.location.port;
-                text = text.replace(protocol+'//'+domainName+':'+port+'/#','');
-                setDecodedText(text);
-                
+
             } catch (error) {
-                console.error('Error fetching user details:', error);
+                console.error('Error fetching scholarship details:', error);
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchDetails();
-    }, [API_URL, id]);
+    }, [API_URL, id,currentDate]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -125,10 +98,23 @@ const Scholarship = ({ API_URL }) => {
         }));
     };
 
+    const handleDateChange = (date) => {
+        setFormData(prevData => ({
+            ...prevData,
+            created_date: date
+        }));
+    };
+
     const saveEdit = async () => {
         setLoading(true);
+        console.log(formData)
         try {
-            await axios.patch(`${API_URL}/api/scholarships/${id}`, formData, {
+            await axios.patch(`${API_URL}/api/scholarships/${id}`, {
+                ...formData,
+                duration: formData.duration+' '+formData.durationUnit,
+                created_date: formData.created_date ? formData.created_date.format('YYYY-MM-DD') : null,
+                current_date:currentDate
+            }, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -138,51 +124,60 @@ const Scholarship = ({ API_URL }) => {
         } catch (error) {
             console.error('Error updating scholarship details:', error);
             message.error('Error updating scholarship details');
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const generatePdf = async () => {
-        
         setPdfLoading(true);
-
         try {
             const doc = new jsPDF();
+            const logoWidth = 34;
+            const logoHeight = 30;
+            const companyNameFontSize = 17;
+            const titleFontSize = 14;
 
-            // Define some dimensions and positions
-            const logoWidth = 34; // Width of the logo
-            const logoHeight = 30; // Height of the logo
-            const passportBoxSize = 30; // Size of the passport box
-            const companyNameFontSize = 17; // Font size for company name
-            const titleFontSize = 14; // Font size for the title
-
-            // Add the logo to the top left
-            console.log(logo)
             doc.addImage(logo, 'PNG', 10, 10, logoWidth, logoHeight);
-
-            // Add the company name to the top center
             doc.setFontSize(companyNameFontSize);
-            //console.log(doc.getFontList())
-            doc.setFont('Helvetica','bold')
+            doc.setFont('Helvetica', 'bold');
             doc.text('LOVE AMBASSADORS HUMANITARIAN', doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
             doc.text('FOUNDATION (LAHF)', doc.internal.pageSize.getWidth() / 2, 28, { align: 'center' });
-
-            // Add a box for the passport photo to the top right
-            doc.rect(doc.internal.pageSize.getWidth() - passportBoxSize - 10, 10, passportBoxSize, passportBoxSize);
-            
-            // Add the title of the form
-            doc.setFont('Aria','normal')
+            doc.setFont('Arial', 'normal');
             doc.setFontSize(titleFontSize);
             doc.text('Scholarship Form', doc.internal.pageSize.getWidth() / 2, 38, { align: 'center' });
-
-            doc.addImage(formData.qrcode, 'PNG', doc.internal.pageSize.getWidth() - logoWidth, doc.internal.pageSize.getHeight() - logoHeight, logoWidth, logoHeight);
-            // Save the PDF
-            doc.save(`scholarship_${formData.first_name}_${formData.last_name}.pdf`);
-            
+            doc.text(`Name: ${formData.name}`, 20, 60);
+            doc.text(`Year: ${formData.year}`, 20, 70);
+            doc.text(`Amount Approved: ${formData.amount_approved} ${formData.currency}`, 20, 80);
+            doc.text(`Duration: ${formData.duration} ${formData.durationUnit}`, 20, 90);
+            doc.text(`Created Date: ${formData.created_date ? formData.created_date.format('YYYY-MM-DD') : ''}`, 20, 100);
+            doc.save(`scholarship_${formData.name}.pdf`);
         } catch (error) {
             console.error('Error generating PDF:', error);
         } finally {
             setPdfLoading(false);
+        }
+    };
+
+    const currencyOptions = currencyCodes.codes().map(code => (
+        <Option key={code} value={code}>
+            {`${currencyCodes.code(code).currency} (${code})`}
+        </Option>
+    ));
+
+    const durationUnitOptions = () => {
+        if (formData.duration === '1') {
+            return singularUnits.map(unit => (
+                <Option key={unit} value={unit}>
+                    {unit.charAt(0).toUpperCase() + unit.slice(1)}
+                </Option>
+            ));
+        } else {
+            return pluralUnits.map(unit => (
+                <Option key={unit} value={unit}>
+                    {unit.charAt(0).toUpperCase() + unit.slice(1)}
+                </Option>
+            ));
         }
     };
 
@@ -193,22 +188,27 @@ const Scholarship = ({ API_URL }) => {
     return (
         <Layout style={{ marginTop: '70px', height: '100vh' }}>
             <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{ backgroundColor: '#d7d7e9' }}>
-                <Breadcrumb>
-                    <Breadcrumb.Item href="/">
-                        <HomeOutlined />
-                    </Breadcrumb.Item>
-                    <Breadcrumb.Item href='/#/admin/scholarships' className='text-decoration-none'>
-                        <span>Scholarships</span>
-                    </Breadcrumb.Item>
-                    <Breadcrumb.Item>
-                        <span>{formData.first_name} {formData.last_name}</span>
-                    </Breadcrumb.Item>
-                </Breadcrumb>
+                <Breadcrumb
+                    items={[
+                        { href: '/', title: <HomeOutlined /> },
+                        { href: '/#/admin/scholarships', title: (<><SolutionOutlined /><span style={{textDecoration:'none'}}>Scholarships</span></>) },
+                        { title: (<span>{formData.name}</span>) },
+                    ]}
+                />
                 <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
-                    
-                    {pdfloading ? <div className='spinnersmall'></div>: null}
-                    <FilePdfOutlined onClick={generatePdf}  className='mx-2 text-danger' style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
-                    <EditOutlined onClick={() => setEditScholarship(!editScholarship)} className='mx-2' style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
+                    <Tooltip title="View Applicants">
+                        <Link to={`/admin/scholarships/${formData.id}/applicants`} style={{ textDecoration: 'none' }}>
+                            <UserOutlined className='mx-2' style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
+                        </Link>
+                    </Tooltip>
+
+                    {pdfLoading ? <div className='spinnersmall'></div> : null}
+                    <Tooltip title='Generate pdf'>
+                        <FilePdfOutlined onClick={generatePdf} className='mx-2 text-danger' style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
+                    </Tooltip>
+                    <Tooltip title='Edit Scholarship'>
+                        <EditOutlined onClick={() => setEditScholarship(!editScholarship)} className='mx-2' style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
+                    </Tooltip>
                 </span>
             </div>
             <Content className='m-2'>
@@ -218,152 +218,49 @@ const Scholarship = ({ API_URL }) => {
                         minHeight: 360,
                         background: '#fff',
                         borderRadius: '4px',
-                        height: 'calc(100vh - 140px)'
                     }}
                 >
                     <Form layout="vertical">
-                        <Title level={3}>{formData.first_name} {formData.middle_name} {formData.last_name} 
-                            <span className='ms-5'></span>
-                            <Link to={decodedText} className='text-decoration-none'>
-                                <Avatar shape='square' src={formData.qrcode} size={80}></Avatar>
-                            </Link>
-                            
-                            
+                        <Title level={3}>
+                            {formData.name}
                         </Title>
-                        
-                        <Form.Item label="First Name">
+                        <Text className='m-4'>
+                            {formData.id}
+                        </Text>
+                        <Form.Item label="Scholarship Name" className='mt-4'>
                             <Input
-                                name="first_name"
-                                value={formData.first_name}
+                                name="name"
+                                value={formData.name}
                                 onChange={handleInputChange}
                                 disabled={!editScholarship}
                             />
                         </Form.Item>
-                        <Form.Item label="Middle Name">
-                            <Input
-                                name="middle_name"
-                                value={formData.middle_name}
+                        <Form.Item label="Description">
+                            <Input.TextArea
+                                name="description"
+                                value={formData.description}
+                                rows={7}
                                 onChange={handleInputChange}
                                 disabled={!editScholarship}
                             />
                         </Form.Item>
-                        <Form.Item label="Last Name">
-                            <Input
-                                name="last_name"
-                                value={formData.last_name}
-                                onChange={handleInputChange}
-                                disabled={!editScholarship}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Birthday">
-                            <Input
-                                name="birthday"
-                                type="date"
-                                value={formData.birthday}
-                                onChange={handleInputChange}
-                                disabled={!editScholarship}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Home Address">
-                            <Input
-                                name="home_address"
-                                value={formData.home_address}
-                                onChange={handleInputChange}
-                                disabled={!editScholarship}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Email">
-                            <Input
-                                name="email"
-                                type="email"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                                disabled={!editScholarship}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Phone Number">
-                            <Input
-                                name="phone_number"
-                                value={formData.phone_number}
-                                onChange={handleInputChange}
-                                disabled={!editScholarship}
-                            />
-                        </Form.Item>
-                    
-                        <Form.Item label="Guardian Parent Name">
-                            <Input
-                                name="guardian_parent_name"
-                                value={formData.guardian_parent_name}
-                                onChange={handleInputChange}
-                                disabled={!editScholarship}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Guardian Parent Home Address">
-                            <Input
-                                name="guardian_parent_home_address"
-                                value={formData.guardian_parent_home_address}
-                                onChange={handleInputChange}
-                                disabled={!editScholarship}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Guardian Parent Email">
-                            <Input
-                                name="guardian_parent_email"
-                                type="email"
-                                value={formData.guardian_parent_email}
-                                onChange={handleInputChange}
-                                disabled={!editScholarship}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Guardian Parent Phone Number">
-                            <Input
-                                name="guardian_parent_phone_number"
-                                value={formData.guardian_parent_phone_number}
-                                onChange={handleInputChange}
-                                disabled={!editScholarship}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Educational Level">
+                        <Form.Item label="Year">
                             <Select
-                                name="educational_level"
-                                value={formData.educational_level}
-                                onChange={value => handleSelectChange('educational_level', value)}
+                                name="year"
+                                value={formData.year}
+                                onChange={value => handleSelectChange('year', value)}
                                 disabled={!editScholarship}
                             >
-                                <Option value="nursery">Nursery</Option>
-                                <Option value="primary">Primary</Option>
-                                <Option value="secondary">Secondary</Option>
-                                <Option value="tertiary">Tertiary</Option>
+                                {years.map(year => (
+                                    <Option key={year} value={year}>
+                                        {year}
+                                    </Option>
+                                ))}
                             </Select>
-                        </Form.Item>
-                        <Form.Item label="Name of Institution">
-                            <Input
-                                name="name_of_institution"
-                                value={formData.name_of_institution}
-                                onChange={handleInputChange}
-                                disabled={!editScholarship}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Address of Institution">
-                            <Input
-                                name="address_of_institution"
-                                value={formData.address_of_institution}
-                                onChange={handleInputChange}
-                                disabled={!editScholarship}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Class Level">
-                            <Input
-                                name="class_level"
-                                value={formData.class_level}
-                                onChange={handleInputChange}
-                                disabled={!editScholarship}
-                            />
                         </Form.Item>
                         <Form.Item label="Amount Approved">
                             <Input
                                 name="amount_approved"
-                                type="number"
                                 value={formData.amount_approved}
                                 onChange={handleInputChange}
                                 disabled={!editScholarship}
@@ -376,38 +273,55 @@ const Scholarship = ({ API_URL }) => {
                                 onChange={value => handleSelectChange('currency', value)}
                                 disabled={!editScholarship}
                             >
-                                <Option value="NGN">NGN</Option>
-                                <Option value="USD">USD</Option>
-                                <Option value="EUR">EUR</Option>
+                                {currencyOptions}
                             </Select>
                         </Form.Item>
                         <Form.Item label="Duration">
                             <Input
                                 name="duration"
+                                type="number"
                                 value={formData.duration}
                                 onChange={handleInputChange}
                                 disabled={!editScholarship}
+                                addonAfter={
+                                    <Select
+                                        name="durationUnit"
+                                        value={formData.durationUnit}
+                                        onChange={value => handleSelectChange('durationUnit', value)}
+                                        disabled={!editScholarship}
+                                    >
+                                        {durationUnitOptions()}
+                                    </Select>
+                                }
                             />
                         </Form.Item>
-                        <Form.Item label="Organisation Approved">
-                            <Select
-                                name="organisation_approved"
-                                value={formData.organisation_approved}
-                                onChange={value => handleSelectChange('organisation_approved', value)}
+                        <Form.Item label="Created Date">
+                            <DatePicker
+                                name="created_date"
+                                value={formData.created_date}
+                                onChange={handleDateChange}
+                                format="YYYY-MM-DD"
                                 disabled={!editScholarship}
-                            >
-                                <Option value={true}>Yes</Option>
-                                <Option value={false}>No</Option>
-                            </Select>
+                            />
                         </Form.Item>
-                        
+                        {!editScholarship ? 
+                            <Form.Item label={formData.is_expired ? "Is Expired" : "Is Not Expired"}>
+                                <Checkbox
+                                    checked={formData.is_expired}  // Use 'checked' to reflect the value
+                                    disabled={true}  // Disable the checkbox to make it non-editable
+                                    
+                                    >
+                                    {formData.is_expired ? <span className='text-danger'>Expired</span>: <span className='text-success'>Not Expired</span>}
+                                </Checkbox>
+                            </Form.Item> 
+                        : null}
+
                         {editScholarship && (
                             <Row justify="center">
                                 <Col>
                                     <Button
                                         type="primary"
-                                        className='text-white'
-                                        icon={<SaveOutlined className='text-white'/>}
+                                        icon={<SaveOutlined className='text-white' />}
                                         onClick={saveEdit}
                                         loading={loading}
                                     >

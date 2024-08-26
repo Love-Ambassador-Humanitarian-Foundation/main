@@ -18,11 +18,15 @@ from PIL import Image
 import uuid
 import qrcode
 import base64
-import urllib.parse
+from datetime import date
+import re
+from dateutil.relativedelta import relativedelta
+
 
 # Define a more reasonable maximum length for char fields
 MAX_LENGTH = 2555
-
+VALID_UNITS = ['year', 'month', 'week', 'day', 'hour', 'minute', 'second',
+                           'years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds']
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -207,29 +211,77 @@ class Email(models.Model):
     class Meta:
         ordering = ['-sent_at', 'recipient']
 
-
 class Scholarship(models.Model):
-    # Class Level Choices
-    NURSERY = 'Nursery'
-    PRIMARY = 'Primary'
-    JSS = 'JSS'
-    SSS = 'SSS'
-    TERTIARY = 'Tertiary'
-    
-    CLASS_LEVEL_CHOICES = [
-        (NURSERY, 'Nursery'),
-        (PRIMARY, 'Primary'),
-        (JSS, 'Junior Secondary School'),
-        (SSS, 'Senior Secondary School'),
-        (TERTIARY, 'Tertiary'),
-    ]
-
-    # Personal Information
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=MAX_LENGTH)  # Name of the scholarship
+    description=models.TextField()
+    year = models.PositiveIntegerField()
+    token = models.UUIDField(default=uuid.uuid4, editable=False)
+    amount_approved = models.DecimalField(max_digits=MAX_LENGTH, decimal_places=2)
+    currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='NGN')
+    duration = models.CharField(max_length=MAX_LENGTH)  # E.g., "1 year", "6 months"
+    created_date = models.DateField(null=False, blank=False)  # Date when the scholarship was created
+
+    def __str__(self):
+        return f'{self.name} - {self.year}'
+    
+    def is_expired(self, current_date=None):
+        """
+        Check if the scholarship has expired based on its duration and created_date.
+        Optionally accept a current_date parameter to test against a specific date.
+        """
+        current_date = current_date or date.today()
+        if not self.duration or not self.created_date:
+            return False
+
+        # Parse the duration
+        try:
+            amount, unit = self.duration.split()
+            amount = int(amount)
+        except ValueError:
+            return False
+
+        # Normalize the unit to singular form
+        unit = unit.rstrip('s') if unit.endswith('s') else unit
+        if unit not in VALID_UNITS:
+            return False
+
+        # Calculate the expiration date
+        if unit == 'year':
+            expiration_date = self.created_date + relativedelta(years=amount)
+        elif unit == 'month':
+            expiration_date = self.created_date + relativedelta(months=amount)
+        elif unit == 'week':
+            expiration_date = self.created_date + relativedelta(weeks=amount)
+        elif unit == 'day':
+            expiration_date = self.created_date + relativedelta(days=amount)
+        elif unit == 'hour':
+            expiration_date = self.created_date + relativedelta(hours=amount)
+        elif unit == 'minute':
+            expiration_date = self.created_date + relativedelta(minutes=amount)
+        elif unit == 'second':
+            expiration_date = self.created_date + relativedelta(seconds=amount)
+        else:
+            return False
+
+        return current_date > expiration_date
+    
+class ScholarshipApplicant(models.Model):
+    # Choices for class level and currency
+    CLASS_LEVEL_CHOICES = [
+        ('Nursery', 'Nursery'),
+        ('Primary', 'Primary'),
+        ('JSS', 'Junior Secondary School'),
+        ('SSS', 'Senior Secondary School'),
+        ('Tertiary', 'Tertiary'),
+    ]
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    scholarship = models.ForeignKey(Scholarship, on_delete=models.CASCADE, related_name='applicants')
+    
+    # Personal Information
     first_name = models.CharField(max_length=MAX_LENGTH)
     middle_name = models.CharField(max_length=MAX_LENGTH, blank=True, null=True)
     last_name = models.CharField(max_length=MAX_LENGTH)
-    profile_picture = models.TextField(blank=True, null=True)
     birthday = models.DateField()
     home_address = models.CharField(max_length=MAX_LENGTH)
     email = models.EmailField(max_length=MAX_LENGTH)
@@ -242,46 +294,27 @@ class Scholarship(models.Model):
     guardian_parent_phone_number = models.CharField(max_length=MAX_LENGTH)
 
     # Educational Background
-    nursery = models.BooleanField(default=False)
-    primary = models.BooleanField(default=False)
-    secondary = models.BooleanField(default=False)
-    tertiary = models.BooleanField(default=False)
     name_of_institution = models.CharField(max_length=MAX_LENGTH)
     address_of_institution = models.CharField(max_length=MAX_LENGTH)
     class_level = models.CharField(max_length=MAX_LENGTH, choices=CLASS_LEVEL_CHOICES)
 
-    # Scholarship Details
-    amount_approved = models.DecimalField(max_digits=MAX_LENGTH, decimal_places=2)
-    year = models.PositiveIntegerField()
-    currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='NGN')
-    duration = models.CharField(max_length=MAX_LENGTH)  # Duration as a string, e.g., "1 year", "6 months"
-
+    # Scholarship Application Details
+    qrcode = models.TextField(blank=True, null=True)
     organisation_approved = models.BooleanField(default=False)
-    organisation_signature_date = models.DateField()
-    candidate_signature_date = models.DateField()
-    qrcode  =  models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return f'{self.first_name} {self.last_name} - {self.year}'
+    organisation_signature_date = models.DateField(null=True, blank=True)
+    candidate_signature_date= models.DateField(null=False, blank=False)
     
     def save(self, *args, **kwargs):
         if not self.qrcode:
             self.qrcode = self.generate_qr_code()
         super().save(*args, **kwargs)
 
-    
-
     def generate_qr_code(self):
         """
-        Generates a QR code for the scholarship instance using its ID, encodes the QR code image in base64, and returns it.
-
-        The generated QR code is based on the scholarship ID encoded in a URL that can be used to view the 
-        scholarship details. The QR code is generated using the `qrcode` library and customized with specific dimensions.
-
-        Returns:
-            str: A base64-encoded string representing the QR code image.
+        Generates a QR code for the applicant's scholarship application.
+        Encodes the QR code image in base64, and returns it.
         """
-        # Generate QR code using the scholarship ID encoded in a URL
+        # Generate QR code using the applicant ID encoded in a URL
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -289,9 +322,7 @@ class Scholarship(models.Model):
             border=4,
         )
         # Construct the URL for the QR code
-        url = f'http://localhost:3000/#/admin/scholarships/{self.id}'
-        
-        # URL encode the URL to ensure it's properly formatted
+        url = f'http://localhost:3000/#/admin/applicants/{self.id}'
         
         qr.add_data(url)
         qr.make(fit=True)
@@ -332,22 +363,6 @@ class Scholarship(models.Model):
         # Encode the image to base64 to store as text
         qr_code_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
         return qr_code_base64
-    @property
-    def is_expired(self):
-        """
-        calculating is exprired.
-        """
-        duration_mapping = {
-            'years': timedelta(days=365),
-            'months': timedelta(days=30),
-            'weeks': timedelta(weeks=1),
-            'days': timedelta(days=1),
-            'hours': timedelta(hours=1),
-            'minutes': timedelta(minutes=1),
-            'seconds': timedelta(seconds=1),
-        }
-        duration_parts = self.duration.split()
-        amount = int(duration_parts[0])
-        unit = duration_parts[1]
-        expiry_date = self.organisation_signature_date + amount * duration_mapping[unit]
-        return timezone.now().date() > expiry_date
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name} - {self.scholarship}'
