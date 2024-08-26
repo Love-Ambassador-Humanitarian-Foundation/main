@@ -154,7 +154,7 @@ const ScholarshipApplicants = ({ API_URL }) => {
                     ]}
                 />
                 <Tooltip title='Add Applicant'>
-                    <Link to={`admin/scholarships/${id}/applicants/add`} style={{textDecoration:'none'}}>
+                    <Link to={`/admin/scholarships/${id}/applicants/add`} style={{textDecoration:'none'}}>
                         <PlusOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
                     </Link>
                 </Tooltip>
