@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { DeleteOutlined, HomeOutlined, PlusOutlined, SolutionOutlined } from '@ant-design/icons';
-import { Card, Row, Col, Table, theme, Button, message, Layout, Breadcrumb } from 'antd';
+import { Card, Row, Col, Table, theme, Button, message, Layout, Breadcrumb, Tooltip } from 'antd';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -151,9 +151,11 @@ const Scholarships = ({ API_URL }) => {
                         <span>Scholarships</span>
                     </Breadcrumb.Item>
                 </Breadcrumb>
-                <Link to='/admin/scholarships/add' style={{textDecoration:'none'}}>
-                    <PlusOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
-                </Link>
+                <Tooltip title='Add Scholarship'>
+                    <Link to='/admin/scholarships/add' style={{textDecoration:'none'}}>
+                        <PlusOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
+                    </Link>
+                </Tooltip>
             </div>
             <Content className="m-2">
                 <div

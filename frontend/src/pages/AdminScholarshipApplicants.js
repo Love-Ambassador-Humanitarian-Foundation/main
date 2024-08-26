@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useParams,useNavigate, Link } from 'react-router-dom';
-import { Card, Table, Layout, Button, message, Row, Col, Breadcrumb } from 'antd';
-import { CheckOutlined, CloseOutlined, DeleteOutlined, FileMarkdownOutlined, HomeOutlined, ProfileOutlined, SolutionOutlined } from '@ant-design/icons';
+import { Card, Table, Layout, Button, message, Row, Col, Breadcrumb, Tooltip } from 'antd';
+import { CheckOutlined, CloseOutlined, DeleteOutlined, FileMarkdownOutlined, HomeOutlined, PlusOutlined, ProfileOutlined, SolutionOutlined } from '@ant-design/icons';
 import LoadingSpinner from '../components/LoadingSpinner';
 import FilterComponent from '../components/Filter'; // Make sure this path is correct
-
+import dayjs from 'dayjs';
 const { Content } = Layout;
 
 const ScholarshipApplicants = ({ API_URL }) => {
@@ -113,7 +113,7 @@ const ScholarshipApplicants = ({ API_URL }) => {
             title: 'Application Date',
             dataIndex: 'signature_date',
             key: 'signature_date',
-            render: (date) => (date ? new Date(date).toLocaleDateString() : 'N/A'),
+            render: (date) => (date ? dayjs(date) : 'N/A'),
         },
         
         {
@@ -147,6 +147,11 @@ const ScholarshipApplicants = ({ API_URL }) => {
                         { title: (<><ProfileOutlined /><span style={{textDecoration:'none'}}>Applicants</span></>) },
                     ]}
                 />
+                <Tooltip title='Add Applicant'>
+                    <Link to={`admin/scholarships/${id}/applicants/add`} style={{textDecoration:'none'}}>
+                        <PlusOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
+                    </Link>
+                </Tooltip>
             </div>
             <Content className="m-2">
                 <div
