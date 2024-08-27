@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Layout, Breadcrumb, Form, Input, Button, Select, DatePicker, message } from 'antd';
-import { HomeOutlined, SaveOutlined, SolutionOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+import { Layout, Breadcrumb, Form, Input, Button, Select, message } from 'antd';
+import { HomeOutlined, ProfileOutlined, SaveOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import currencyCodes from 'currency-codes';
@@ -127,7 +127,7 @@ const AddScholarship = ({ API_URL }) => {
                 <Breadcrumb
                     items={[
                         { href: '/', title: <HomeOutlined /> },
-                        { href: '/#/admin/scholarships', title: (<><SolutionOutlined /><span style={{ textDecoration: 'none' }}>Scholarships</span></>) },
+                        { href: '/#/admin/scholarships', title: (<><ProfileOutlined /><span style={{ textDecoration: 'none' }}>Scholarships</span></>) },
                         { title: (<span>Add Scholarship</span>) },
                     ]}
                 />

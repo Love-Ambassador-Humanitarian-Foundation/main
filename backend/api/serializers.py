@@ -73,9 +73,7 @@ class PartnersSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Partners
-        fields = [
-            'id', 'title', 'description', 'logo', 'link', 'created_date'
-        ]
+        fields = '__all__'
 
 class EventSerializer(serializers.ModelSerializer):
     """

@@ -40,6 +40,7 @@ import UserProfilePage from './pages/Profile';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import AddScholarshipApplicant from './pages/AdminAddScholarshipApplicant.js';
+import AddPartner from './pages/AdminAddPartners.js';
 
 
 const Companyname = 'LAHF';
@@ -88,6 +89,7 @@ const App = ({API_URL}) => {
             <Route path="/admin/scholarships/:id/applicants/add" element={<PrivateRoute redirectUrl={"/admin/scholarships/:id/applicants/add"}><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<AddScholarshipApplicant API_URL={API_URL} isloggedIn={isloggedIn}/>} /></PrivateRoute>} />
             <Route path="/admin/scholarships/:id/applicants/:applicantid" element={<PrivateRoute redirectUrl={"/admin/scholarships/:id/applicants/:applicantid"}><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<ScholarshipApplicant API_URL={API_URL} isloggedIn={isloggedIn}/>} /></PrivateRoute>} />
             <Route path="/admin/partners" element={<PrivateRoute redirectUrl={"/admin/partners"}><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<Partners API_URL={API_URL} isloggedIn={isloggedIn}/>} /></PrivateRoute>} />
+            <Route path="/admin/partners/add" element={<PrivateRoute redirectUrl={"/admin/partners/add"}><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<AddPartner API_URL={API_URL} isloggedIn={isloggedIn}/>} /></PrivateRoute>} />
             <Route path="/admin/partners/:id" element={<PrivateRoute redirectUrl={"/admin/partners/:id"}><AdminMain API_URL={API_URL} Companyname={Companyname}  screen={<Partner API_URL={API_URL} isloggedIn={isloggedIn}/>} /></PrivateRoute>} />
             <Route path="/admin/events" element={<PrivateRoute redirectUrl={"/admin/events"}><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<Events API_URL={API_URL} isloggedIn={isloggedIn}/>} /></PrivateRoute>} />
             <Route path="/admin/events/:id" element={<PrivateRoute redirectUrl={"/admin/events/:id"}><AdminMain API_URL={API_URL} Companyname={Companyname}  screen={<Event API_URL={API_URL} isloggedIn={isloggedIn}/>} /></PrivateRoute>} />

@@ -122,7 +122,7 @@ class Partners(models.Model):
     description = models.TextField()
     logo = models.TextField(blank=True, null=True)
     link = models.URLField(max_length=MAX_LENGTH)
-    created_date = models.DateTimeField(auto_now_add=True)
+    created_date = models.DateField()
 
     def __str__(self):
         return self.title
@@ -305,7 +305,7 @@ class ScholarshipApplicant(models.Model):
     candidate_signature_date= models.DateField(null=False, blank=False)
     
     def save(self, *args, **kwargs):
-        if not self.qrcode:
+        if not self.qrcode and self.organisation_approved:
             self.qrcode = self.generate_qr_code()
         super().save(*args, **kwargs)
 

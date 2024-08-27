@@ -1,99 +1,104 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { DeleteOutlined,HomeOutlined, EditOutlined,TeamOutlined} from '@ant-design/icons';
-import { Card, Table, Row, Col, theme, message, Layout, Breadcrumb, Button} from 'antd';
-import { Link } from 'react-router-dom';
-const { Content} = Layout;
+import { DeleteOutlined, HomeOutlined, TeamOutlined, PlusOutlined } from '@ant-design/icons';
+import { Card, Table, Row, Col, theme, message, Layout, Breadcrumb, Button, Tooltip, Avatar } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
+import debounce from 'lodash/debounce';  // Import debounce from lodash
 
-const Partners = ({onSetContent, API_URL}) => {
+const { Content } = Layout;
+
+const Partners = ({ API_URL }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
-    
-    const [editpage,SetEditPage] = useState(false);
+    const navigate = useNavigate();
     const [partners, setPartners] = useState([]);
     const [filteredPartners, setFilteredPartners] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        axios.get(`${API_URL}/api/partners`)
-            .then(response => {
-                const fetchedPartners = response.data.data;
-                setPartners(fetchedPartners);
-                setFilteredPartners(fetchedPartners);
-                setIsLoading(false);
-            })
-            .catch(error => {
-                console.error("There was an error fetching the partners!", error);
-                setPartners([{_id:'53545',name:"sfsdf",dateStarted:'2022-01-03', location:'cdfsc'}]);
-                setFilteredPartners([{_id:'53545',name:"sfsdf",dateStarted:'2022-01-03', location:'cdfsc'}]);
-                setIsLoading(false);
+        const fetchPartners = async () => {
+            try {
+                const response = await axios.get(`${API_URL}/api/partners`);
+                const fetchedPartners = response.data;
+
+                if (Array.isArray(fetchedPartners.data)) {
+                    setPartners(fetchedPartners.data);
+                    setFilteredPartners(fetchedPartners.data);
+                    message.success(fetchedPartners.message);
+                } else {
+                    console.error("The response data is not an array:", fetchedPartners.data);
+                    message.error(fetchedPartners.message);
+                }
+            } catch (error) {
+                console.error("There was an error fetching the partners!", error.response);
                 message.error("There was an error fetching the partners!", 5);
-            });
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchPartners();
     }, [API_URL]);
 
-    const deletePartner = (id) => {
-        axios.delete(`${API_URL}/api/partners/${id}`)
-            .then(response => {
-                const newPartners = partners.filter(partner => partner._id !== id);
-                setPartners(newPartners);
-                setFilteredPartners(newPartners);
-                message.success("Partner deleted successfully!", 5);
-            })
-            .catch(error => {
-                console.error("There was an error deleting the partner!", error);
-                message.error("There was an error deleting the partner!", 5);
-            });
-    }
+    const deletePartner = async (id) => {
+        try {
+            await axios.delete(`${API_URL}/api/partners/${id}`);
+            setPartners(prev => prev.filter(partner => partner.id !== id));
+            setFilteredPartners(prev => prev.filter(partner => partner.id !== id));
+            message.success("Partner deleted successfully!", 5);
+        } catch (error) {
+            console.error("There was an error deleting the partner!", error);
+            message.error("There was an error deleting the partner!", 5);
+        }
+    };
 
-    const columns = [
+    const columns = useMemo(() => [
         {
-            title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
+            dataIndex: 'logo',
+            key: 'logo',
+            render: (logo) => <Avatar src={logo} />
+        },
+        {
+            title: 'Title',
+            dataIndex: 'title',
+            key: 'title',
+        },
+        {
+            title: 'Created Date',
+            dataIndex: 'created_date',
+            key: 'created_date',
+            render: (date) => new Date(date).toLocaleDateString(),
+        },
+        {
+            key: 'action',
             render: (text, record) => (
-                <Link to={`/admin/partners/${record._id}`} className='text-decoration-none'>
-                    <Button type="primary" className='text-white'>
-                        {record.name}
-                    </Button>
-                </Link>
+                <Button type="primary" icon={<DeleteOutlined className='text-danger' />} onClick={() => deletePartner(record.id)} />
             ),
         },
-        {
-            title: 'Date Started',
-            dataIndex: 'dateStarted',
-            key: 'dateStarted',
-            render: (text) => new Date(text).toLocaleDateString(),
-        },
-        {
-            title: 'Location',
-            dataIndex: 'location',
-            key: 'location',
-        },
-        {
-            render: (text, record) => (
-                <Button type="primary" icon={<DeleteOutlined className='text-white' />} onClick={() => deletePartner(record._id)} />
-            ),
-        },
-    ];
+    ], [deletePartner]);
 
-    const filterPartners = ({ itemName, dateRange }) => {
+    const filterPartners = useCallback(debounce(({ itemName, dateRange }) => {
         let filtered = partners;
 
         if (itemName) {
             filtered = filtered.filter(partner => 
-                partner.name.toLowerCase().includes(itemName.toLowerCase())
+                partner.title.toLowerCase().includes(itemName.toLowerCase())
             );
         }
 
         if (dateRange && dateRange.length === 2) {
             filtered = filtered.filter(partner => {
-                const partnerDateStarted = new Date(partner.dateStarted);
-                return partnerDateStarted >= dateRange[0] && partnerDateStarted <= dateRange[1];
+                const partnerCreatedDate = new Date(partner.created_date);
+                return partnerCreatedDate >= dateRange[0] && partnerCreatedDate <= dateRange[1];
             });
         }
 
         setFilteredPartners(filtered);
+    }, 300), [partners]);
+
+    const handleRowClick = (record) => {
+        navigate(`/admin/partners/${record.id}`);
     };
 
     if (isLoading) {
@@ -103,25 +108,31 @@ const Partners = ({onSetContent, API_URL}) => {
     return (
         <Layout style={{ marginTop: '70px', height: '100vh' }}>
             <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{ backgroundColor: '#d7d7e9', borderRadius: '4px' }}>
-                <Breadcrumb
-                    items={[
-                        { href: '/', title: <HomeOutlined /> },
-                        { title: (<><TeamOutlined /><span>Partners</span></>) },
-                    ]}
-                />
-                <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={()=>SetEditPage(!editpage)} />
+                <Breadcrumb>
+                    <Breadcrumb.Item href="/">
+                        <HomeOutlined />
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item>
+                        <TeamOutlined />
+                        <span>Partners</span>
+                    </Breadcrumb.Item>
+                </Breadcrumb>
+                <Tooltip title='Add Partner'>
+                    <Link to='/admin/partners/add' style={{ textDecoration: 'none' }}>
+                        <PlusOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
+                    </Link>
+                </Tooltip>
             </div>
             <Content className='m-2'>
                 <div
-                        style={{
-                            padding: 24,
-                            minHeight: 360,
-                            background: colorBgContainer,
-                            borderRadius: borderRadiusXS,
-                            height: 'calc(100vh - 140px)'
-                        }}
-                    >
-                    <FilterComponent onSearch={filterPartners} name={true} date={true} />
+                    style={{
+                        padding: 24,
+                        minHeight: 360,
+                        background: colorBgContainer,
+                        borderRadius: borderRadiusXS,
+                    }}
+                >
+                    <FilterComponent onSearch={filterPartners} name date />
                     <div className="site-layout-background" style={{ padding: 8, minHeight: 380 }}>
                         <Row style={{ marginTop: 1 }}>
                             <Col span={24}>
@@ -129,9 +140,12 @@ const Partners = ({onSetContent, API_URL}) => {
                                     <Table
                                         dataSource={filteredPartners}
                                         columns={columns}
-                                        pagination={true}
-                                        rowClassName="editable-row"
+                                        pagination={{ pageSize: 10 }}
+                                        rowClassName="clickable-row"
                                         scroll={{ x: 'max-content' }}
+                                        onRow={(record) => ({
+                                            onClick: () => handleRowClick(record),
+                                        })}
                                     />
                                 </Card>
                             </Col>

@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useParams,useNavigate, Link } from 'react-router-dom';
-import { Card, Table, Layout, Button, message, Row, Col, Breadcrumb, Tooltip } from 'antd';
-import { CheckOutlined, CloseOutlined, DeleteOutlined, FileMarkdownOutlined, HomeOutlined, PlusOutlined, ProfileOutlined, SolutionOutlined } from '@ant-design/icons';
+import { Card, Table, Layout, Button, message, Breadcrumb, Tooltip } from 'antd';
+import { DeleteOutlined, HomeOutlined, PlusOutlined, ProfileOutlined, SolutionOutlined } from '@ant-design/icons';
 import LoadingSpinner from '../components/LoadingSpinner';
 import FilterComponent from '../components/Filter'; // Make sure this path is correct
-import dayjs from 'dayjs';
 const { Content } = Layout;
 
 const ScholarshipApplicants = ({ API_URL }) => {
@@ -148,9 +147,9 @@ const ScholarshipApplicants = ({ API_URL }) => {
                 <Breadcrumb
                     items={[
                         { href: '/', title: <HomeOutlined /> },
-                        { href: '/#/admin/scholarships', title: (<><SolutionOutlined /><span style={{textDecoration:'none'}}>Scholarships</span></>) },
+                        { href: '/#/admin/scholarships', title: (<><ProfileOutlined /><span style={{textDecoration:'none'}}>Scholarships</span></>) },
                         { href: `/#/admin/scholarships/${id}`, title: (<span style={{textDecoration:'none'}}>{scholarship.name}</span>) },
-                        { title: (<><ProfileOutlined /><span style={{textDecoration:'none'}}>Applicants</span></>) },
+                        { title: (<><SolutionOutlined /><span style={{textDecoration:'none'}}>Applicants</span></>) },
                     ]}
                 />
                 <Tooltip title='Add Applicant'>

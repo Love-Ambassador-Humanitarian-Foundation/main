@@ -4,8 +4,8 @@ import {
     EditOutlined,
     SaveOutlined,
     FilePdfOutlined,
-    SolutionOutlined,
-    UserOutlined
+    UserOutlined,
+    ProfileOutlined
 } from '@ant-design/icons';
 import jsPDF from 'jspdf';
 import {
@@ -191,7 +191,7 @@ const Scholarship = ({ API_URL }) => {
                 <Breadcrumb
                     items={[
                         { href: '/', title: <HomeOutlined /> },
-                        { href: '/#/admin/scholarships', title: (<><SolutionOutlined /><span style={{textDecoration:'none'}}>Scholarships</span></>) },
+                        { href: '/#/admin/scholarships', title: (<><ProfileOutlined /><span style={{textDecoration:'none'}}>Scholarships</span></>) },
                         { title: (<span>{formData.name}</span>) },
                     ]}
                 />

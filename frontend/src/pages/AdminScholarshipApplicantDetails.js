@@ -5,9 +5,7 @@ import {
     SaveOutlined,
     FilePdfOutlined,
     SolutionOutlined,
-    UserOutlined,
     ProfileOutlined,
-    CheckOutlined,
     CheckCircleOutlined,
     CloseCircleOutlined
 } from '@ant-design/icons';
@@ -16,13 +14,11 @@ import {
     Row, Col, Typography, Input, Button, message,
     Breadcrumb, Select, Layout, Form, DatePicker,
     Checkbox, Tooltip,
-    Image,
-    Radio
+    Image
 } from 'antd';
-import { useParams, Link, useLocation } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import axios from 'axios';
-import currencyCodes from 'currency-codes';
 import logo from '../assets/logo.jpg';
 import dayjs from 'dayjs';
 
@@ -260,9 +256,9 @@ const ScholarshipApplicant = ({ API_URL }) => {
                 <Breadcrumb
                     items={[
                         { href: '/', title: <HomeOutlined /> },
-                        { href: '/#/admin/scholarships', title: (<><SolutionOutlined /><span style={{textDecoration:'none'}}>Scholarships</span></>) },
+                        { href: '/#/admin/scholarships', title: (<><ProfileOutlined /><span style={{textDecoration:'none'}}>Scholarships</span></>) },
                         { href: `/#/admin/scholarships/${id}`, title: (<span style={{textDecoration:'none'}}>{scholarshipName}</span>) },
-                        { href: `/#/admin/scholarships/${id}/applicants`, title: (<><ProfileOutlined /><span style={{textDecoration:'none'}}>Applicants</span></>) },
+                        { href: `/#/admin/scholarships/${id}/applicants`, title: (<><SolutionOutlined /><span style={{textDecoration:'none'}}>Applicants</span></>) },
                         { title: (<span style={{textDecoration:'none'}}>{formData.first_name+' '+formData.last_name}</span>) },
                     ]}
                 />

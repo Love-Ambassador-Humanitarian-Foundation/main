@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
-import { DeleteOutlined, HomeOutlined, PlusOutlined, SolutionOutlined } from '@ant-design/icons';
+import { DeleteOutlined, HomeOutlined, PlusOutlined, ProfileOutlined } from '@ant-design/icons';
 import { Card, Row, Col, Table, theme, Button, message, Layout, Breadcrumb, Tooltip } from 'antd';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -147,7 +147,7 @@ const Scholarships = ({ API_URL }) => {
                         <HomeOutlined />
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>
-                        <SolutionOutlined />
+                        <ProfileOutlined />
                         <span>Scholarships</span>
                     </Breadcrumb.Item>
                 </Breadcrumb>
@@ -164,7 +164,6 @@ const Scholarships = ({ API_URL }) => {
                         minHeight: 360,
                         background: colorBgContainer,
                         borderRadius: borderRadiusXS,
-                        height: 'calc(100vh - 140px)',
                     }}
                 >
                     <FilterComponent onSearch={filterScholarships} name date />

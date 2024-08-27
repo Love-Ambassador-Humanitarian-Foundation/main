@@ -1,17 +1,29 @@
-import React, { useState } from 'react';
-import { Layout, Breadcrumb, Form, Input, Button, DatePicker, message } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Layout, Breadcrumb, Form, Input, Button, DatePicker, message,Select } from 'antd';
 import { HomeOutlined, ProfileOutlined, SaveOutlined, SolutionOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';  // Import dayjs for date handling
 
 const { Content } = Layout;
+const { Option } = Select;
+
+const CLASS_LEVEL_CHOICES = [
+    { value: 'Nursery', label: 'Nursery' },
+    { value: 'Primary', label: 'Primary' },
+    { value: 'JSS', label: 'Junior Secondary School' },
+    { value: 'SSS', label: 'Senior Secondary School' },
+    { value: 'Tertiary', label: 'Tertiary' },
+];
 
 const AddScholarshipApplicant = ({ API_URL }) => {
     const { id } = useParams();
+    console.log(useParams());
     const [loading, setLoading] = useState(false);
+    const [scholarship, setScholarship] =useState({})
     const currentDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
     const [formData, setFormData] = useState({
+        scholarship:id,
         first_name: "",
         middle_name: "",
         last_name: "",
@@ -32,12 +44,25 @@ const AddScholarshipApplicant = ({ API_URL }) => {
     const navigate = useNavigate();
     const [form] = Form.useForm();
 
+    useEffect(() => {
+        const fetchScholarship = async () =>{
+            try {
+                const responsescholarsip = await axios.get(`${API_URL}/api/scholarships/${id}?current_date=${currentDate}`);
+                setScholarship(responsescholarsip.data.data);
+            } catch (error){
+                console.error("Error fetching scholarship", error);
+                message.error("There was an error fetching the scholarship!", 5);
+            } 
+        }
+        fetchScholarship()
+    })
+
     const onFinish = async () => {
         setLoading(true);
         try {
-            await axios.post(`${API_URL}/api/scholarship-applicants`, formData);
+            await axios.post(`${API_URL}/api/scholarshipapplicants`, formData);
             message.success('Application submitted successfully!');
-            navigate('/applicants');
+            navigate(`/admin/scholarships/${id}/applicants`);
         } catch (error) {
             console.error('There was an error submitting the application!', error.response?.data || error.message);
             message.error('Failed to submit the application. Please try again.');
@@ -71,6 +96,12 @@ const AddScholarshipApplicant = ({ API_URL }) => {
             birthday: dateString,
         });
     };
+    const handleSelectChange = (value) => {
+        setFormData({
+            ...formData,
+            class_level: value,
+        });
+    };
 
     return (
         <Layout style={{ marginTop: '70px', height: '100vh' }}>
@@ -78,9 +109,9 @@ const AddScholarshipApplicant = ({ API_URL }) => {
                 <Breadcrumb
                     items={[
                         { href: '/', title: <HomeOutlined /> },
-                        { href: '/#/admin/scholarships', title: (<><SolutionOutlined /><span style={{textDecoration:'none'}}>Scholarships</span></>) },
-                        { href: `/#/admin/scholarships/${id}`, title: (<span style={{textDecoration:'none'}}>{'scholarshipName'}</span>) },
-                        { href: `/#/admin/scholarships/${id}/applicants`, title: (<><ProfileOutlined /><span style={{textDecoration:'none'}}>Applicants</span></>) },
+                        { href: '/#/admin/scholarships', title: (<><ProfileOutlined /><span style={{textDecoration:'none'}}>Scholarships</span></>) },
+                        { href: `/#/admin/scholarships/${id}`, title: (<span style={{textDecoration:'none'}}>{scholarship.name}</span>) },
+                        { href: `/#/admin/scholarships/${id}/applicants`, title: (<><SolutionOutlined /><span style={{textDecoration:'none'}}>Applicants</span></>) },
                         { title: (<span style={{textDecoration:'none'}}>Add Application</span>) },
                     ]}
                 />
@@ -269,14 +300,19 @@ const AddScholarshipApplicant = ({ API_URL }) => {
                         <Form.Item
                             label="Class Level"
                             name="class_level"
-                            rules={[{ required: true, message: 'Please enter the class level' }]}
+                            rules={[{ required: true, message: 'Please select the class level' }]}
                         >
-                            <Input 
-                                name="class_level"
+                            <Select
                                 value={formData.class_level}
-                                onChange={handleInputChange}
-                                placeholder="Enter Class Level" 
-                            />
+                                onChange={handleSelectChange}
+                                placeholder="Select Class Level"
+                            >
+                                {CLASS_LEVEL_CHOICES.map(option => (
+                                    <Option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </Option>
+                                ))}
+                            </Select>
                         </Form.Item>
 
                         <Form.Item>

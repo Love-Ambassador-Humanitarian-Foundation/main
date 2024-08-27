@@ -1,133 +1,278 @@
-import React, { useState } from 'react';
-import { Row, Col, Typography, Input, Upload, Button as AntButton, theme, message, Layout, Breadcrumb } from 'antd';
-import { Button } from '../components/button';
-import { useNavigate } from 'react-router-dom';
-import { SaveOutlined, HomeOutlined, EditOutlined, TeamOutlined, UploadOutlined } from '@ant-design/icons';
+import React, { useState, useEffect } from 'react';
+import {
+    HomeOutlined,
+    EditOutlined,
+    SaveOutlined,
+    FilePdfOutlined,
+    TeamOutlined,
+    UploadOutlined
+} from '@ant-design/icons';
+import jsPDF from 'jspdf';
+import {
+    Row, Col, Typography, Input, Button, message,
+    Breadcrumb, Layout, Form, DatePicker,
+    Tooltip, Image, Upload
+} from 'antd';
+import { useParams } from 'react-router-dom';
+import LoadingSpinner from '../components/LoadingSpinner';
+import axios from 'axios';
+import dayjs from 'dayjs';  // Import dayjs for date formatting
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
 
-const Partner = ({ item, API_URL }) => {
-    const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
-    //const { partnerDetails } = useParams();
-    const [editpage, setEditPage] = useState(false);
-    const navigate = useNavigate();
-    const [name, setName] = useState('Partner Company');
-    const [location, setLocation] = useState('123 Partner St, Partner City');
-    const [date, setDate] = useState('January 1st, 2024');
-    const [imageUrls, setImageUrls] = useState([]);
-
-    const saveEdit = () => {
-        setEditPage(false);
-        message.success('Partner details saved successfully');
-    };
+const Partner = ({ API_URL }) => {
+    const { id } = useParams();
+    const [editPartner, setEditPartner] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [pdfLoading, setPdfLoading] = useState(false);
+    const [logoLoading, setLogoLoading] = useState(false);
+    const [formData, setFormData] = useState({
+        id: "",
+        title: '',
+        description: '',
+        logo: '',  // Base64 encoded string for the logo
+        link: '',
+        created_date: dayjs(),  // Default to current date
+    });
 
     const handleInputChange = (e) => {
-        if (e.target.id === 'name') {
-            setName(e.target.value);
-        } else if (e.target.id === 'location') {
-            setLocation(e.target.value);
-        } else if (e.target.id === 'date') {
-            setDate(e.target.value);
+        const { name, value } = e.target;
+        setFormData(prevData => ({
+            ...prevData,
+            [name]: value
+        }));
+    };
+
+    const handleDateChange = (date) => {
+        setFormData(prevData => ({
+            ...prevData,
+            created_date: date
+        }));
+    };
+
+    useEffect(() => {
+        const fetchDetails = async () => {
+            try {
+                setIsLoading(true);
+                const response = await axios.get(`${API_URL}/api/partners/${id}`);
+                const data = response.data.data;
+
+                setFormData({
+                    id: data.id || '',
+                    title: data.title || '',
+                    description: data.description || '',
+                    logo: data.logo || '',
+                    link: data.link || '',
+                    created_date: data.created_date ? dayjs(data.created_date) : null,
+                });
+            } catch (error) {
+                console.error('Error fetching partner details:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchDetails();
+    }, [API_URL, id]);
+
+    const handleLogoUpload = (file) => {
+        setLogoLoading(true);
+
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            const base64String = reader.result.split(',')[1];
+            setFormData(prevData => ({
+                ...prevData,
+                logo: `data:image/png;base64,${base64String}`
+            }));
+            message.success('Logo uploaded successfully');
+        };
+
+        reader.onerror = (error) => {
+            console.error('There was an error uploading the file!', error);
+            message.error('Failed to upload image. Please try again.');
+        };
+
+        reader.readAsDataURL(file);  // Ensure 'file' is of type Blob/File
+
+        setLogoLoading(false);
+    };
+
+    const saveEdit = async () => {
+        setLoading(true);
+        try {
+            await axios.patch(`${API_URL}/api/partners/${id}`, {
+                ...formData,
+                created_date: formData.created_date ? formData.created_date.format('YYYY-MM-DD') : null,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            message.success('Partner details updated');
+            setEditPartner(false);
+        } catch (error) {
+            console.error('Error updating Partner details:', error);
+            message.error('Error updating Partner details');
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleImageUpload = (info) => {
-        if (info.file.status === 'done') {
-            // Assuming the server returns the image URL after upload
-            setImageUrls(prevUrls => [...prevUrls, info.file.response.url]);
-            message.success(`${info.file.name} file uploaded successfully`);
-        } else if (info.file.status === 'error') {
-            message.error(`${info.file.name} file upload failed.`);
+    const generatePdf = async () => {
+        setPdfLoading(true);
+        try {
+            const doc = new jsPDF();
+            const logoWidth = 34;
+            const logoHeight = 30;
+            const companyNameFontSize = 17;
+            const titleFontSize = 14;
+
+            if (formData.logo) {
+                const imgData = formData.logo;
+                doc.addImage(imgData, 'PNG', 10, 10, logoWidth, logoHeight);
+            }
+            
+            doc.setFontSize(companyNameFontSize);
+            doc.setFont('Helvetica', 'bold');
+            doc.text('LOVE AMBASSADORS HUMANITARIAN', doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
+            doc.text('FOUNDATION (LAHF)', doc.internal.pageSize.getWidth() / 2, 28, { align: 'center' });
+            doc.setFont('Arial', 'normal');
+            doc.setFontSize(titleFontSize);
+            doc.text('Scholarship Form', doc.internal.pageSize.getWidth() / 2, 38, { align: 'center' });
+            doc.text(`Name: ${formData.title}`, 20, 60);
+            doc.text(`Link: ${formData.link}`, 20, 70);
+            doc.text(`Description: ${formData.description}`, 20, 80);
+            doc.text(`Created Date: ${formData.created_date ? formData.created_date.format('YYYY-MM-DD') : ''}`, 20, 90);
+            doc.save(`partner_${formData.title}.pdf`);
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+        } finally {
+            setPdfLoading(false);
         }
     };
 
-    const handleRemoveImage = (url) => {
-        setImageUrls(prevUrls => prevUrls.filter(imageUrl => imageUrl !== url));
-    };
+    if (isLoading) {
+        return <LoadingSpinner />;
+    }
 
     return (
         <Layout style={{ marginTop: '70px', height: '100vh' }}>
-            <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{ backgroundColor: '#d7d7e9', borderRadius: '4px' }}>
+            <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{ backgroundColor: '#d7d7e9' }}>
                 <Breadcrumb
                     items={[
                         { href: '/', title: <HomeOutlined /> },
-                        { title: (<div onClick={navigate(`/admin/partners/`)}><TeamOutlined /><span>Partners</span></div>) },
-                        { title: (<><span>{name}</span></>) },
+                        { href: '/#/admin/partners', title: (<><TeamOutlined /><span style={{ textDecoration: 'none' }}>Partner</span></>) },
+                        { title: (<span>{formData.title}</span>) },
                     ]}
                 />
-                <EditOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} onClick={() => setEditPage(!editpage)} />
+                <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+                    {pdfLoading && <div className='spinnersmall'></div>}
+                    <Tooltip title='Generate PDF'>
+                        <FilePdfOutlined onClick={generatePdf} className='mx-2 text-danger' style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
+                    </Tooltip>
+                    <Tooltip title='Edit Partner'>
+                        <EditOutlined onClick={() => setEditPartner(!editPartner)} className='mx-2' style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
+                    </Tooltip>
+                </span>
             </div>
             <Content className='m-2'>
-                <div style={{
-                    padding: 24,
-                    minHeight: 360,
-                    background: colorBgContainer,
-                    borderRadius: borderRadiusXS,
-                    height: 'calc(100vh - 140px)'
-                }}>
-                    <Row justify="center" align="middle" style={{ marginBottom: '30px' }}>
-                        <Col xs={24} sm={24} md={16} lg={12} xl={12} style={{ backgroundColor: '#d7d7e9' }}>
-                            <div className='d-flex flex-column justify-content-between align-items-center p-2'>
-                                <TeamOutlined style={{ fontSize: 100, color: '#FFD700' }} />
-                                <Title level={3}>Partner Details</Title>
-                            </div>
-                        </Col>
-                    </Row>
-                    <Row justify="center" align="middle">
-                        <Col xs={24} sm={24} md={16} lg={12} xl={12}>
-                            <div className='d-flex flex-column justify-content-left p-2'>
-                                <Text strong>
-                                    Name: <Input id="name" type="text" className="form-control" placeholder="Name" value={name} onChange={handleInputChange} disabled={!editpage} />
-                                </Text>
-                                <Text strong>
-                                    Location: <Input id="location" type="text" className="form-control" placeholder="Location" value={location} onChange={handleInputChange} disabled={!editpage} />
-                                </Text>
-                                <Text strong>
-                                    Date: <Input id="date" type="text" className="form-control" placeholder="Date" value={date} onChange={handleInputChange} disabled={!editpage} />
-                                </Text>
-                                <Text strong>
-                                    Images: 
-                                    {editpage ? (
-                                        <Upload
-                                            name="image"
-                                            action={`${API_URL}/api/upload`} // Update with your actual upload URL
-                                            listType="picture"
-                                            multiple={true}
-                                            showUploadList={false}
-                                            onChange={handleImageUpload}
-                                        >
-                                            <AntButton icon={<UploadOutlined />}>Upload</AntButton>
-                                        </Upload>
-                                    ) : (
-                                        imageUrls.map((url, index) => (
-                                            <div key={index} style={{ marginTop: '10px', position: 'relative' }}>
-                                                <img src={url} alt="Partner" style={{ maxWidth: '100%' }} />
-                                                {editpage && (
-                                                    <AntButton
-                                                        style={{ position: 'absolute', top: 0, right: 0 }}
-                                                        icon={<UploadOutlined />}
-                                                        onClick={() => handleRemoveImage(url)}
-                                                    />
-                                                )}
-                                            </div>
-                                        ))
-                                    )}
-                                </Text>
-                            </div>
-                        </Col>
-                    </Row>
-                    <Row justify="center" align="middle" style={{ marginTop: '30px' }}>
-                        {editpage ? (
+                <div
+                    style={{
+                        padding: 12,
+                        minHeight: 360,
+                        background: '#fff',
+                        borderRadius: '4px',
+                    }}
+                >
+                    <Form layout="vertical">
+                        <Row gutter={16} align="middle">
                             <Col>
-                                <Button text="Save Changes" icon={<SaveOutlined style={{ color: '#25D366' }} />} onClick={saveEdit} />
+                                <Title level={3}>
+                                    {formData.title}
+                                </Title>
                             </Col>
-                        ) : (
                             <Col>
-                                <Button text="Edit Partner" onClick={() => setEditPage(true)} />
+                                {editPartner ? (
+                                    <Upload
+                                        name="logo"
+                                        showUploadList={false}
+                                        customRequest={({ file, onSuccess, onError }) => {
+                                            try {
+                                                handleLogoUpload(file);  // Pass the file directly
+                                                onSuccess();  // Call onSuccess when upload is successful
+                                            } catch (error) {
+                                                onError(error);  // Call onError if there is an issue
+                                            }
+                                        }}
+                                    >
+                                        <Button loading={logoLoading} icon={<UploadOutlined />}>Upload Logo</Button>
+                                    </Upload>
+                                ) : (
+                                    <Image
+                                        width={100}
+                                        src={formData.logo}
+                                        alt="Logo"
+                                    />
+                                )}
                             </Col>
+                        </Row>
+                        <Text className='m-4'>
+                            {formData.id}
+                        </Text>
+                        <Form.Item label="Partner Title" className='mt-4'>
+                            <Input
+                                name="title"
+                                value={formData.title}
+                                onChange={handleInputChange}
+                                disabled={!editPartner}
+                            />
+                        </Form.Item>
+                        <Form.Item label="Description">
+                            <Input.TextArea
+                                name="description"
+                                value={formData.description}
+                                rows={7}
+                                onChange={handleInputChange}
+                                disabled={!editPartner}
+                            />
+                        </Form.Item>
+                        <Form.Item label="Link">
+                            <Input
+                                name="link"
+                                value={formData.link}
+                                onChange={handleInputChange}
+                                disabled={!editPartner}
+                            />
+                        </Form.Item>
+                        <Form.Item label="Created Date">
+                            <DatePicker
+                                name="created_date"
+                                value={formData.created_date}
+                                onChange={handleDateChange}
+                                format="YYYY-MM-DD"
+                                disabled={!editPartner}
+                            />
+                        </Form.Item>
+                        {editPartner && (
+                            <Row justify="center">
+                                <Col>
+                                    <Button
+                                        type="primary"
+                                        icon={<SaveOutlined className='text-white' />}
+                                        onClick={saveEdit}
+                                        loading={loading}
+                                    >
+                                        Save
+                                    </Button>
+                                </Col>
+                            </Row>
                         )}
-                    </Row>
+                    </Form>
                 </div>
             </Content>
         </Layout>
