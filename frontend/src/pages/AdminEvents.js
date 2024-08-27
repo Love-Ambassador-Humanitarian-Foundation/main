@@ -40,7 +40,7 @@ const Events = ({ onSetContent,API_URL }) => {
     const deleteEvent = (id) => {
         axios.delete(`${API_URL}/api/events/${id}`)
             .then(response => {
-                const newEvents = events.filter(event => event._id !== id);
+                const newEvents = events.filter(event => event.id !== id);
                 setEvents(newEvents);
                 setFilteredEvents(newEvents);
                 message.success("Event deleted successfully!", 5);
@@ -57,7 +57,7 @@ const Events = ({ onSetContent,API_URL }) => {
             dataIndex: 'name',
             key: 'name',
             render: (text, record) => (
-                <Link to={`/admin/events/${record._id}`} className='text-decoration-none'>
+                <Link to={`/admin/events/${record.id}`} className='text-decoration-none'>
                     <Button type="link" className='text-white'>
                         {record.name}
                     </Button>

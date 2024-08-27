@@ -41,7 +41,7 @@ const Partners = ({ API_URL }) => {
         fetchPartners();
     }, [API_URL]);
 
-    const deletePartner = async (id) => {
+    const deletePartner = useCallback(async (id) => {
         try {
             await axios.delete(`${API_URL}/api/partners/${id}`);
             setPartners(prev => prev.filter(partner => partner.id !== id));
@@ -51,7 +51,26 @@ const Partners = ({ API_URL }) => {
             console.error("There was an error deleting the partner!", error);
             message.error("There was an error deleting the partner!", 5);
         }
-    };
+    }, [API_URL]);
+
+    const filterPartners = useCallback(debounce(({ itemName, dateRange }) => {
+        let filtered = partners;
+
+        if (itemName) {
+            filtered = filtered.filter(partner => 
+                partner.title.toLowerCase().includes(itemName.toLowerCase())
+            );
+        }
+
+        if (dateRange && dateRange.length === 2) {
+            filtered = filtered.filter(partner => {
+                const partnerCreatedDate = new Date(partner.created_date);
+                return partnerCreatedDate >= dateRange[0] && partnerCreatedDate <= dateRange[1];
+            });
+        }
+
+        setFilteredPartners(filtered);
+    }, 300), [partners]);
 
     const columns = useMemo(() => [
         {
@@ -78,28 +97,9 @@ const Partners = ({ API_URL }) => {
         },
     ], [deletePartner]);
 
-    const filterPartners = useCallback(debounce(({ itemName, dateRange }) => {
-        let filtered = partners;
-
-        if (itemName) {
-            filtered = filtered.filter(partner => 
-                partner.title.toLowerCase().includes(itemName.toLowerCase())
-            );
-        }
-
-        if (dateRange && dateRange.length === 2) {
-            filtered = filtered.filter(partner => {
-                const partnerCreatedDate = new Date(partner.created_date);
-                return partnerCreatedDate >= dateRange[0] && partnerCreatedDate <= dateRange[1];
-            });
-        }
-
-        setFilteredPartners(filtered);
-    }, 300), [partners]);
-
-    const handleRowClick = (record) => {
+    const handleRowClick = useCallback((record) => {
         navigate(`/admin/partners/${record.id}`);
-    };
+    }, [navigate]);
 
     if (isLoading) {
         return <LoadingSpinner />;
