@@ -6,9 +6,10 @@ For more details, see the LICENSE file in the root of the repository."""
 
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from .models import date,VALID_UNITS, User, About, Partners, Event, Payments, Logs, Notification, Email, Scholarship, ScholarshipApplicant
-from django.utils.dateparse import parse_date
-DATE_FORMAT = '%Y-%m-%d'
+from .models import date, datetime, DATE_FORMAT,DATETIME_FORMAT,VALID_UNITS, User, About, Partners, Event, Payments, Logs, Notification, Email, Scholarship, ScholarshipApplicant
+from django.utils.dateparse import parse_date, parse_datetime
+
+
 
 class UserSerializer(serializers.ModelSerializer):
     """
@@ -58,6 +59,8 @@ class AboutSerializer(serializers.ModelSerializer):
     """
     Serializer for About model.
     """
+    created_date = serializers.DateTimeField(format=DATETIME_FORMAT, input_formats=[DATETIME_FORMAT])
+    updated_date = serializers.DateTimeField(format=DATETIME_FORMAT, input_formats=[DATETIME_FORMAT])
     class Meta:
         model = About
         fields = [
@@ -71,6 +74,7 @@ class PartnersSerializer(serializers.ModelSerializer):
     """
     Serializer for Partners model.
     """
+    created_date = serializers.DateField(format=DATE_FORMAT, input_formats=[DATE_FORMAT])
     class Meta:
         model = Partners
         fields = '__all__'
@@ -79,12 +83,53 @@ class EventSerializer(serializers.ModelSerializer):
     """
     Serializer for Event model.
     """
+    start_date = serializers.DateTimeField(format=DATETIME_FORMAT, input_formats=[DATETIME_FORMAT])
+    end_date = serializers.DateTimeField(format=DATETIME_FORMAT, input_formats=[DATETIME_FORMAT])
+    ongoing = serializers.SerializerMethodField()  # Adding the is_ongoing field
+
+    
     class Meta:
         model = Event
         fields = [
-            'id', 'title', 'description', 'type', 'participants',
-            'start_date', 'end_date', 'ongoing', 'images', 'videos'
+            'id', 'title', 'description', 'eventtype', 'participants',
+            'start_date', 'end_date', 'ongoing', 'media'
         ]
+
+    def validate(self, attrs):
+
+        if attrs['start_date'] > attrs['end_date']:
+            raise serializers.ValidationError('The start date cannot be later than the end date.')
+        
+        return attrs
+
+    def get_ongoing(self, obj):
+        """
+        Determine if the event is ongoing based on the current date.
+        The current date is fetched from the request context, falling back to date.today() if not provided.
+        """
+        request = self.context.get('request')
+        current_date = datetime.today()  # Default to today's date
+
+        # Check request data for a date
+        
+        if request and 'current_date' in request.data:
+            current_date_str = request.data.get('current_date')
+            if current_date_str:
+                parsedatetime = parse_datetime(current_date_str)
+                if parsedatetime:
+                    current_date = parsedatetime
+
+        # Check query parameters for a date
+        if request and 'current_date' in request.query_params:
+            current_date_str = request.query_params.get('current_date')
+            if current_date_str:
+                parsedatetime = parse_datetime(current_date_str)
+                if parsedatetime:
+                    current_date = parsedatetime
+
+        # Ensure `ongoing` is a callable method
+        return obj.ongoing(current_date=current_date)
+
 
 class PaymentsSerializer(serializers.ModelSerializer):
     """

@@ -13,7 +13,6 @@ from django.core.exceptions import ValidationError
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager, Group, Permission
-from .currencies import CURRENCY_CHOICES  # Import currency choices
 from PIL import Image
 import uuid
 import qrcode
@@ -21,12 +20,64 @@ import base64
 from datetime import date
 import re
 from dateutil.relativedelta import relativedelta
+from django.utils.dateparse import parse_datetime
+from django.utils.timezone import make_naive, is_naive, utc
+from .currencies import CURRENCY_CHOICES  # Import currency choices
 
 
 # Define a more reasonable maximum length for char fields
+DATE_FORMAT = '%Y-%m-%d'
+DATETIME_FORMAT = DATE_FORMAT + ' %H:%M:%S'
 MAX_LENGTH = 2555
 VALID_UNITS = ['year', 'month', 'week', 'day', 'hour', 'minute', 'second',
                            'years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds']
+EVENT_TYPES = [
+        ('seminar', 'Seminar'),
+        ('fundraiser', 'Fundraiser'),
+        ('donation', 'Donation'),
+        ('awareness', 'Awareness'),
+        ('conference', 'Conference'),
+        ('workshop', 'Workshop'),
+        ('webinar', 'Webinar'),
+        ('networking', 'Networking'),
+        ('panel', 'Panel Discussion'),
+        ('training', 'Training'),
+        ('charity', 'Charity Event'),
+        ('meetup', 'Meetup'),
+        ('competition', 'Competition'),
+        ('hackathon', 'Hackathon'),
+        ('retreat', 'Retreat'),
+        ('social', 'Social Event'),
+        ('volunteering', 'Volunteering'),
+        ('exhibition', 'Exhibition'),
+        ('summit', 'Summit'),
+        ('launch', 'Product Launch'),
+        ('celebration', 'Celebration'),
+        ('festival', 'Festival'),
+        ('fundraising', 'Fundraising Event'),
+        ('gala', 'Gala Dinner'),
+        ('concert', 'Concert'),
+        ('reunion', 'Reunion'),
+        ('rally', 'Rally'),
+        ('workshop', 'Workshop'),
+        ('lecture', 'Lecture'),
+        ('symposium', 'Symposium'),
+        ('openhouse', 'Open House'),
+        ('networking', 'Networking Event'),
+        ('camp', 'Camp'),
+        ('screening', 'Film Screening'),
+        ('birthday', 'Birthday Party'),
+        ('wedding', 'Wedding'),
+        ('anniversary', 'Anniversary Celebration'),
+        ('trade_show', 'Trade Show'),
+        ('expo', 'Expo'),
+        ('community', 'Community Event'),
+        ('roundtable', 'Roundtable Discussion'),
+        ('debate', 'Debate'),
+        ('press_conference', 'Press Conference'),
+        ('demonstration', 'Demonstration'),
+        ('fund', 'Fundraising')
+    ]
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -66,6 +117,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     #is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
     joined_date = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
     position = models.CharField(max_length=255, blank=True)
@@ -97,8 +149,8 @@ class About(models.Model):
     mission = models.TextField(blank=True, null=True)
     values = models.TextField(blank=True, null=True)
     achievements = models.JSONField(blank=True, null=True)
-    created_date = models.DateTimeField(auto_now_add=True)
-    updated_date = models.DateTimeField(auto_now=True)
+    created_date = models.DateTimeField()
+    updated_date = models.DateTimeField()
     branches = models.JSONField(blank=True, null=True)
     policies = models.TextField(blank=True, null=True)
     socials = models.JSONField(blank=True, null=True)
@@ -109,7 +161,6 @@ class About(models.Model):
 
     class Meta:
         ordering = ['-created_date']
-
 
 @receiver(pre_save, sender=About)
 def limit_about_instance(sender, instance, **kwargs):
@@ -131,29 +182,40 @@ class Partners(models.Model):
         ordering = ['-created_date', 'title']
 
 class Event(models.Model):
-    EVENT_TYPES = [
-        ('seminar', 'Seminar'),
-        ('fundraiser', 'Fundraiser'),
-        ('donation', 'Donation'),
-        ('awareness', 'Awareness')
-    ]
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=MAX_LENGTH)
     description = models.TextField()
-    type = models.CharField(max_length=MAX_LENGTH, choices=EVENT_TYPES)
+    eventtype = models.CharField(max_length=MAX_LENGTH, default='seminar', choices=EVENT_TYPES)
     participants = models.JSONField()
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
-    ongoing = models.BooleanField(default=False)
-    images = models.TextField(blank=True, null=True)
-    videos = models.TextField(blank=True, null=True)
+    media = models.JSONField(default=None)
 
     def __str__(self):
         return self.title
 
     class Meta:
-        ordering = ['-end_date', 'title']
+        ordering = ['-end_date', 'start_date', 'title']
+
+    def ongoing(self, current_date=None):
+        """
+        Check if the event is ongoing based on its start_date and end_date.
+        Optionally accept a current_date parameter to test against a specific date.
+        """
+        # Use datetime.now() to get the current date and time if not provided
+        current_date = current_date or datetime.strptime(datetime.now().strftime(DATETIME_FORMAT), DATETIME_FORMAT)
+
+        # Ensure start_date and end_date are datetime objects
+        start_date = datetime.strptime(self.start_date.strftime(DATETIME_FORMAT), DATETIME_FORMAT)
+        end_date = datetime.strptime(self.end_date.strftime(DATETIME_FORMAT), DATETIME_FORMAT)
+
+        # Check if the current_date is within the range of start_date and end_date
+        if current_date > end_date or current_date < start_date:
+            return False
+
+        return True
+        
+
 
 class Payments(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

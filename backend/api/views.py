@@ -77,11 +77,11 @@ class AboutAPIView(APIView):
 class EventAPIView(APIView):
     def get(self, request):
         events = Event.objects.all()
-        serializer = EventSerializer(events, many=True)
+        serializer = EventSerializer(events, many=True,  context={'request': request})
         return Response({'success': 'true', 'message': 'Retrieved all events', 'data': serializer.data}, status=status.HTTP_200_OK)
 
     def post(self, request):
-        serializer = EventSerializer(data=request.data)
+        serializer = EventSerializer(data=request.data,  context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response({'success': 'true', 'message': 'Event created successfully', 'data': serializer.data}, status=status.HTTP_201_CREATED)
@@ -105,19 +105,19 @@ class EventDetailAPIView(APIView):
         if id:
             event = self.get_object(id)
             if event:
-                serializer = EventSerializer(event)
+                serializer = EventSerializer(event,  context={'request': request})
                 return Response({'success': 'true', 'message': 'Event retrieved successfully', 'data': serializer.data}, status=status.HTTP_200_OK)
         elif participant_id:
             events = self.get_objects_by_participant(participant_id)
             if events.exists():
-                serializer = EventSerializer(events, many=True)
+                serializer = EventSerializer(events, many=True,  context={'request': request})
                 return Response({'success': 'true', 'message': 'Events retrieved successfully', 'data': serializer.data}, status=status.HTTP_200_OK)
         return Response({'success': 'false', 'message': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, id):
         event = self.get_object(id)
         if event:
-            serializer = EventSerializer(event, data=request.data, partial=True)
+            serializer = EventSerializer(event, data=request.data, partial=True, context={'request': request})
             if serializer.is_valid():
                 serializer.save()
                 return Response({'success': 'true', 'message': 'Event updated successfully', 'data': serializer.data}, status=status.HTTP_200_OK)
@@ -128,7 +128,7 @@ class EventDetailAPIView(APIView):
         event = self.get_object(id)
         if event:
             event.delete()
-            return Response({'success': 'true', 'message': 'Event deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({'success': 'true', 'message': 'Event deleted successfully'}, status=status.HTTP_200_OK)
         return Response({'success': 'false', 'message': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
 
 class PartnerListCreateView(generics.ListCreateAPIView):
