@@ -26,13 +26,14 @@ urlpatterns = [
 
     # User login
     path('users/login', views.UserLoginAPIView.as_view(), name='user-login'),
-
+    path('users/token/verify', views.VerifyTokenAPIView.as_view(), name='user-token_verify'),
     # Password reset
     path('password/reset', views.PasswordResetRequestView.as_view(), name='password-reset-request'),
     path('password/reset/confirm/<str:uidb64>/<str:token>', views.PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
 
     # Email verification
     path('email/verify/<str:uidb64>/<str:token>', views.EmailVerificationView.as_view(), name='email-verification'),
+    
 
     # Payments URLs
     path('payments', views.PaymentListCreateView.as_view(), name='payment_list_create'),

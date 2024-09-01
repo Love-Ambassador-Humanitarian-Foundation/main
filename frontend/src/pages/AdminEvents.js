@@ -39,15 +39,8 @@ const Events = ({ onSetContent, API_URL }) => {
             })
             .catch(error => {
                 console.error("There was an error fetching the events!", error);
-                const dummyData = [
-                    { id: '1', title: 'Dummy Event 1', eventtype: 'seminar', participants: [], ongoing: true, media: [] },
-                    { id: '2', title: 'Dummy Event 2', eventtype: 'fundraiser', participants: [], ongoing: false, media: [] },
-                    { id: '3', title: 'Dummy Event 3', eventtype: 'donation', participants: [], ongoing: false, media: [] }
-                ];
-                setEvents(dummyData);
-                setFilteredEvents(dummyData);
+                
                 setIsLoading(false);
-                message.warning("Using dummy data due to error fetching events", 5);
             });
     }, [API_URL]);
 
@@ -57,6 +50,7 @@ const Events = ({ onSetContent, API_URL }) => {
                 const newEvents = events.filter(event => event.id !== id);
                 setEvents(newEvents);
                 setFilteredEvents(newEvents);
+                navigate('admin/events')
                 message.success("Event deleted successfully!", 5);
             })
             .catch(error => {

@@ -1,20 +1,17 @@
 import { useState, useEffect } from 'react';
+import { fetchUserDetails } from '../utils/utils';
 
 // Custom hook to update login status
-export const useUpdateLoginStatus = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(() => {
-        // Check initial values in local storage
-        const token = localStorage.getItem('lahf_access_token');
-        const userId = localStorage.getItem('lahf_user_id');
-        return token && userId ? true : false;
-    });
+export const useUpdateLoginStatus = (API_URL ) => {
+    const userd = fetchUserDetails(API_URL);
+    const [isLoggedIn, setIsLoggedIn] = useState(userd ? true : false);
+    const [userDetails, setUserDetails] = useState(userd);
 
     useEffect(() => {
-        // Update the state when the component mounts or local storage changes
-        const updateLoginStatus = () => {
-            const token = localStorage.getItem('lahf_access_token');
-            const userId = localStorage.getItem('lahf_user_id');
-            setIsLoggedIn(token && userId ? true : false);
+        const updateLoginStatus = async() => {
+            const userData = await fetchUserDetails(API_URL);
+            setUserDetails(userData);
+            setIsLoggedIn(userData ? true : false);
         };
 
         // Call the function to update login status when the component mounts
@@ -27,7 +24,8 @@ export const useUpdateLoginStatus = () => {
         return () => {
             window.removeEventListener('storage', updateLoginStatus);
         };
-    }, []); // Empty dependency array means this effect runs once after the initial render
+    }, [API_URL]); // Depend only on API_URL
 
-    return isLoggedIn;
+    return { isLoggedIn, userDetails };
 };
+

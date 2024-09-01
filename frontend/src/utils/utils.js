@@ -947,24 +947,118 @@ export const countryCodes = [
       name: "Zimbabwe"
     }
 ];
+export const eventTypes = [
+  { value: 'seminar', name: 'Seminar' },
+  { value: 'fundraiser', name: 'Fundraiser' },
+  { value: 'donation', name: 'Donation' },
+  { value: 'awareness', name: 'Awareness' },
+  { value: 'conference', name: 'Conference' },
+  { value: 'workshop', name: 'Workshop' },
+  { value: 'webinar', name: 'Webinar' },
+  { value: 'networking', name: 'Networking' },
+  { value: 'panel', name: 'Panel Discussion' },
+  { value: 'training', name: 'Training' },
+  { value: 'charity', name: 'Charity Event' },
+  { value: 'meetup', name: 'Meetup' },
+  { value: 'competition', name: 'Competition' },
+  { value: 'hackathon', name: 'Hackathon' },
+  { value: 'retreat', name: 'Retreat' },
+  { value: 'social', name: 'Social Event' },
+  { value: 'volunteering', name: 'Volunteering' },
+  { value: 'exhibition', name: 'Exhibition' },
+  { value: 'summit', name: 'Summit' },
+  { value: 'launch', name: 'Product Launch' },
+  { value: 'celebration', name: 'Celebration' },
+  { value: 'festival', name: 'Festival' },
+  { value: 'fundraising', name: 'Fundraising Event' },
+  { value: 'gala', name: 'Gala Dinner' },
+  { value: 'concert', name: 'Concert' },
+  { value: 'reunion', name: 'Reunion' },
+  { value: 'rally', name: 'Rally' },
+  { value: 'lecture', name: 'Lecture' },
+  { value: 'symposium', name: 'Symposium' },
+  { value: 'openhouse', name: 'Open House' },
+  { value: 'camp', name: 'Camp' },
+  { value: 'screening', name: 'Film Screening' },
+  { value: 'birthday', name: 'Birthday Party' },
+  { value: 'wedding', name: 'Wedding' },
+  { value: 'anniversary', name: 'Anniversary Celebration' },
+  { value: 'trade_show', name: 'Trade Show' },
+  { value: 'expo', name: 'Expo' },
+  { value: 'community', name: 'Community Event' },
+  { value: 'roundtable', name: 'Roundtable Discussion' },
+  { value: 'debate', name: 'Debate' },
+  { value: 'press_conference', name: 'Press Conference' },
+  { value: 'demonstration', name: 'Demonstration' },
+  { value: 'fund', name: 'Fundraising' }
+];
 
-export const fetchUserDetails = async (API_URL,userId) => {
-  const token = localStorage.getItem('lahf_access_token');
-  const id = userId || localStorage.getItem('lahf_user_id');
-  const url = API_URL;
-  //console.log(url,'===',localStorage)
-  try {
-      const response = await axios.get(`${url}/api/users/${id}`, {
-          headers: {
-              'Authorization': `Bearer ${token}`
-          }
-      });
-      return response.data.data;
-  } catch (error) {
-      console.error('Error fetching user details:', error);
-      return null;
-  }
+export const getRandomBgColorClass = () => {
+  const colors = [
+      'bg-primary',
+      'bg-secondary',
+      'bg-success',
+      'bg-danger',
+      'bg-warning',
+      'bg-info',
+      'bg-light',
+      'bg-dark',
+      'bg-white'
+  ];
+  const randomIndex = Math.floor(Math.random() * colors.length);
+  return colors[randomIndex];
 };
+
+export const fetchUserDetails = (API_URL) => {
+  return verifyAccessToken(API_URL)
+      .then((userId) => {
+          if (userId) {
+              return axios.get(`${API_URL}/api/users/${userId}`, {
+                  headers: {
+                      'Authorization': `Bearer ${localStorage.getItem('lahf_access_token')}`
+                  }
+              });
+          } else {
+              console.error('User ID not found after token verification');
+              return null;
+          }
+      })
+      .then((response) => {
+          if (response && response.data) {
+              return response.data.data;
+          } else {
+              return null;
+          }
+      })
+      .catch((error) => {
+          console.error('Error fetching user details:', error);
+          return null;
+      });
+};
+
+export const verifyAccessToken = (API_URL) => {
+  const token = localStorage.getItem('lahf_access_token');
+  if (!token) {
+      console.error('No access token found');
+      return Promise.resolve(null);
+  }
+
+  return axios.post(`${API_URL}/api/users/token/verify`, { token })
+      .then((response) => {
+          if (response.data && response.data.user_id) {
+              return response.data.user_id;
+          } else {
+              console.error('Token verification failed or user_id missing in response');
+              return null;
+          }
+      })
+      .catch((error) => {
+          console.error('Error verifying access token:', error);
+          return null;
+      });
+};
+
+
 
 export const convertImageToBase64 = (file) => {
   return new Promise((resolve, reject) => {

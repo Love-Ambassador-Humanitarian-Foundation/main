@@ -25,7 +25,7 @@ const { Option } = Select;
 const { Title, Text } = Typography;
 const { Content } = Layout;
 const User = ({ API_URL }) => {
-    const { userId } = useParams();
+    const { id:userId } = useParams();
     const [userDetails, setUserDetails] = useState(null);
     const [editProfile, setEditProfile] = useState(false);
     const [profileImage, setProfileImage] = useState(null);
@@ -78,6 +78,7 @@ const User = ({ API_URL }) => {
     };
 
     useEffect(() => {
+        console.log(userId, '====')
         const fetchDetails = async () => {
             try {
                 const user = await fetchUserDetails(API_URL, userId);

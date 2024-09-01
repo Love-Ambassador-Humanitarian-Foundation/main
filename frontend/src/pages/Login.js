@@ -24,13 +24,13 @@ const LoginPage = ({ API_URL }) => {
             
             localStorage.setItem('lahf_access_token', response.data.access);
             localStorage.setItem('lahf_refresh_token', response.data.refresh);
-            localStorage.setItem('lahf_user_id', response.data.userid);
 
             axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
             
-            const url = redirectUrl.replace(':userid', response.data.userid);
+            const url = redirectUrl.replace(':id', response.data.userid);
             navigate(url);
-            message.success('Login successful');
+            // message.success('Login successful'+url);
+            // navigate(url);
             
         } catch (error) {
             console.log(error,'=============');

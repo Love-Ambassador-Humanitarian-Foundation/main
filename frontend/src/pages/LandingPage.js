@@ -12,7 +12,6 @@ import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
 import LoadingSpinner from '../components/LoadingSpinner';
 import {useUpdateLoginStatus} from '../utils/hooks'
-import {fetchUserDetails} from '../utils/utils';
 import axios from 'axios';
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -27,10 +26,7 @@ import 'swiper/css/pagination';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
 const LandingPage = ({API_URL}) => {
-    console.log(API_URL,'------')
-    const [userDetails, setUserDetails] = useState(null);
-
-    const isLoggedIn = useUpdateLoginStatus();
+    const {isLoggedIn,userDetails} = useUpdateLoginStatus(API_URL);
 
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -143,11 +139,7 @@ const LandingPage = ({API_URL}) => {
     useEffect(() => {
         // Update the state when the component mounts
         setHeights();
-        const fetchDetails = async () => {
-            const d = await fetchUserDetails(API_URL);
-            setUserDetails(d);
-        };
-        fetchDetails();
+        
         window.addEventListener('resize', setHeights);
         window.addEventListener('load', setHeights);
         const fetchData = async () => {

@@ -140,7 +140,6 @@ const AddScholarship = ({ API_URL }) => {
                         minHeight: 360,
                         background: '#fff',
                         borderRadius: '4px',
-                        height: 'calc(100vh - 140px)'
                     }}
                 >
                     <Form

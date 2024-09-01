@@ -33,14 +33,8 @@ const SignUpPage = ({ API_URL }) => {
 
                 localStorage.setItem('lahf_access_token', response.data.access);
                 localStorage.setItem('lahf_refresh_token', response.data.refresh);
-                localStorage.setItem('lahf_user_id', response.data.userid); // Assuming the user ID is in response.data.user.id
-
                 axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
 
-                const token = localStorage.getItem('lahf_access_token');
-                const userId = localStorage.getItem('lahf_user_id');
-                console.log("UserId:",userId);
-                console.log(token)
                 // Navigate to another page and pass the user details as state
                 navigate('/email/verify');
                 message.success(response.data.message || 'Sign up successful!');

@@ -5,7 +5,7 @@ import axios from 'axios';
 import { Link, useNavigate} from 'react-router-dom';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
-
+import {getRandomBgColorClass} from '../utils/utils';
 const { Content } = Layout;
 
 const Users = ({ API_URL }) => {
@@ -14,21 +14,7 @@ const Users = ({ API_URL }) => {
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    const getRandomBgColorClass = () => {
-        const colors = [
-            'bg-primary',
-            'bg-secondary',
-            'bg-success',
-            'bg-danger',
-            'bg-warning',
-            'bg-info',
-            'bg-light',
-            'bg-dark',
-            'bg-white'
-        ];
-        const randomIndex = Math.floor(Math.random() * colors.length);
-        return colors[randomIndex];
-    };
+    
 
     useEffect(() => {
         axios.get(`${API_URL}/api/users`)
@@ -184,7 +170,6 @@ const Users = ({ API_URL }) => {
                         minHeight: 360,
                         background: '#fff',
                         borderRadius: '4px',
-                        height: 'calc(100vh - 140px)'
                     }}
                 >
                     <FilterComponent onSearch={filterUsers} name={true} date={true} />

@@ -3,15 +3,14 @@ import HeaderComponent from '../components/AdminHeader';
 import { DashboardOutlined, UsergroupAddOutlined,MailOutlined, InfoCircleOutlined,CalendarOutlined,TeamOutlined, DollarOutlined, BankOutlined, UserOutlined, BellOutlined, SolutionOutlined } from '@ant-design/icons';
 import { Layout, Menu, Badge } from 'antd';
 import {useUpdateLoginStatus} from '../utils/hooks'
-import {fetchUserDetails} from '../utils/utils';
 import { Nav } from 'react-bootstrap';
-import { Link} from 'react-router-dom';
-
+import { Link, useLocation} from 'react-router-dom';
 const { Sider } = Layout;
 
 const AdminMain = ({ API_URL,Companyname, screen }) => {
-    const [userDetails, setUserDetails] = useState(null);
-    const isLoggedIn = useUpdateLoginStatus();
+    const {isLoggedIn,userDetails} = useUpdateLoginStatus(API_URL);
+    const location = useLocation();
+    const currentUrl = location.pathname + location.search;
     //const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     
@@ -23,7 +22,7 @@ const AdminMain = ({ API_URL,Companyname, screen }) => {
         { url: '/admin/scholarships', icon: <SolutionOutlined />, label: 'Scholarships',badge:false },
         { url: '/admin/partners', icon: <TeamOutlined />, label: 'Partners',badge:false },
         { url: '/admin/events', icon: <CalendarOutlined />, label: 'Events',badge:false },
-        { url: '/admin/payments', icon: <DollarOutlined />, label: 'Payments',badge:false },
+        //{ url: '/admin/payments', icon: <DollarOutlined />, label: 'Payments',badge:false },
         { url: '/admin/branches', icon: <BankOutlined />, label: 'Branches',badge:false },
         { url: '/admin/profile', icon: <UserOutlined />, label: 'Profile',badge:false },
         { url: '/admin/emails', icon: <MailOutlined />, label: 'Emails',badge:true },
@@ -36,11 +35,7 @@ const AdminMain = ({ API_URL,Companyname, screen }) => {
         const handleResize = () => {
             setIsMobile(window.innerWidth < 768);
         };
-        const fetchDetails = async () => {
-            const d = await fetchUserDetails(API_URL);
-            setUserDetails(d);
-        };
-        fetchDetails();
+
         window.addEventListener('resize', handleResize);
 
         return () => {
@@ -65,9 +60,10 @@ const AdminMain = ({ API_URL,Companyname, screen }) => {
                             style={{ backgroundColor: '#17172f' }} // Ensure menu background matches Sider
                         >
                             {navItems.map((item, index) => (
+                                
                                 <Menu.Item
                                     key={index}
-                                    //style={{ backgroundColor: 'red' }} // Ensure non-active items match Sider
+                                    className={currentUrl.includes(item.url) ? 'bg-purple' : 'bg-transparent'}
                                 >
                                     <Nav.Item className='nav-link d-flex justify-content-left align-items-center'>
                                     {item.badge === true?

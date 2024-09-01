@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useCallback  } from 'react';
 import axios from 'axios';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { DeleteOutlined, FilterOutlined , HomeOutlined, PlusOutlined, BankOutlined } from '@ant-design/icons';
 import { Card, Row, Col, Table, theme, Button, message,Layout, Breadcrumb  } from 'antd';
 
@@ -10,7 +10,7 @@ const { Content} = Layout;
 
 const Branches = ({API_URL}) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
-    
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [branches, setBranches] = useState([]);
     const [filteredBranches, setFilteredBranches] = useState([]);
@@ -18,23 +18,36 @@ const Branches = ({API_URL}) => {
     const [about, setAbout]  = useState(null);
 
     useEffect(() => {
-        axios.get(`${API_URL}/api/about`)
-            .then(response => {
-                //console.log(response.data.response)
-                setAbout(response.data.response)
-                const fetchedBranches = response.data.response.branches ||response.data.data.branches;
-                setBranches(fetchedBranches);
-                setFilteredBranches(fetchedBranches);
+        const fetchAboutData = async () => {
+            try {
+                const response = await axios.get(`${API_URL}/api/about`);
+                const aboutData = response.data.data;
+                
+                console.log(aboutData);
+                
+                setAbout(aboutData);
+    
+                // Ensure branches exist in the response before setting the state
+                if (aboutData.branches) {
+                    const fetchedBranches = aboutData.branches;
+                    setBranches(fetchedBranches);
+                    setFilteredBranches(fetchedBranches);
+                } else {
+                    setBranches([]);  // Set empty array if no branches
+                    setFilteredBranches([]);
+                }
+    
                 setIsLoading(false);
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error("There was an error fetching the branches!", error);
                 setIsLoading(false);
-                setBranches([{id:'53545',name:"sfsdf",date:'2022-01-03'}]);
-                setFilteredBranches([{id:'53545',name:"sfsdf",date:'2022-01-03'}]);
-                message.error("There was an error fetching the branches!", 5);
-            });
+                //message.error("There was an error fetching the branches!", 5);
+            }
+        };
+    
+        fetchAboutData();
     }, [API_URL]);
+    
 
     const deleteBranch = async(id) => {
         setLoading(true);
@@ -53,8 +66,8 @@ const Branches = ({API_URL}) => {
                     'Content-Type': 'application/json'
                 }
             });
-            setAbout(response.data.response);
-            const about = response.data.response.branches || response.data.data.branches;
+            setAbout(response.data.data);
+            const about = response.data.data.branches;
             setBranches(about);
             setFilteredBranches(about);
             message.success('branch details updated');
@@ -71,13 +84,6 @@ const Branches = ({API_URL}) => {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
-            render: (text, record) => (
-                <Link to={`/admin/branches/${record.id}`} className='text-decoration-none'>
-                    <Button type="primary" className='text-white' >
-                        {record.name}
-                    </Button>
-                </Link>
-            ),
         },
         {
             title: 'Location',
@@ -88,7 +94,6 @@ const Branches = ({API_URL}) => {
             title: 'Date',
             dataIndex: 'date_created',
             key: 'date_created',
-            render: (text) => new Date(text).toLocaleDateString(),
         },
         {
             render: (text, record) => (
@@ -115,6 +120,10 @@ const Branches = ({API_URL}) => {
 
         setFilteredBranches(filtered);
     };
+    const handleRowClick = useCallback((record) => {
+        navigate(`/admin/branches/${record.id}`);
+    }, [navigate]);
+
 
     if (isLoading) {
         return <LoadingSpinner />;
@@ -138,7 +147,6 @@ const Branches = ({API_URL}) => {
                         minHeight: 360,
                         background: colorBgContainer,
                         borderRadius: borderRadiusXS,
-                        height: 'calc(100vh - 140px)'
                     }}
                 >
             <FilterComponent onSearch={filterBranches} name={true} date={true} />
@@ -150,8 +158,11 @@ const Branches = ({API_URL}) => {
                                 dataSource={filteredBranches}
                                 columns={columns}
                                 pagination={true}
-                                rowClassName="editable-row"
+                                rowClassName="clickable-row"
                                 scroll={{ x: 'max-content' }}
+                                onRow={(record) => ({
+                                    onClick: () => handleRowClick(record),
+                                })}
                             />
                         </Card>
                     </Col>

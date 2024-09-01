@@ -17,6 +17,10 @@ from .serializers import (
     PartnersSerializer, PaymentsSerializer, LogsSerializer,UserRegistrationSerializer, UserLoginSerializer, ScholarshipSerializer, ScholarshipApplicantSerializer
 )
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+from rest_framework_simplejwt.tokens import AccessToken
 from django.core.mail import send_mail # type: ignore
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
@@ -48,7 +52,7 @@ class AboutAPIView(APIView):
         if about:
             serializer = AboutSerializer(about)
             return Response({'success': 'true', 'message': 'Retrieved the company details', 'data': serializer.data}, status=status.HTTP_200_OK)
-        return Response({'success': 'false', 'message': 'No company details found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'success': 'false', 'message': 'No company details found', 'data':None}, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
         serializer = AboutSerializer(data=request.data)
@@ -65,7 +69,7 @@ class AboutAPIView(APIView):
 
                 return Response({'success': 'true', 'message': 'Event updated successfully', 'data': serializer.data}, status=status.HTTP_200_OK)
             return Response({'success': 'false', 'message': 'Failed to update event', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({'success': 'false', 'message': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'success': 'false', 'message': 'Event not found', 'data':None}, status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request):
         about = About.objects.first()
@@ -354,6 +358,29 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response({'success': True, 'message': 'User deleted successfully'})
+
+
+class VerifyTokenAPIView(APIView):
+    """
+    View to verify the validity of an access token.
+    """
+
+    # permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        token = request.data.get('token')
+
+        try:
+            # Decode the token to check if it's valid
+            access_token = AccessToken(token)
+            # Get the user_id (assuming the default setup)
+            user_id = access_token['user_id']
+
+            # You can check for token payload here, e.g., user, expiration, etc.
+            return Response({'success': True, 'message': 'Token is valid', 'user_id':user_id}, status=status.HTTP_200_OK)
+
+        except (TokenError, InvalidToken):
+            return Response({'success': False, 'message': 'Invalid or expired token','user_id':None}, status=status.HTTP_401_UNAUTHORIZED)
 
 class PaymentListCreateView(generics.ListCreateAPIView):
     queryset = Payments.objects.all()
