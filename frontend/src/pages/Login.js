@@ -24,9 +24,6 @@ const LoginPage = ({ API_URL }) => {
             
             localStorage.setItem('lahf_access_token', response.data.access);
             localStorage.setItem('lahf_refresh_token', response.data.refresh);
-
-            axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
-            
             const url = redirectUrl.replace(':id', response.data.userid);
             navigate(url);
             // message.success('Login successful'+url);

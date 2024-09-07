@@ -25,8 +25,7 @@ const AdminMain = ({ API_URL,Companyname, screen }) => {
         //{ url: '/admin/payments', icon: <DollarOutlined />, label: 'Payments',badge:false },
         { url: '/admin/branches', icon: <BankOutlined />, label: 'Branches',badge:false },
         { url: '/admin/profile', icon: <UserOutlined />, label: 'Profile',badge:false },
-        { url: '/admin/emails', icon: <MailOutlined />, label: 'Emails',badge:true },
-        { url: '/admin/notifications', icon: <BellOutlined />, label: 'Notifications',badge:true },
+        { url: '/admin/newsletters', icon: <MailOutlined />, label: 'News Letters',badge:false },
     ];
     
     const navItems = [...items];

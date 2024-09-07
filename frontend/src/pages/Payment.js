@@ -5,8 +5,9 @@ import { useParams } from 'react-router-dom';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
+import { useUpdateLoginStatus } from '../utils/hooks';
 
-const PaymentPage = ({Companyname, isloggedIn}) => {
+const PaymentPage = ({Companyname, API_URL}) => {
     const [cardNumber, setCardNumber] = useState('');
     const [expiryDate, setExpiryDate] = useState('');
     const [cvv, setCvv] = useState('');
@@ -33,10 +34,11 @@ const PaymentPage = ({Companyname, isloggedIn}) => {
         }
     };
 
+    const {isLoggedIn,userDetails} = useUpdateLoginStatus(API_URL);
     return (
         <>
-            <HeaderComponent Companyname={Companyname} isloggedIn={isloggedIn} /> {/* Include the header component */}
-            <Container className="py-5">
+            <HeaderComponent Companyname={Companyname} isloggedIn={isLoggedIn} userDetails={userDetails} /> {/* Include the header component */}
+        <Container className="py-5">
                 <Row className="justify-content-center mt-4">
                     <Col md={6} style={{ maxWidth: '380px' }}>
                         <h2 className="text-center mb-4 fs-5">Payment: <small className='text-success fs-6'>({variable})</small></h2>

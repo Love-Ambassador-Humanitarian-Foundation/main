@@ -331,7 +331,7 @@ const About = ({ API_URL }) => {
                             </Form.List>
                             {editAbout && (
                                 <Form.Item style={{ marginTop: '30px' }}>
-                                    <Button type="primary" className='text-white' htmlType="submit" loading={loading} icon={<SaveOutlined className='text-white' />} style={{ marginRight: '10px' }}>Save Changes</Button>
+                                    <Button type="primary" htmlType="submit" loading={loading} icon={<SaveOutlined />} style={{ marginRight: '10px' }}>Save Changes</Button>
                                 </Form.Item>
                             )}
                         </Form>

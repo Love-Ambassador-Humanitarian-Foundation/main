@@ -139,8 +139,8 @@ REST_FRAMEWORK = {
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),#30 days
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=60), #60 days
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=30000),#30 days
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=600000), #60 days
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
@@ -156,7 +156,7 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
-
+APPEND_SLASH=False 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 USE_L10N = True

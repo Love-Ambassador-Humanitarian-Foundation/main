@@ -298,7 +298,7 @@ const Scholarship = ({ API_URL }) => {
                         <Form.Item label="Created Date">
                             <DatePicker
                                 name="created_date"
-                                value={formData.created_date}
+                                value={currentDate}
                                 onChange={handleDateChange}
                                 format="YYYY-MM-DD"
                                 disabled={!editScholarship}
@@ -321,7 +321,7 @@ const Scholarship = ({ API_URL }) => {
                                 <Col>
                                     <Button
                                         type="primary"
-                                        icon={<SaveOutlined className='text-white' />}
+                                        icon={<SaveOutlined />}
                                         onClick={saveEdit}
                                         loading={loading}
                                     >

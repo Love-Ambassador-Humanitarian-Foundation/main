@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
-
+import { useUpdateLoginStatus } from '../utils/hooks';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -19,7 +19,7 @@ const options = [
     { title: 'Fundraising', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', url: '/payment/fundraising' },
 ];
 
-const ContributePage = ({ Companyname, isloggedIn }) => {
+const ContributePage = ({ Companyname, API_URL }) => {
     const [visible, setVisible] = useState(false);
     const [currentOption, setCurrentOption] = useState(null);
 
@@ -31,10 +31,11 @@ const ContributePage = ({ Companyname, isloggedIn }) => {
     const handleCancel = () => {
         setVisible(false);
     };
-
+    const {isLoggedIn,userDetails} = useUpdateLoginStatus(API_URL);
     return (
         <>
-            <HeaderComponent Companyname={Companyname} isloggedIn={isloggedIn} />
+            <HeaderComponent Companyname={Companyname} isloggedIn={isLoggedIn} userDetails={userDetails} /> {/* Include the header component */}
+        
             <div className="container py-5">
                 <hr />
                 <div className="row mt-5">

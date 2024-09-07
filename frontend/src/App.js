@@ -6,7 +6,6 @@ import EventsPage from './pages/Events';
 import ContactUsPage from './pages/ContactUsPage';
 import LoginPage from './pages/Login';
 import SignUpPage from './pages/SignUp';
-import Profile from './pages/Profile';
 import PaymentPage from './pages/Payment';
 import ContributePage from './pages/Contribute';
 import NotFound from './pages/NotFound';
@@ -29,21 +28,24 @@ import Partner from './pages/AdminPartnerDetail';
 import Payment from './pages/AdminPaymentDetail';
 import Branch from './pages/AdminBranchDetail';
 import Event from './pages/AdminEventDetail';
-import Emails from './pages/AdminEmails';
-import Notifications from './pages/AdminNotifications';
 import PrivateRoute from './utils/PrivateRoute.js';
 import LogoutPage from './pages/Logout.js';
 import EmailVerificationPage from './pages/EmailVerificationPage.js';
 import Registering from './pages/Registering.js';
 import UserProfilePage from './pages/Profile';
-
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
 import AddScholarshipApplicant from './pages/AdminAddScholarshipApplicant.js';
 import AddPartner from './pages/AdminAddPartners.js';
 import AddEvent from './pages/AdminAddEvents.js';
 import EventParticipants from './pages/AdminEventParticipants.js';
 import AddEventParticipant from './pages/AdminAddEventParticipant.js';
+import AdminProfilePage from './pages/AdminProfile.js';
+import Newsletters from './pages/AdminNewsletters.js';
+import NewsletterDetail from './pages/AdminNewsletterDetail.js';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
+import AddNewsletter from './pages/AdminAddNewsletterDetail.js';
+import NewsletterReceipients from './pages/AdminNewsletterReceipients.js';
 
 
 const Companyname = 'LAHF';
@@ -62,7 +64,7 @@ const App = ({API_URL}) => {
             <Route path="/logout" element={<LogoutPage API_URL={API_URL} />} exact ></Route>
             <Route path="/email/verify" element={<EmailVerificationPage API_URL={API_URL} />} exact ></Route>
             <Route path="/email/registration/:uid/:token" element={<Registering API_URL={API_URL} />} exact ></Route>
-            <Route path="/profile/:userid" element={<PrivateRoute redirectUrl={"/profile/:userid"} API_URL={API_URL} ><UserProfilePage API_URL={API_URL} /></PrivateRoute>} exact ></Route>
+            <Route path="/profile/:id" element={<PrivateRoute redirectUrl={"/profile/:id"} API_URL={API_URL} ><UserProfilePage API_URL={API_URL} /></PrivateRoute>} exact ></Route>
             <Route path="/payment/:variable" element={<PrivateRoute redirectUrl={"/admin/payment/:variable"} API_URL={API_URL} ><PaymentPage API_URL={API_URL} /></PrivateRoute>} ></Route>
             <Route path="/admin/users" element={<PrivateRoute redirectUrl={"/admin/users"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<Users API_URL={API_URL} />} /></PrivateRoute>} />
             <Route path="/admin/users/add" element={<PrivateRoute redirectUrl={"/admin/users/add"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<AddUser API_URL={API_URL} />} /></PrivateRoute>} />
@@ -87,27 +89,13 @@ const App = ({API_URL}) => {
             <Route path="/admin/payments/:id" element={<PrivateRoute redirectUrl={"/admin/payments/:id"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<Payment API_URL={API_URL} />} /></PrivateRoute>} />
             <Route path="/admin/branches" element={<PrivateRoute redirectUrl={"/admin/branches"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname}  screen={<Branches API_URL={API_URL} />} /></PrivateRoute>} />
             <Route path="/admin/branches/:id" element={<PrivateRoute redirectUrl={"/admin/branches/:id"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<Branch API_URL={API_URL} />} /></PrivateRoute>} />
-            <Route path="/admin/profile" element={<PrivateRoute redirectUrl={"/admin/profile"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<Profile API_URL={API_URL} />} /></PrivateRoute>} />
-
-
-            <Route 
-                path="/admin/emails" 
-                element={
-                    <PrivateRoute redirectUrl={"/admin/emails"} API_URL={API_URL} >
-                        <AdminMain API_URL={API_URL} Companyname={Companyname} screen={<Emails API_URL={API_URL} />} />
-                    </PrivateRoute>
-                }
-            />
-
-            <Route 
-              path="/admin/notifications" 
-              element={
-                  <PrivateRoute redirectUrl={"/admin/notifications"} API_URL={API_URL} >
-                      <AdminMain API_URL={API_URL} Companyname={Companyname} screen={<Notifications API_URL={API_URL} />} />
-                  </PrivateRoute>
-              }
-          />
-
+            <Route path="/admin/profile" element={<PrivateRoute redirectUrl={"/admin/profile"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<AdminProfilePage API_URL={API_URL} />} /></PrivateRoute>} />
+            <Route path="/admin/newsletters" element={<PrivateRoute redirectUrl={"/admin/newsletters"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<Newsletters API_URL={API_URL} />} /></PrivateRoute>} />
+            <Route path="/admin/newsletters/:id" element={<PrivateRoute redirectUrl={"/admin/newsletters/:id"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<NewsletterDetail API_URL={API_URL} />} /></PrivateRoute> } />
+            <Route path="/admin/newsletters/add" element={<PrivateRoute redirectUrl={"/admin/newsletters/add"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<AddNewsletter API_URL={API_URL} />} /></PrivateRoute> } />
+            <Route path="/admin/newsletters/receipients" element={<PrivateRoute redirectUrl={"/admin/newsletters/receipients"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<NewsletterReceipients API_URL={API_URL} />} /></PrivateRoute>} />
+            <Route path="/admin/newsletters/receipients/:id" element={<PrivateRoute redirectUrl={"/admin/newsletters/receipients/:id"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<NewsletterDetail API_URL={API_URL} />} /></PrivateRoute> } />
+            <Route path="/admin/newsletters/receipients/add" element={<PrivateRoute redirectUrl={"/admin/newsletters/receipients/add"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<AddNewsletter API_URL={API_URL} />} /></PrivateRoute> } />
             {/* Add other routes as needed */}
             {/* <Redirect from="/" to="/" /> */}
             

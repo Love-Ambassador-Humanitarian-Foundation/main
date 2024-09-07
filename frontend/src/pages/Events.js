@@ -3,9 +3,10 @@ import { Row, Col, Input} from 'antd';
 import Timeline from '../components/Timeline';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
+import { useUpdateLoginStatus } from '../utils/hooks';
 const { Search } = Input;
 
-const EventPage = ({Companyname, isloggedIn}) => {
+const EventPage = ({Companyname, API_URL}) => {
     
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -44,9 +45,10 @@ const EventPage = ({Companyname, isloggedIn}) => {
         );
     });
 
+    const {isLoggedIn,userDetails} = useUpdateLoginStatus(API_URL);
     return (
         <>
-            <HeaderComponent Companyname={Companyname} isloggedIn={isloggedIn} /> {/* Include the header component */}
+            <HeaderComponent Companyname={Companyname} isloggedIn={isLoggedIn} userDetails={userDetails} /> {/* Include the header component */}
             <div className="container py-5">
                 <h2 className="text-center mb-2 mt-5">Events</h2>
                 <Row justify="center" className="mb-3">

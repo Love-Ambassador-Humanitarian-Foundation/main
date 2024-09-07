@@ -5,11 +5,10 @@ You may not modify, copy, or distribute this software without permission.
 For more details, see the LICENSE file in the root of the repository."""
 
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from django.contrib.auth import authenticate
-from .models import date, datetime, DATE_FORMAT,DATETIME_FORMAT,VALID_UNITS, User, About, Partners, Event, Payments, Logs, Notification, Email, Scholarship, ScholarshipApplicant
+from .models import date, datetime, DATE_FORMAT,DATETIME_FORMAT,VALID_UNITS, User, About, Partners, Event, Payments, Logs, Scholarship, ScholarshipApplicant, Newsletter,NewsletterReceipients
 from django.utils.dateparse import parse_date, parse_datetime
-
-
 
 class UserSerializer(serializers.ModelSerializer):
     """
@@ -130,7 +129,6 @@ class EventSerializer(serializers.ModelSerializer):
         # Ensure `ongoing` is a callable method
         return obj.ongoing(current_date=current_date)
 
-
 class PaymentsSerializer(serializers.ModelSerializer):
     """
     Serializer for Payments model.
@@ -152,22 +150,37 @@ class LogsSerializer(serializers.ModelSerializer):
             'id', 'user', 'action', 'date_created', 'details'
         ]
 
-class NotificationSerializer(serializers.ModelSerializer):
-    """
-    Serializer for Notification model.
-    """
+class NewsletterSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateField(format=DATE_FORMAT, input_formats=[DATE_FORMAT])
+    
     class Meta:
-        model = Notification
-        fields = ['id', 'recipient', 'message', 'is_read', 'created_at']
+        model = Newsletter
+        fields = '__all__'
 
-class EmailSerializer(serializers.ModelSerializer):
-    """
-    Serializer for Email model.
-    """
+
+class NewsletterReceipientsSerializer(serializers.ModelSerializer):
+    joined_at = serializers.DateField(format=DATE_FORMAT, input_formats=[DATE_FORMAT])
+    firstname = serializers.SerializerMethodField()
+    lastname = serializers.SerializerMethodField()
+
     class Meta:
-        model = Email
-        fields = ['id', 'sender', 'recipient', 'subject', 'body', 'sent_at', 'read']
+        model = NewsletterReceipients
+        fields = ['id', 'email', 'joined_at', 'firstname', 'lastname']
 
+    def get_firstname(self, obj):
+        # Try to fetch the user based on the recipient's email
+        user = User.objects.filter(email=obj.email).first()
+        if user:
+            return user.firstname
+        return None
+
+    def get_lastname(self, obj):
+        # Try to fetch the user based on the recipient's email
+        user = User.objects.filter(email=obj.email).first()
+        if user:
+            return user.lastname
+        return None
+        
 class ScholarshipSerializer(serializers.ModelSerializer):
     
     created_date = serializers.DateField(format=DATE_FORMAT, input_formats=[DATE_FORMAT])

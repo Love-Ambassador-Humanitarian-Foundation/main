@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>News Letter</title>
+    <style>
+        /* Include inline Bootstrap CSS for email compatibility */
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .header img {
+            max-width: 100%;
+            height: auto;
+        }
+        .header h1 {
+            margin: 0;
+            color: #4CAF50;
+            font-size: 24px;
+        }
+        .content {
+            padding: 20px;
+        }
+        .content p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .verify-button {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px 0;
+            text-align: center;
+            background-color: #4CAF50;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .footer {
+            text-align: center;
+            padding: 10px 0;
+            border-top: 1px solid #ddd;
+            margin-top: 20px;
+            color: #888;
+        }
+    </style>
+</head>
+<body style="background-color: #f4f4f4; margin: 0; padding: 0; color: #333; font-family: Verdana, sans-serif;">
+    <div class="container" style="background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+        <div class="header" style="text-align: center; padding: 10px 0; border-bottom: 1px solid #ddd;">
+            <img src="{{user.logo}}" alt="Company Logo" style="max-width: 100%; height: auto;">
+            <h1 style="margin: 0; color: #4CAF50; font-size: 24px;">News Letter</h1>
+        </div>
+        <div class="content" style="padding: 20px;">
+            <p style="margin: 10px 0; line-height: 1.6;">Hi {{user.firstname}},</p>
+            <p style="margin: 10px 0; line-height: 1.6;">Click the link below to verify your email address:</p>
+            <a href="{{verify_link}}" class="verify-button" style="display: block; width: 200px; margin: 20px auto; padding: 10px 0; text-align: center; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 5px; font-size: 16px;">Verify Email</a>
+            <p style="margin: 10px 0; line-height: 1.6;">If you did not request this email, please ignore it.</p>
+        </div>
+        <div class="footer" style="text-align: center; padding: 10px 0; border-top: 1px solid #ddd; margin-top: 20px; color: #888;">
+            <p style="margin: 0;">Thank you for using our service!</p>
+        </div>
+    </div>
+</body>
+</html>

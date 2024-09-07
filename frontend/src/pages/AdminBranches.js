@@ -51,8 +51,6 @@ const Branches = ({API_URL}) => {
 
     const deleteBranch = async(id) => {
         setLoading(true);
-        const token = localStorage.getItem('lahf_access_token');
-
         const formData = about;
         formData.branches = branches.filter(branch => branch.id !== id)
     
@@ -61,10 +59,7 @@ const Branches = ({API_URL}) => {
     
         try {
             const response = await axios.put(`${API_URL}/api/about`, formData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
+
             });
             setAbout(response.data.data);
             const about = response.data.data.branches;

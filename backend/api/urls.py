@@ -4,8 +4,19 @@ This software is licensed under [Proprietary License].
 You may not modify, copy, or distribute this software without permission.
 For more details, see the LICENSE file in the root of the repository."""
 
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from . import views
+
+class CustomRouter(DefaultRouter):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.trailing_slash = ''  # Disable the trailing slash
+router = CustomRouter()
+
+router.register(r'newsletters', views.NewsletterViewSet)
+router.register(r'newsletter-recipients', views.NewsletterReceipientsViewSet, basename='newsletter-recipients')
+
 
 urlpatterns = [
     path('', views.HomeView.as_view(), name='home'),
@@ -43,13 +54,9 @@ urlpatterns = [
     path('logs', views.LogsListCreateView.as_view(), name='logs_list_create'),
     path('logs/<uuid:id>', views.LogsDetailView.as_view(), name='logs_detail'),
 
-    # Notification URLs
-    path('notifications', views.NotificationListCreateView.as_view(), name='notification-list-create'),
-    path('notifications/<uuid:id>', views.NotificationDetailView.as_view(), name='notification-detail'),
-
-    # Email URLs
-    path('emails', views.EmailListCreateView.as_view(), name='email-list-create'),
-    path('emails/<uuid:id>', views.EmailDetailView.as_view(), name='email-detail'),
+    # Newsletters URLs
+    path('', include(router.urls)),
+    path('send-newsletter', views.NewsletterSendView.as_view(), name='send-newsletter'),
 
     # Scholarship URLs
     path('scholarships', views.ScholarshipListCreateView.as_view(), name='scholarship-list-create'),

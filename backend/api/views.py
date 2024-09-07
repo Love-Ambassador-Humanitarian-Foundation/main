@@ -8,26 +8,32 @@ import os
 from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status, generics, exceptions as djangoexceptions
+from rest_framework import status, viewsets, generics, exceptions as djangoexceptions
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from .models import User, About, Event, Partners, Payments, Logs, Notification, Email, Scholarship, ScholarshipApplicant
+from rest_framework.exceptions import ValidationError
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
+from .models import User, About, Event, Partners, Payments, Logs,Scholarship, ScholarshipApplicant, Newsletter, NewsletterReceipients
 from .serializers import (
-    UserSerializer, AboutSerializer, EventSerializer,NotificationSerializer,EmailSerializer,
+    UserSerializer, AboutSerializer, EventSerializer,NewsletterSerializer, NewsletterReceipientsSerializer,
     PartnersSerializer, PaymentsSerializer, LogsSerializer,UserRegistrationSerializer, UserLoginSerializer, ScholarshipSerializer, ScholarshipApplicantSerializer
 )
+from .templates import Html
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from .utils import Utils
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from rest_framework_simplejwt.tokens import AccessToken
-from django.core.mail import send_mail # type: ignore
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
-from django.contrib.auth import login
+from django.contrib.auth import login, get_user_model
+from django.forms.models import model_to_dict
 from django.conf import settings
 from django.db import connection
+
+User = get_user_model()
 
 NAME = 'LAHF'
 VERSION = '1.0.0'
@@ -255,7 +261,12 @@ class UserLoginAPIView(APIView):
                 'refresh': str(refresh),
                 'access': str(refresh.access_token)
             }, status=status.HTTP_200_OK)
-        return Response({'success': False, 'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        # Include serializer.errors in the response for invalid credentials
+        return Response({
+            'success': False,
+            'message': 'Invalid credentials',
+            'errors': serializer.errors
+        }, status=status.HTTP_401_UNAUTHORIZED)
 
 class PasswordResetRequestView(APIView):
     
@@ -459,119 +470,237 @@ class LogsDetailView(generics.RetrieveUpdateDestroyAPIView):
         self.perform_destroy(instance)
         return Response({'success': True, 'message': 'Log deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 
-class NotificationListCreateView(generics.ListCreateAPIView):
-    queryset = Notification.objects.all()
-    serializer_class = NotificationSerializer
+class NewsletterViewSet(viewsets.ModelViewSet):
+    queryset = Newsletter.objects.all()
+    serializer_class = NewsletterSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response({
+                'success': True,
+                'message': 'Newsletter created successfully',
+                'data': serializer.data
+            }, status=status.HTTP_201_CREATED, headers=headers)
+        return Response({
+            'success': False,
+            'message': 'Failed to create newsletter',
+            'errors': serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
 
     def list(self, request, *args, **kwargs):
+        # Return the single instance if it exists
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response({
             'success': True,
-            'message': 'Notifications retrieved successfully',
+            'message': 'Newsletter retrieved successfully',
             'data': serializer.data
         })
+
+    def retrieve(self, request, *args, **kwargs):
+        
+        try:
+            instance = self.get_object()
+        except Newsletter.DoesNotExist:
+            return Response({
+                'success': False,
+                'message': f'Newsletter with id {kwargs["pk"]} not found'
+            }, status=status.HTTP_404_NOT_FOUND)
+        serializer = self.get_serializer(instance)
+        return Response({
+            'success': True,
+            'message': f'Newsletter {instance.id} retrieved successfully',
+            'data': serializer.data
+        })
+
+    def update(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+        except Newsletter.DoesNotExist:
+            return Response({
+                'success': False,
+                'message': 'Newsletter not found',
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        # Validate data for PUT request (must provide all fields)
+        serializer = self.get_serializer(instance, data=request.data)
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response({
+                'success': True,
+                'message': 'Newsletter updated successfully',
+                'data': serializer.data
+            })
+        return Response({
+            'success': False,
+            'message': 'Failed to update newsletter',
+            'errors': serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+        except Newsletter.DoesNotExist:
+            return Response({
+                'success': False,
+                'message': 'Newsletter not found',
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        self.perform_destroy(instance)
+        return Response({
+            'success': True,
+            'message': 'Newsletter deleted successfully'
+        }, status=status.HTTP_204_NO_CONTENT)
+
+
+
+class NewsletterReceipientsViewSet(viewsets.ModelViewSet):
+    queryset = NewsletterReceipients.objects.all().order_by('-joined_at')
+    serializer_class = NewsletterReceipientsSerializer
+
+    def get_user_data(self, email):
+        """
+        Check if the email exists in the User model.
+        If it does, return the user's first name, last name, and email.
+        Otherwise, return None.
+        """
+        try:
+            user = User.objects.get(email=email)
+            return model_to_dict(user)  # This will return all fields of the User model 
+        except User.DoesNotExist:
+            return None
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response({
+
+        custom_response = {
             'success': True,
-            'message': 'Notification created successfully',
+            'message': 'Recipient created successfully',
             'data': serializer.data
-        }, status=status.HTTP_201_CREATED, headers=headers)
-
-class NotificationDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Notification.objects.all()
-    serializer_class = NotificationSerializer
-    lookup_field = 'id'
-
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response({
-            'success': True,
-            'message': 'Notification details retrieved successfully',
-            'data': serializer.data
-        })
-
-    def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response({
-            'success': True,
-            'message': 'Notification updated successfully',
-            'data': serializer.data
-        })
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response({
-            'success': True,
-            'message': 'Notification deleted successfully'
-        }, status=status.HTTP_204_NO_CONTENT)
-
-class EmailListCreateView(generics.ListCreateAPIView):
-    queryset = Email.objects.all()
-    serializer_class = EmailSerializer
+        }
+        return Response(custom_response, status=status.HTTP_201_CREATED)
 
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response({
-            'success': True,
-            'message': 'Emails retrieved successfully',
-            'data': serializer.data
-        })
+        queryset = self.filter_queryset(self.get_queryset())
+        data = []
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response({
-            'success': True,
-            'message': 'Email created successfully',
-            'data': serializer.data
-        }, status=status.HTTP_201_CREATED, headers=headers)
+        for recipient in queryset:
+            user_data = self.get_user_data(recipient.email)
+            if user_data:
+                # Include recipient ID in the user data
+                user_data['id'] = recipient.id
+                data.append(user_data)  # Add user data if user exists
+            else:
+                recipient_data = model_to_dict(recipient)
+                recipient_data['id'] = recipient.id  # Ensure the ID is included
+                data.append(recipient_data)  # Add recipient data otherwise
 
-class EmailDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Email.objects.all()
-    serializer_class = EmailSerializer
-    lookup_field = 'id'
+        custom_response = {
+            'success': True,
+            'message': 'Recipients fetched successfully',
+            'data': data
+        }
+        return Response(custom_response)
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response({
-            'success': True,
-            'message': 'Email details retrieved successfully',
-            'data': serializer.data
-        })
-
+        user_data = self.get_user_data(instance.email)
+        if user_data:
+            user_data['id'] = instance.id
+            custom_response = {
+                'success': True,
+                'message': 'Recipient details fetched successfully',
+                'data': user_data
+            }
+        else:
+            recipient_data = model_to_dict(instance)
+            recipient_data['id'] = instance.id
+            custom_response = {
+                'success': True,
+                'message': 'Recipient details fetched successfully',
+                'data': recipient_data
+            }
+        
+        return Response(custom_response)
     def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data)
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        return Response({
+
+        custom_response = {
             'success': True,
-            'message': 'Email updated successfully',
+            'message': 'Recipient updated successfully',
             'data': serializer.data
-        })
+        }
+        return Response(custom_response)
+
+    def partial_update(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
-        return Response({
+
+        custom_response = {
             'success': True,
-            'message': 'Email deleted successfully'
-        }, status=status.HTTP_204_NO_CONTENT)
+            'message': 'Recipient deleted successfully',
+            'data': None
+        }
+        return Response(custom_response, status=status.HTTP_204_NO_CONTENT)
+
+class NewsletterSendView(APIView):
+    """
+    View to handle sending newsletters to recipients.
+
+    This view retrieves the newsletter by its ID, fetches all recipients, 
+    and sends the newsletter email to each recipient in HTML format.
+    
+    """
+    def post(self, request):
+        # Get the newsletter ID from request
+        newsletterid = request.data.get('newsletter')
+        newsletter = Newsletter.objects.filter(id=newsletterid).first()  # Fetch the newsletter object
+
+        # Ensure the newsletter exists
+        if not newsletter:
+            return Response({'success': False, 'message': 'Newsletter not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Fetch all recipients for the newsletter
+        newsletterreceipients = NewsletterReceipients.objects.all().order_by('-joined_at')
+
+        try:
+            # Define the email subject and create the HTML content using the template
+            subject = "Newsletter"
+            html = Html()  # Assume Html class is properly defined elsewhere
+            newsletter_html = html.newsletter_template(
+                title=subject,
+                firstname="John",  # Customize per recipient if needed
+                article_title=newsletter.title,  # Assuming 'title' is an attribute of Newsletter
+                article_body=newsletter.message  # Assuming 'body' is an attribute of Newsletter
+            )
+
+            # Send the email to all recipients
+            Utils().send_email_message(
+                subject='Lahf '+subject,
+                message='',  # Optional plain-text message
+                from_email=settings.EMAIL_HOST_USER,  # Sender's email address
+                recipient_list=[recipient.email for recipient in newsletterreceipients],  # All recipient emails
+                html_message=newsletter_html  # The HTML content of the email
+            )
+            
+            # Return success response if emails are sent successfully
+            return Response({'success': True, 'message': 'Newsletter sent successfully', 'data': None}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            # Handle any unexpected errors during email sending
+            return Response({'success': False, 'message': f'Error: {str(e)}', 'data': None}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class ScholarshipListCreateView(generics.ListCreateAPIView):
@@ -631,7 +760,6 @@ class ScholarshipDetailView(generics.RetrieveUpdateDestroyAPIView):
             'message': 'Scholarship deleted successfully'
         }, status=status.HTTP_204_NO_CONTENT) 
 
-
 class ScholarshipApplicantListCreateView(generics.ListCreateAPIView):
     serializer_class = ScholarshipApplicantSerializer
 
@@ -669,7 +797,6 @@ class ScholarshipApplicantListCreateView(generics.ListCreateAPIView):
             'message': 'Applicant applied successfully',
             'data': serializer.data
         }, status=status.HTTP_201_CREATED, headers=headers)
-
 
 class ScholarshipApplicantDetailView(generics.RetrieveUpdateDestroyAPIView):
     
@@ -733,6 +860,7 @@ class ScholarshipApplicantApprovalView(generics.UpdateAPIView):
                 'organisation_signature_date': applicant.organisation_signature_date
             }
         }, status=status.HTTP_200_OK)
+
 class ScholarshipApplicantDisApprovalView(generics.UpdateAPIView):
     queryset = ScholarshipApplicant.objects.all()
     serializer_class = ScholarshipApplicantSerializer

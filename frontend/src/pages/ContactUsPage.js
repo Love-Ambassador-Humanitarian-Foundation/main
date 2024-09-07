@@ -4,10 +4,12 @@ import { Button } from '../components/button';
 import { SendOutlined, TwitterOutlined, InstagramOutlined, FacebookOutlined, WhatsAppOutlined, LinkedinOutlined } from '@ant-design/icons'; // Import social icons from Ant Design
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
-const ContactUsPage = ({Companyname,isloggedIn}) => {
+import { useUpdateLoginStatus } from '../utils/hooks';
+const ContactUsPage = ({Companyname,API_URL}) => {
+    const {isLoggedIn,userDetails} = useUpdateLoginStatus(API_URL);
     return (
         <>
-            <HeaderComponent Companyname={Companyname} isloggedIn={isloggedIn} /> {/* Include the header component */}
+            <HeaderComponent Companyname={Companyname} isloggedIn={isLoggedIn} userDetails={userDetails} /> {/* Include the header component */}
         
             <Container className="py-5">
                 <h2 className="text-center mb-2 mt-5">Contact Us</h2>

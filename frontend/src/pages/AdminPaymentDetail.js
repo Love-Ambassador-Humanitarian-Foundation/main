@@ -60,7 +60,6 @@ const Payment = ({ item, API_URL }) => {
                     minHeight: 360,
                     background: colorBgContainer,
                     borderRadius: borderRadiusXS,
-                    height: 'calc(100vh - 140px)'
                 }}>
                     <Row justify="center" align="middle" style={{ marginBottom: '30px' }}>
                         <Col xs={24} sm={24} md={16} lg={12} xl={12} style={{ backgroundColor: '#d7d7e9' }}>
@@ -104,7 +103,7 @@ const Payment = ({ item, API_URL }) => {
                     <Row justify="center" align="middle" style={{ marginTop: '30px' }}>
                         {editpage ? (
                             <Col>
-                                <Button text="Save Changes" icon={<SaveOutlined style={{ color: '#25D366' }} />} onClick={saveEdit} />
+                                <Button text="Save Changes" icon={<SaveOutlined />} onClick={saveEdit} />
                             </Col>
                         ) : (
                             <Col>

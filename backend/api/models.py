@@ -102,17 +102,17 @@ class CustomUserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    email = models.EmailField(max_length=255, unique=True)
-    firstname = models.CharField(max_length=255)
-    lastname = models.CharField(max_length=255)
-    numberpre = models.CharField(max_length=255,blank=True, null=True)
+    email = models.EmailField(max_length=MAX_LENGTH, unique=True)
+    firstname = models.CharField(max_length=MAX_LENGTH)
+    lastname = models.CharField(max_length=MAX_LENGTH)
+    numberpre = models.CharField(max_length=MAX_LENGTH,blank=True, null=True)
     number = models.IntegerField(blank=True, null=True)
     address = models.TextField(blank=True, null=True)
-    facebook = models.CharField(max_length=255, blank=True, null=True)
-    instagram = models.CharField(max_length=255, blank=True, null=True)
-    twitter = models.CharField(max_length=255, blank=True, null=True)
-    linkedIn = models.CharField(max_length=255, blank=True, null=True)
-    whatsapp = models.CharField(max_length=255, blank=True, null=True)
+    facebook = models.CharField(max_length=MAX_LENGTH, blank=True, null=True)
+    instagram = models.CharField(max_length=MAX_LENGTH, blank=True, null=True)
+    twitter = models.CharField(max_length=MAX_LENGTH, blank=True, null=True)
+    linkedIn = models.CharField(max_length=MAX_LENGTH, blank=True, null=True)
+    whatsapp = models.CharField(max_length=MAX_LENGTH, blank=True, null=True)
     profileImage = models.TextField(blank=True, null=True)
     #is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
@@ -245,33 +245,27 @@ class Logs(models.Model):
     class Meta:
         ordering = ['-date_created', 'user', 'action']
 
-class Notification(models.Model):
+class Newsletter(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    recipient = models.CharField(max_length=MAX_LENGTH, blank=False, null=False)
-    message = models.CharField(max_length=MAX_LENGTH)
-    is_read = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+    title = models.CharField(max_length=MAX_LENGTH, blank=False, null=False)
+    message = models.TextField()
+    is_sent = models.BooleanField(default=False)
+    created_at = models.DateField()
 
     def __str__(self):
-        return f"Notification for {self.recipient} - {self.message}"
+        return f"Newsletter on {self.title}"
 
     class Meta:
         ordering = ['-created_at']
 
-class Email(models.Model):
+class NewsletterReceipients(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    sender = models.CharField(max_length=MAX_LENGTH, blank=False, null=False)
-    recipient = models.CharField(max_length=MAX_LENGTH, blank=False, null=False)
-    subject = models.CharField(max_length=MAX_LENGTH, blank=False, null=False)
-    body = models.TextField(blank=False, null=False)
-    sent_at = models.DateTimeField(auto_now_add=True)
-    read = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.subject} - {self.recipient}"
+    email = models.EmailField(max_length=MAX_LENGTH, unique=True)
+    joined_at = models.DateField()
 
     class Meta:
-        ordering = ['-sent_at', 'recipient']
+        ordering = ['-joined_at']
+
 
 class Scholarship(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

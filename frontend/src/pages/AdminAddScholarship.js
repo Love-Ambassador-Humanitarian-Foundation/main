@@ -249,7 +249,7 @@ const AddScholarship = ({ API_URL }) => {
                                 type="primary" 
                                 htmlType="submit" 
                                 loading={loading} 
-                                icon={<SaveOutlined className='text-white' />}
+                                icon={<SaveOutlined />}
                             >
                                 Add Scholarship
                             </Button>

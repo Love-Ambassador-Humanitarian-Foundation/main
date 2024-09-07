@@ -12,191 +12,103 @@ import {
 } from '@ant-design/icons';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
-import { Row, Col, Avatar, Typography, Breadcrumb, Input, message,Select, Button } from 'antd';
+import { Row, Col, theme,Avatar, Typography, Breadcrumb, Input, message, Select, Button, Layout, Form, Tooltip } from 'antd';
 import { countryCodes, fetchUserDetails, convertImageToBase64 } from '../utils/utils';
 import { useUpdateLoginStatus } from '../utils/hooks';
 import { useParams } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import axios from 'axios';
+import { Content } from 'antd/es/layout/layout';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
 
 const UserProfilePage = ({ API_URL }) => {
-    const { userId } = useParams();
-    const isLoggedIn = useUpdateLoginStatus();
-    const [userDetails, setUserDetails] = useState(null);
+    const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
+    const { isLoggedIn, userDetails } = useUpdateLoginStatus(API_URL);
     const [editProfile, setEditProfile] = useState(false);
     const [profileImage, setProfileImage] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [loading, setLoading] = useState(false);
-    const [name, setName] = useState('');
-    const [status, setStatus] = useState('');
-    const [email, setEmail] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [address, setAddress] = useState('');
-    const [phoneNumberPre, setPhoneNumberPre] = useState('+234');
-    const [facebook, setFacebook] = useState('');
-    const [instagram, setInstagram] = useState('');
-    const [twitter, setTwitter] = useState('');
-    const [linkedIn, setLinkedIn] = useState('');
-    const [whatsapp, setWhatsapp] = useState('');
-    const [events, setEvents] = useState([
-        { title: "Fundraiser", content: [{ name: 'Event 1', date: '2023-01-01' },{ name: 'Event 2', date: '2023-01-01' }] },
-        { title: "Donations", content: [{ name: 'Event 2', date: '2023-02-01' }] },
-        { title: "Seminars", content: [{ name: 'Event 3', date: '2023-03-01' }] }
-    ]);
+    const [form] = Form.useForm();
 
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-                const user = await fetchUserDetails(API_URL, userId);
-                setUserDetails(user);
-                //console.log(user)
-                setName(`${user.firstname} ${user.lastname}`);
-                setStatus(user.is_active ? 'Active' : 'Inactive');
-                setEmail(user.email);
-                setPhoneNumberPre(user.numberpre);
-                setPhoneNumber(user.number);
-                setAddress(user.address);
-                setFacebook(user.facebook);
-                setInstagram(user.instagram);
-                setTwitter(user.twitter);
-                setLinkedIn(user.linkedIn);
-                setWhatsapp(user.whatsapp);
+                const user = await fetchUserDetails(API_URL, userDetails.id);
+                form.setFieldsValue({
+                    firstname: user.firstname,
+                    lastname: user.lastname,
+                    email: user.email,
+                    phoneNumberPre: user.numberpre,
+                    phoneNumber: user.number,
+                    address: user.address,
+                    facebook: user.facebook,
+                    instagram: user.instagram,
+                    twitter: user.twitter,
+                    linkedIn: user.linkedIn,
+                    whatsapp: user.whatsapp,
+                    status: user.is_active ? 'Active' : 'Inactive'
+                });
                 setProfileImage(user.profileImage);
             } catch (error) {
                 console.error('Error fetching user details:', error);
-            }
-
-            try {
-                const token = localStorage.getItem('lahf_access_token');
-                const id = userId || localStorage.getItem('lahf_user_id');
-                const response = await axios.get(`${API_URL}/api/events/participant/${id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                console.log(response.data);
-                setEvents(response.data.data)
-            } catch (error) {
-                console.error('Error fetching event details:', error);
-            } finally {
+            }finally {
                 setIsLoading(false);
             }
         };
 
         fetchDetails();
-    }, [API_URL, userId]);
+    }, [API_URL, form, userDetails]);
 
-    const handleInputChange = (e) => {
-        const { id, value } = e.target;
-        switch (id) {
-            case 'name':
-                setName(value);
-                break;
-            case 'email':
-                setEmail(value);
-                break;
-            case 'phonenumber':
-                if (!isNaN(value.charAt(value.length - 1))) {
-                    setPhoneNumber(value);
-                }
-                break;
-            case 'address':
-                setAddress(value);
-                break;
-            case 'facebook':
-                setFacebook(value);
-                break;
-            case 'instagram':
-                setInstagram(value);
-                break;
-            case 'twitter':
-                setTwitter(value);
-                break;
-            case 'linkedln':
-                setLinkedIn(value);
-                break;
-            case 'whatsapp':
-                setWhatsapp(value);
-                break;
-            default:
-                break;
-        }
-    };
-
-    const handleImageChange = async(e) => {
+    const handleImageChange = async (e) => {
         const file = e.target.files[0];
         if (file) {
             try {
                 const base64 = await convertImageToBase64(file);
                 setProfileImage(base64);
-                //console.log(base64)
             } catch (error) {
                 console.error('Error converting file to Base64:', error);
             }
         }
     };
 
-    const saveEdit = async () => {
+    const saveEdit = async (values) => {
         setLoading(true);
-        const token = localStorage.getItem('lahf_access_token');
-        const [firstName, lastName] = name.split(' ');
-    
         const formData = {
-            firstname: firstName || '',
-            lastname: lastName || '',
-            email: email,
-            numberpre: phoneNumberPre,
-            number: parseInt(phoneNumber, 10),
-            address: address,
-            facebook: facebook,
-            instagram: instagram,
-            twitter: twitter,
-            linkedIn: linkedIn,
-            whatsapp: whatsapp,
-            is_active: status === 'Active',
-            profileImage:profileImage
+            ...values,
+            number: parseInt(values.phoneNumber, 10),
+            is_active: values.status === 'Active',
+            profileImage: profileImage
         };
-    
-        // Log the formData content for debugging
-        console.log(formData);
-    
+        console.log(userDetails,'====')
+
         try {
-            const response = await axios.patch(`${API_URL}/api/users/${userDetails.id}`, formData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-    
-            setUserDetails(response.data.data);
+            const response = await axios.patch(`${API_URL}/api/users/${userDetails.id}`, formData);
+
             setEditProfile(false);
-            message.success('User details updated')
+            message.success('User details updated');
             console.log('User details updated:', response.data.data);
         } catch (error) {
-            console.error('Error updating user details:', error);
-            message.error('Error updating user details')
+            console.log('Error updating user details:', error);
+            message.error('Error updating user details', error);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const selectBefore = (
-        <Select
-            defaultValue={phoneNumberPre}
-            disabled={!editProfile}
-            onChange={(value) => setPhoneNumberPre(value)}
-            style={{ minWidth: '80px' }}
-            id='phonenumberpre'
-        >
-            {countryCodes.map((country, index) => (
-                <Option key={index} value={country.code}>
-                    {country.code}
-                </Option>
-            ))}
-        </Select>
+        <Form.Item name="phoneNumberPre" noStyle>
+            <Select
+                style={{ minWidth: '80px' }}
+            >
+                {countryCodes.map((country, index) => (
+                    <Option key={index} value={country.code}>
+                        {country.code}
+                    </Option>
+                ))}
+            </Select>
+        </Form.Item>
     );
 
     if (isLoading) {
@@ -206,114 +118,167 @@ const UserProfilePage = ({ API_URL }) => {
     return (
         <>
             <HeaderComponent Companyname={'LAHF'} isloggedIn={isLoggedIn} userDetails={userDetails} />
-            <div className='mt-5 p-4 pt-5 '>
-                <div className='d-flex justify-content-between align-items-center p-2 mb-4' style={{ backgroundColor: '#d7d7e9' }}>
-                    <Breadcrumb
-                        items={[
-                            { href: '/', title: <HomeOutlined /> },
-                            { title: (<><UserOutlined /><span>{userDetails?.firstname}</span></>) }
-                        ]}
-                    />
-                    <EditOutlined onClick={() => setEditProfile(!editProfile)} style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
-                </div>
-                <Row justify="center" align="middle" style={{ marginBottom: '30px' }}>
-                    <Col xs={24} sm={12} md={12} lg={12} xl={12}>
-                        <div className='d-flex flex-column justify-content-between align-items-center ms-2 p-2'  style={{ backgroundColor: '#d7d7e9' }}>
+            <div className='mt-5 py-2'>
+
+            </div>
+            <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{ backgroundColor: '#d7d7e9' }}>
+                <Breadcrumb
+                    items={[
+                        { href: '/', title: <HomeOutlined /> },
+                        { title: (<>{profileImage?<Avatar size={20} src={profileImage} />:<UserOutlined/>}<span className='ms-2'>{userDetails?.firstname} {userDetails?.lastname}</span></>) }
+                    ]}
+                />
+                <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+                    <Tooltip title='Edit Profile'>
+                        <EditOutlined onClick={() => setEditProfile(!editProfile)} className='mx-2' style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
+                    </Tooltip>
+                </span>
+            </div>
+            <Content className='m-2'>
+                <div
+                    style={{
+                        padding: 24,
+                        minHeight: 360,
+                        background: colorBgContainer,
+                        borderRadius: borderRadiusXS,
+                    }}
+                >
+                    <Form
+                        form={form}
+                        layout="vertical"
+                        onFinish={saveEdit}
+                    >
+                        <div className='d-flex flex-column justify-content-left align-items-start ms-2 p-2'>
                             <Avatar size={150} src={profileImage || "https://example.com/default-avatar.jpg"} />
                             {editProfile && (
                                 <input type="file" accept="image/*" onChange={handleImageChange} />
                             )}
-                            <div className='d-flex flex-column justify-content-left'>
-                                <Title level={3}>{userDetails?.firstname}, {userDetails?.lastname}</Title>
-                                <Text className='mb-1'>{status}--{userDetails?.position}</Text>
-                                <Text className='mb-2'>joined:{userDetails?.joined_date}</Text>
-                                <Text className='mb-2'>last login:{userDetails?.last_login}</Text>
-                            </div>
+
+                            <Form.Item
+                                name="firstname"
+                                label="First Name"
+                                rules={[{ required: true, message: 'Please enter your first name' }]}
+                                style={{ width: '100%' }}
+                            >
+                                <Input
+                                    placeholder='First Name'
+                                    prefix={<UserOutlined />}
+                                    disabled={!editProfile}
+                                />
+                            </Form.Item>
+
+                            <Form.Item
+                                name="lastname"
+                                label="Last Name"
+                                rules={[{ required: true, message: 'Please enter your last name' }]}
+                                style={{ width: '100%' }}
+                            >
+                                <Input
+                                    placeholder='Last Name'
+                                    prefix={<UserOutlined />}
+                                    disabled={!editProfile}
+                                />
+                            </Form.Item>
+
+                            <Form.Item
+                                name="email"
+                                label="Email"
+                                rules={[
+                                    { required: true, message: 'Please enter your email' },
+                                    { type: 'email', message: 'Please enter a valid email' }
+                                ]}
+                                style={{ width: '100%' }}
+                            >
+                                <Input
+                                    placeholder='Email'
+                                    prefix={<UserOutlined />}
+                                    disabled={!editProfile}
+                                />
+                            </Form.Item>
+
+                            <Form.Item
+                                name="phoneNumber"
+                                label="Phone Number"
+                                rules={[
+                                    { required: true, message: 'Please enter your phone number' },
+                                    { pattern: /^[0-9]+$/, message: 'Please enter a valid phone number' }
+                                ]}
+                                style={{ width: '100%' }}
+                            >
+                                <Input
+                                    placeholder='Phone Number'
+                                    addonBefore={selectBefore}
+                                    disabled={!editProfile}
+                                />
+                            </Form.Item>
+
+                            <Form.Item
+                                name="address"
+                                label="Address"
+                                rules={[{ required: true, message: 'Please enter your address' }]}
+                                style={{ width: '100%' }}
+                            >
+                                <Input
+                                    placeholder='Address'
+                                    disabled={!editProfile}
+                                />
+                            </Form.Item>
+
+                            <Form.Item name="facebook" label="Facebook" style={{ width: '100%' }}>
+                                <Input
+                                    placeholder='Facebook'
+                                    prefix={<FacebookOutlined />}
+                                    disabled={!editProfile}
+                                />
+                            </Form.Item>
+
+                            <Form.Item name="instagram" label="Instagram" style={{ width: '100%' }}>
+                                <Input
+                                    placeholder='Instagram'
+                                    prefix={<InstagramOutlined />}
+                                    disabled={!editProfile}
+                                />
+                            </Form.Item>
+
+                            <Form.Item name="twitter" label="Twitter" style={{ width: '100%' }}>
+                                <Input
+                                    placeholder='Twitter'
+                                    prefix={<TwitterOutlined />}
+                                    disabled={!editProfile}
+                                />
+                            </Form.Item>
+
+                            <Form.Item name="linkedIn" label="LinkedIn" style={{ width: '100%' }}>
+                                <Input
+                                    placeholder='LinkedIn'
+                                    prefix={<LinkedinOutlined />}
+                                    disabled={!editProfile}
+                                />
+                            </Form.Item>
+
+                            <Form.Item name="whatsapp" label="WhatsApp" style={{ width: '100%' }}>
+                                <Input
+                                    placeholder='WhatsApp'
+                                    prefix={<WhatsAppOutlined />}
+                                    disabled={!editProfile}
+                                />
+                            </Form.Item>
+
+                            {editProfile && (
+                                <Button
+                                    type="primary"
+                                    htmlType="submit"
+                                    icon={<SaveOutlined />}
+                                    loading={loading}
+                                    style={{ alignSelf: 'flex-start' }}
+                                >
+                                    Save
+                                </Button>
+                            )}
                         </div>
-                        <div className='my-2'>
-                            <Text strong>Name: <input id="name" type="text" className="form-control" placeholder={name} value={name} onChange={handleInputChange} disabled={!editProfile} /></Text>
-                        </div>
-                    </Col>
-                    <Col xs={24} sm={12} md={12} lg={12} xl={12}>
-                        <div className='d-flex flex-column justify-content-between ms-2'>
-                            <div className='my-2'>
-                                <Text strong>Name: <input id="name" type="text" className="form-control" placeholder={name} value={name} onChange={handleInputChange} disabled={!editProfile} /></Text>
-                            </div>
-                            <div className='my-2'>
-                                <Text strong>Email: <input id="email" type="email" className="form-control" placeholder={email} value={email} onChange={handleInputChange} disabled={!editProfile} /></Text>
-                            </div>
-                            <div className='my-2'>
-                                <Text strong>Phone Number: <Input addonBefore={selectBefore} id="phonenumber" placeholder={phoneNumber} value={phoneNumber} onChange={handleInputChange} disabled={!editProfile} /></Text>
-                            </div>
-                            <div className='my-2'>
-                                <Text strong>Address: <input id="address" type="text" className="form-control" placeholder={address} value={address} onChange={handleInputChange} disabled={!editProfile} /></Text>
-                            </div>
-                        </div>
-                    </Col>
-                </Row>
-                <Row justify="center" align="middle" style={{ marginBottom: '20px' }}>
-                    <Col span={24}>
-                        <Row justify="center" className='p-0 m-0' gutter={[2, 8]}>
-                            <Col xs={24} sm={24} md={8}>
-                                <div className='mx-2'>
-                                    <FacebookOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#1877F2' }}/>
-                                    <input id="facebook" type="text" className="form-control" placeholder="Facebook" value={facebook} onChange={handleInputChange} disabled={!editProfile} />
-                                </div>
-                            </Col>
-                            <Col xs={24} sm={24} md={8}>
-                                <div className='mx-2'>
-                                    <InstagramOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#E4405F' }}/>
-                                    <input id="instagram" type="text" className="form-control" placeholder="Instagram" value={instagram} onChange={handleInputChange} disabled={!editProfile} />
-                                </div>
-                            </Col>
-                            <Col xs={24} sm={24} md={8}>
-                                <div className='mx-2'>
-                                    <TwitterOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#1DA1F2' }}/>
-                                    <input id="twitter" type="text" className="form-control" placeholder="Twitter" value={twitter} onChange={handleInputChange} disabled={!editProfile} />
-                                </div>
-                            </Col>
-                            <Col xs={24} sm={24} md={8}>
-                                <div className='mx-2'>
-                                    <LinkedinOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#0077B5' }}/>
-                                    <input id="linkedln" type="text" className="form-control" placeholder="LinkedIn" value={linkedIn} onChange={handleInputChange} disabled={!editProfile} />
-                                </div>
-                            </Col>
-                            <Col xs={24} sm={24} md={8}>
-                                <div className='mx-2'>
-                                    <WhatsAppOutlined style={{ fontSize: '24px', marginRight: '10px', color:'#25D366' }} />
-                                    <input id="whatsapp" type="text" className="form-control" placeholder="WhatsApp" value={whatsapp} onChange={handleInputChange} disabled={!editProfile} />
-                                </div>
-                            </Col>
-                        </Row>
-                    </Col>
-                </Row>
-                {editProfile && (
-                    <Row justify="center">
-                        <Col>
-                            <Button type="primary" className='text-white' icon={<SaveOutlined  className='text-white'/>} htmlType="submit" onClick={saveEdit} loading={loading} style={{ width: '100%' }}>
-                                {loading ? 'Saving...' : 'Save Changes'}
-                            </Button>
-                        </Col>
-                    </Row>
-                )}
-                <Text strong>Events:</Text>
-                <Row justify="center" align="middle" style={{ marginBottom: '20px' }}>
-                {events.map((event, index) => (
-                    <Col xs={24} sm={24} md={8} key={index}>
-                        <div >{event.title}</div>
-                        <Row justify="center" className='p-0 m-0' gutter={[2, 8]}>
-                            {event.content.map((content, contentIndex) => (
-                                <Col xs={24} sm={24} md={24} key={contentIndex}>
-                                    <div className='mx-2'>
-                                        <Text className="form-control">{content.name} - {content.date}</Text>
-                                    </div>
-                                </Col>
-                            ))}
-                        </Row>
-                    </Col>
-                ))}
-                </Row>
-            </div>
+                    </Form>
+                </div>
+            </Content>
             <Footer />
         </>
     );

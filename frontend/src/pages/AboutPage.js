@@ -7,12 +7,13 @@ import Footer from '../components/Footer';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { useUpdateLoginStatus } from '../utils/hooks';
 const { Meta } = Card;
 const { Text } = Typography;
 
-const AboutPage = ({API_URL,isloggedIn}) => {
+const AboutPage = ({API_URL,Companyname}) => {
     const location = useLocation();
-    
+    const {isLoggedIn,userDetails} = useUpdateLoginStatus(API_URL);
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -128,9 +129,10 @@ const AboutPage = ({API_URL,isloggedIn}) => {
         return <div>Error: {error}</div>;
     }
       
+    
     return (
         <div id='about'>
-            <HeaderComponent Companyname={data.name} isloggedIn={isloggedIn} /> {/* Include the header component */}
+            <HeaderComponent Companyname={Companyname} isloggedIn={isLoggedIn} userDetails={userDetails} /> {/* Include the header component */}
             <div className="container py-5">
             <div className="row align-items-center mt-4">
                 <div className="col-xs-12 col-md-6">
@@ -226,7 +228,7 @@ const AboutPage = ({API_URL,isloggedIn}) => {
                         <CustomAccordion
                             onClick={(e) => switchImage(e)}
                             items={items}
-                            isloggedIn={isloggedIn}
+                            isloggedIn={isLoggedIn}
                         />
 
                     </Col>

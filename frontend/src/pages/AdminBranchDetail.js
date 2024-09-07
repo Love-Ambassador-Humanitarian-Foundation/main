@@ -161,11 +161,11 @@ const Branch = ({ API_URL }) => {
                     <Row justify="center" align="middle" style={{ marginTop: '30px' }}>
                         {editpage ? (
                             <Col>
-                                <Button type="primary" className='text-white' loading={loading} icon={<SaveOutlined className='text-white' />} onClick={saveEdit} >Save Changes</Button>  
+                                <Button type="primary" loading={loading} icon={<SaveOutlined />} onClick={saveEdit} >Save Changes</Button>  
                             </Col>
                         ) : (
                             <Col>
-                                <Button type="primary" className='text-white' onClick={() => setEditPage(true)} >Edit Branch</Button>
+                                <Button type="primary" onClick={() => setEditPage(true)} >Edit Branch</Button>
                             </Col>
                         )}
                     </Row>

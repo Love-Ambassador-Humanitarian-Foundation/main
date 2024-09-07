@@ -122,7 +122,7 @@ const AddPartner = ({ API_URL }) => {
                         </Form.Item>
 
                         <Form.Item>
-                            <Button type="primary" className='text-white' htmlType="submit" loading={loading} icon={<SaveOutlined className='text-white' />}>
+                            <Button type="primary" htmlType="submit" loading={loading} icon={<SaveOutlined />}>
                                 Save
                             </Button>
                         </Form.Item>

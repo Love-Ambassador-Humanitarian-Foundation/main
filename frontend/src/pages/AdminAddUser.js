@@ -232,7 +232,7 @@ const AddUser = ({ API_URL }) => {
                         </Form.Item>
 
                         <Form.Item>
-                            <Button type="primary" className='text-white' htmlType="submit" loading={loading} icon={<SaveOutlined className='text-white' />}>
+                            <Button type="primary" htmlType="submit" loading={loading} icon={<SaveOutlined />}>
                                 Add User
                             </Button>
                         </Form.Item>

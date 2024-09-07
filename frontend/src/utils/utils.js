@@ -1085,3 +1085,9 @@ export const base64ToFile = async (base64String, fileName) => {
   return new File([blob], fileName, { type: blob.type });
 };
 
+export const detectenterkey = (e,rows, setRows) =>{
+  if (e.key === 'Enter') {
+    e.preventDefault();  // Prevent the default behavior of adding a new line
+    setRows(rows => rows + 1);  // Increase the number of rows
+}
+}

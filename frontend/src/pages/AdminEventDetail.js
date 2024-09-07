@@ -398,7 +398,7 @@ const Event = ({ API_URL }) => {
                                 <Col>
                                     <Button
                                         type="primary"
-                                        icon={<SaveOutlined className='text-white' />}
+                                        icon={<SaveOutlined />}
                                         onClick={saveEdit}
                                         loading={loading}
                                     >
