@@ -21,7 +21,7 @@ const AddUser = ({ API_URL }) => {
                 ...values,
                 profileImage: profileImage ? profileImage : null,
             };
-            await axios.post(`${API_URL}/api/users`, payload);
+            await axios.post(`${API_URL}/api/adminusers`, payload);
             message.success('User added successfully!');
             navigate('/admin/users');
         } catch (error) {
@@ -76,7 +76,6 @@ const AddUser = ({ API_URL }) => {
                         minHeight: 360,
                         background: '#fff',
                         borderRadius: '4px',
-                        height: 'calc(100vh - 140px)'
                     }}
                 >
                     <Form

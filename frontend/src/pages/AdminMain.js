@@ -102,7 +102,7 @@ const AdminMain = ({ API_URL,Companyname, screen }) => {
                 </Sider>
             
             )}
-            <Layout style={{ padding: '8px', overflowY: 'auto', height: 'calc(100vh - 70px)' }}>
+            <Layout style={{ padding: '8px', overflowY: 'auto', height: 'calc(100vh - 16px)' }}>
                 {screen}
             </Layout>
         </Layout>

@@ -34,6 +34,7 @@ urlpatterns = [
     # User URLs
     path('users', views.UserListCreateView.as_view(), name='user_list_create'),
     path('users/<uuid:id>', views.UserDetailView.as_view(), name='user_detail'),
+    path('adminusers', views.AdminUserCreateView.as_view(), name='user_create'),
 
     # User login
     path('users/login', views.UserLoginAPIView.as_view(), name='user-login'),

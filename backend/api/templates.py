@@ -40,7 +40,7 @@ For more details, see the LICENSE file in the root of the repository."""
 #             </body>
 #             </html>
 #             """
-# newslettersubscribetemplate=""""""
+
 # logintemplate=""""""
 # emailverificationtemplate=""""""
 # pwdconfirmationemail=""""""
@@ -71,7 +71,7 @@ class Html:
             str: A formatted HTML string for the newsletter.
         """
 
-        
+
         return f"""
         <!DOCTYPE html>
         <html lang="en">

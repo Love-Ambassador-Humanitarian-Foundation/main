@@ -118,7 +118,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
-    joined_date = models.DateTimeField(auto_now_add=True)
+    joined_at = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
     position = models.CharField(max_length=255, blank=True)
     groups = models.ManyToManyField(Group, related_name='custom_user_set')
@@ -133,7 +133,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return f"{self.email}"
     
     class Meta:
-        ordering = ['-last_login', '-joined_date', 'firstname', 'lastname']
+        ordering = ['-last_login', '-joined_at', 'firstname', 'lastname']
 
 class About(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -261,7 +261,7 @@ class Newsletter(models.Model):
 class NewsletterReceipients(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(max_length=MAX_LENGTH, unique=True)
-    joined_at = models.DateField()
+    joined_at = models.DateTimeField()
 
     class Meta:
         ordering = ['-joined_at']

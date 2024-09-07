@@ -46,6 +46,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import AddNewsletter from './pages/AdminAddNewsletterDetail.js';
 import NewsletterReceipients from './pages/AdminNewsletterReceipients.js';
+import NewsletterReceipientDetail from './pages/AdminNewsletterReceipientDetail.js';
 
 
 const Companyname = 'LAHF';
@@ -94,7 +95,7 @@ const App = ({API_URL}) => {
             <Route path="/admin/newsletters/:id" element={<PrivateRoute redirectUrl={"/admin/newsletters/:id"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<NewsletterDetail API_URL={API_URL} />} /></PrivateRoute> } />
             <Route path="/admin/newsletters/add" element={<PrivateRoute redirectUrl={"/admin/newsletters/add"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<AddNewsletter API_URL={API_URL} />} /></PrivateRoute> } />
             <Route path="/admin/newsletters/receipients" element={<PrivateRoute redirectUrl={"/admin/newsletters/receipients"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<NewsletterReceipients API_URL={API_URL} />} /></PrivateRoute>} />
-            <Route path="/admin/newsletters/receipients/:id" element={<PrivateRoute redirectUrl={"/admin/newsletters/receipients/:id"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<NewsletterDetail API_URL={API_URL} />} /></PrivateRoute> } />
+            <Route path="/admin/newsletters/receipients/:id" element={<PrivateRoute redirectUrl={"/admin/newsletters/receipients/:id"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<NewsletterReceipientDetail API_URL={API_URL} />} /></PrivateRoute> } />
             <Route path="/admin/newsletters/receipients/add" element={<PrivateRoute redirectUrl={"/admin/newsletters/receipients/add"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<AddNewsletter API_URL={API_URL} />} /></PrivateRoute> } />
             {/* Add other routes as needed */}
             {/* <Redirect from="/" to="/" /> */}

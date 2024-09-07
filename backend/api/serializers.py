@@ -14,9 +14,11 @@ class UserSerializer(serializers.ModelSerializer):
     """
     Serializer for User model.
     """
+    joined_at = serializers.DateTimeField(format=DATETIME_FORMAT, input_formats=[DATETIME_FORMAT])
+    last_login = serializers.DateTimeField(format=DATETIME_FORMAT, input_formats=[DATETIME_FORMAT])
     class Meta:
         model = User
-        fields = ('id', 'email', 'firstname', 'lastname', 'profileImage','numberpre', 'number', 'address', 'facebook', 'instagram', 'twitter', 'linkedIn', 'whatsapp', 'is_active', 'is_staff', 'joined_date', 'last_login', 'position')
+        fields = ('id', 'email', 'firstname', 'lastname', 'profileImage','numberpre', 'number', 'address', 'facebook', 'instagram', 'twitter', 'linkedIn', 'whatsapp', 'is_active', 'is_staff', 'joined_at', 'last_login', 'position')
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """
@@ -26,7 +28,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'password', 'firstname', 'lastname', 'profileImage','numberpre',  'number', 'address', 'facebook', 'instagram', 'twitter', 'linkedIn', 'whatsapp', 'is_active', 'is_staff', 'joined_date', 'last_login', 'position')
+        fields = ('id', 'email', 'password', 'firstname', 'lastname', 'profileImage','numberpre',  'number', 'address', 'facebook', 'instagram', 'twitter', 'linkedIn', 'whatsapp', 'is_active', 'is_staff', 'position')
 
     def create(self, validated_data):
         # Create user with hashed password
@@ -159,7 +161,7 @@ class NewsletterSerializer(serializers.ModelSerializer):
 
 
 class NewsletterReceipientsSerializer(serializers.ModelSerializer):
-    joined_at = serializers.DateField(format=DATE_FORMAT, input_formats=[DATE_FORMAT])
+    joined_at = serializers.DateTimeField(format=DATETIME_FORMAT, input_formats=[DATETIME_FORMAT])
     firstname = serializers.SerializerMethodField()
     lastname = serializers.SerializerMethodField()
 

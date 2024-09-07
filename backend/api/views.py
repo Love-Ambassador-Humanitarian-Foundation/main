@@ -180,6 +180,47 @@ class PartnerDetailView(generics.RetrieveUpdateDestroyAPIView):
         self.perform_destroy(instance)
         return Response({'success': True, 'message': 'Partner deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
 
+class AdminUserCreateView(generics.CreateAPIView):
+    """
+    Admin API to create users.
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    def post(self, request):
+        data = request.data
+        data['is_active']= True
+        serializer = UserRegistrationSerializer(data=data)
+        if serializer.is_valid():
+            user = serializer.save()
+            
+            # Define the email subject and create the HTML content using the template
+            subject = "User Registration"
+            html = Html()  # Assume Html class is properly defined elsewhere
+            newsletter_html = html.newsletter_template(
+                title=subject,
+                firstname=data['firstname'],  # Customize per recipient if needed
+                article_title='newsletter.title',  # Assuming 'title' is an attribute of Newsletter
+                article_body='newsletter.message'  # Assuming 'body' is an attribute of Newsletter
+            )
+
+            # Send the email to all recipients
+            Utils().send_email_message(
+                subject='Lahf '+subject,
+                message='',  # Optional plain-text message
+                from_email=settings.EMAIL_HOST_USER,  # Sender's email address
+                recipient_list=[data['email']],  # All recipient emails
+                html_message=newsletter_html  # The HTML content of the email
+            )
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'success': True,
+                'message': 'User registered successfully',
+                'userid': user.id,
+                'refresh': str(refresh),
+                'access': str(refresh.access_token)
+            }, status=status.HTTP_201_CREATED)
+        return Response({'success': False, 'message': 'Failed to register user', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
 class UserListCreateView(generics.ListCreateAPIView):
     """
     API view to list and create users.
@@ -187,6 +228,7 @@ class UserListCreateView(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     def post(self, request):
+        data=request.data
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
@@ -230,7 +272,25 @@ class UserListCreateView(generics.ListCreateAPIView):
             </body>
             </html>
             """
-            send_mail(subject, message, settings.EMAIL_HOST_USER, [user.email], fail_silently=False, html_message=message)
+            # Define the email subject and create the HTML content using the template
+            subject = "User Registration"
+            html = Html()  # Assume Html class is properly defined elsewhere
+            # Define the email subject and create the HTML content using the template
+            newsletter_html = html.newsletter_template(
+                title=subject,
+                firstname=data['firstname'],  # Customize per recipient if needed
+                article_title='newsletter.title',  # Assuming 'title' is an attribute of Newsletter
+                article_body='newsletter.message'  # Assuming 'body' is an attribute of Newsletter
+            )
+
+            # Send the email to all recipients
+            Utils().send_email_message(
+                subject='Lahf '+subject,
+                message='',  # Optional plain-text message
+                from_email=settings.EMAIL_HOST_USER,  # Sender's email address
+                recipient_list=[data['email']],  # All recipient emails
+                html_message=newsletter_html  # The HTML content of the email
+            )
             refresh = RefreshToken.for_user(user)
             return Response({
                 'success': True,
@@ -569,7 +629,8 @@ class NewsletterReceipientsViewSet(viewsets.ModelViewSet):
         """
         try:
             user = User.objects.get(email=email)
-            return model_to_dict(user)  # This will return all fields of the User model 
+            serializer = UserSerializer(user)
+            return serializer.data  # This will return serialized data of the User model
         except User.DoesNotExist:
             return None
 
@@ -593,7 +654,7 @@ class NewsletterReceipientsViewSet(viewsets.ModelViewSet):
             user_data = self.get_user_data(recipient.email)
             if user_data:
                 # Include recipient ID in the user data
-                user_data['id'] = recipient.id
+                user_data['id']=recipient.id
                 data.append(user_data)  # Add user data if user exists
             else:
                 recipient_data = model_to_dict(recipient)
@@ -610,8 +671,9 @@ class NewsletterReceipientsViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         user_data = self.get_user_data(instance.email)
+        
         if user_data:
-            user_data['id'] = instance.id
+            user_data['id']= instance.id
             custom_response = {
                 'success': True,
                 'message': 'Recipient details fetched successfully',
@@ -663,6 +725,18 @@ class NewsletterSendView(APIView):
     and sends the newsletter email to each recipient in HTML format.
     
     """
+    def get_user_data(self, email):
+        """
+        Check if the email exists in the User model.
+        If it does, return the user's first name, last name, and email.
+        Otherwise, return None.
+        """
+        try:
+            user = User.objects.get(email=email)
+            serializer = UserSerializer(user)
+            return serializer.data  # This will return serialized data of the User model
+        except User.DoesNotExist:
+            return None
     def post(self, request):
         # Get the newsletter ID from request
         newsletterid = request.data.get('newsletter')
@@ -676,24 +750,31 @@ class NewsletterSendView(APIView):
         newsletterreceipients = NewsletterReceipients.objects.all().order_by('-joined_at')
 
         try:
-            # Define the email subject and create the HTML content using the template
-            subject = "Newsletter"
-            html = Html()  # Assume Html class is properly defined elsewhere
-            newsletter_html = html.newsletter_template(
-                title=subject,
-                firstname="John",  # Customize per recipient if needed
-                article_title=newsletter.title,  # Assuming 'title' is an attribute of Newsletter
-                article_body=newsletter.message  # Assuming 'body' is an attribute of Newsletter
-            )
+            for receipient in newsletterreceipients:
+                u=receipient.email
+                user_data = self.get_user_data(receipient.email)
+        
+                if user_data:
+                    u=user_data['firstname']
+                
+                # Define the email subject and create the HTML content using the template
+                subject = "Newsletter"
+                html = Html()  # Assume Html class is properly defined elsewhere
+                newsletter_html = html.newsletter_template(
+                    title=subject,
+                    firstname=u,  # Customize per recipient if needed
+                    article_title=newsletter.title,  # Assuming 'title' is an attribute of Newsletter
+                    article_body=newsletter.message  # Assuming 'body' is an attribute of Newsletter
+                )
 
-            # Send the email to all recipients
-            Utils().send_email_message(
-                subject='Lahf '+subject,
-                message='',  # Optional plain-text message
-                from_email=settings.EMAIL_HOST_USER,  # Sender's email address
-                recipient_list=[recipient.email for recipient in newsletterreceipients],  # All recipient emails
-                html_message=newsletter_html  # The HTML content of the email
-            )
+                # Send the email to all recipients
+                Utils().send_email_message(
+                    subject='Lahf '+subject,
+                    message='',  # Optional plain-text message
+                    from_email=settings.EMAIL_HOST_USER,  # Sender's email address
+                    recipient_list=[receipient.email],  # All recipient emails
+                    html_message=newsletter_html  # The HTML content of the email
+                )
             
             # Return success response if emails are sent successfully
             return Response({'success': True, 'message': 'Newsletter sent successfully', 'data': None}, status=status.HTTP_200_OK)

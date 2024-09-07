@@ -25,7 +25,6 @@ const Partners = ({ API_URL }) => {
                 if (Array.isArray(fetchedPartners.data)) {
                     setPartners(fetchedPartners.data);
                     setFilteredPartners(fetchedPartners.data);
-                    message.success(fetchedPartners.message);
                 } else {
                     console.error("The response data is not an array:", fetchedPartners.data);
                     message.error(fetchedPartners.message);
