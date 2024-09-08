@@ -97,7 +97,7 @@ const AboutPage = ({API_URL,Companyname}) => {
     const fetchData = async (API_URL) => {
         try {
           const response = await axios.get(API_URL+'/api/about');
-          setData(response.data.response);
+          setData(response.data.data);
           setIsLoading(false);
           console.log(response.data);
         } catch (error) {
