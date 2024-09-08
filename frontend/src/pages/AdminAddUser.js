@@ -13,12 +13,16 @@ const AddUser = ({ API_URL }) => {
     const [profileImage, setProfileImage] = useState(null);
     const navigate = useNavigate();
     const [form] = Form.useForm();
+    const fullDomain = window.location.origin;
+    console.log(fullDomain);
+
 
     const onFinish = async (values) => {
         setLoading(true);
         try {
             const payload = {
                 ...values,
+                url:fullDomain,
                 profileImage: profileImage ? profileImage : null,
             };
             await axios.post(`${API_URL}/api/adminusers`, payload);

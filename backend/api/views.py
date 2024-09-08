@@ -206,11 +206,9 @@ class AdminUserCreateView(generics.CreateAPIView):
             # Define the email subject and create the HTML content using the template
             subject = "User Registration"
             html = Html()  # Assume Html class is properly defined elsewhere
-            newsletter_html = html.newsletter_template(
-                title=subject,
-                firstname=data['firstname'],  # Customize per recipient if needed
-                article_title='newsletter.title',  # Assuming 'title' is an attribute of Newsletter
-                article_body='newsletter.message'  # Assuming 'body' is an attribute of Newsletter
+            registration_complete_html = html.registration_complete_template(
+                name=data['firstname'],
+                password=data['password']
             )
 
             # Send the email to all recipients
@@ -219,7 +217,7 @@ class AdminUserCreateView(generics.CreateAPIView):
                 message='',  # Optional plain-text message
                 from_email=settings.EMAIL_HOST_USER,  # Sender's email address
                 recipient_list=[data['email']],  # All recipient emails
-                html_message=newsletter_html  # The HTML content of the email
+                html_message=registration_complete_html  # The HTML content of the email
             )
             refresh = RefreshToken.for_user(user)
             return Response({
@@ -237,6 +235,7 @@ class UserListCreateView(generics.ListCreateAPIView):
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    
     def post(self, request):
         data=request.data
         serializer = UserRegistrationSerializer(data=request.data)
@@ -244,62 +243,38 @@ class UserListCreateView(generics.ListCreateAPIView):
             user = serializer.save()
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(user.pk.bytes)
-            current_site = get_current_site(request)
-            verify_link = f"http://{current_site.domain}/#/email/registration/{uid}/{token}"
+            
+            verify_link = f"{data['url']}/#/email/registration/{uid}/{token}"
+            if 'http' not in verify_link:
+                verify_link = 'https://'+verify_link
             #print(verify_link," ===============")
-            subject = 'Email Verification'
-            message = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Email Verification</title>
-                <style>
-                    body {{ font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; color: #333; }}
-                    .container {{ max-width: 600px; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }}
-                    .header {{ text-align: center; padding: 10px 0; border-bottom: 1px solid #ddd; }}
-                    .header h1 {{ margin: 0; color: #4CAF50; }}
-                    .content {{ padding: 20px; }}
-                    .content p {{ margin: 10px 0; line-height: 1.6; }}
-                    .verify-button {{ display: block; width: 200px; margin: 20px auto; padding: 10px 0; text-align: center; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 5px; font-size: 16px; }}
-                    .footer {{ text-align: center; padding: 10px 0; border-top: 1px solid #ddd; margin-top: 20px; color: #888; }}
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <h1>Email Verification</h1>
-                    </div>
-                    <div class="content">
-                        <p>Hi {user.firstname},</p>
-                        <p>Click the link below to verify your email address:</p>
-                        <a href="{verify_link}" class="verify-button">Verify Email</a>
-                        <p>If you did not request this email, please ignore it.</p>
-                    </div>
-                    <div class="footer">
-                        <p>Thank you for using our service!</p>
-                    </div>
-                </div>
-            </body>
-            </html>
-            """
+            
             # Define the email subject and create the HTML content using the template
-            subject = "User Registration"
+            
             html = Html()  # Assume Html class is properly defined elsewhere
-            # Define the email subject and create the HTML content using the template
-            newsletter_html = html.newsletter_template(
-                title=subject,
-                firstname=data['firstname'],  # Customize per recipient if needed
-                article_title='newsletter.title',  # Assuming 'title' is an attribute of Newsletter
-                article_body='newsletter.message'  # Assuming 'body' is an attribute of Newsletter
+            registration_complete_html = html.registration_complete_template(
+                name=data['firstname'],
+                password=data['password']
+            )
+            email_verification_html = html.email_verification_template(
+                name=data['firstname'],
+                verification_link=verify_link
             )
 
             # Send the email to all recipients
             Utils().send_email_message(
-                subject='Lahf '+subject,
+                subject='Lahf Email Verification',
                 message='',  # Optional plain-text message
                 from_email=settings.EMAIL_HOST_USER,  # Sender's email address
                 recipient_list=[data['email']],  # All recipient emails
-                html_message=newsletter_html  # The HTML content of the email
+                html_message=email_verification_html  # The HTML content of the email
+            )
+            Utils().send_email_message(
+                subject='Lahf User Registration',
+                message='',  # Optional plain-text message
+                from_email=settings.EMAIL_HOST_USER,  # Sender's email address
+                recipient_list=[data['email']],  # All recipient emails
+                html_message=registration_complete_html  # The HTML content of the email
             )
             refresh = RefreshToken.for_user(user)
             return Response({
@@ -342,50 +317,31 @@ class PasswordResetRequestView(APIView):
     
     def post(self, request):
         email = request.data.get('email')
-        new_password = request.data.get('new_password')
         user = User.objects.filter(email=email).first()
         if user:
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(user.pk.bytes)
-            current_site = get_current_site(request)
-            reset_link = f"http://{current_site.domain}/#/password/reset/confirm/{uid}/{token}?new_password={new_password}"
-            subject = 'Password Reset Request'
-            message = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Password Reset</title>
-                <style>
-                    body {{ font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; color: #333; }}
-                    .container {{ max-width: 600px; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }}
-                    .header {{ text-align: center; padding: 10px 0; border-bottom: 1px solid #ddd; }}
-                    .header h1 {{ margin: 0; color: #4CAF50; }}
-                    .content {{ padding: 20px; }}
-                    .content p {{ margin: 10px 0; line-height: 1.6; }}
-                    .reset-button {{ display: block; width: 200px; margin: 20px auto; padding: 10px 0; text-align: center; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 5px; font-size: 16px; }}
-                    .footer {{ text-align: center; padding: 10px 0; border-top: 1px solid #ddd; margin-top: 20px; color: #888; }}
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <h1>Password Reset</h1>
-                    </div>
-                    <div class="content">
-                        <p>Hi {user.firstname},</p>
-                        <p>Click the button below to reset your password:</p>
-                        <a href="{reset_link}" class="reset-button">Reset Password</a>
-                        <p>If you did not request this email, please ignore it.</p>
-                    </div>
-                    <div class="footer">
-                        <p>Thank you for using our service!</p>
-                    </div>
-                </div>
-            </body>
-            </html>
-            """
-            send_mail(subject, '', settings.EMAIL_HOST_USER, [email], html_message=message)
-            #print(reset_link)
+            reset_link = f"{request.data.get('url')}/#/password/reset/{uid}/{token}"
+            
+            if 'http' not in reset_link:
+                reset_link= 'https://'+reset_link
+            
+            # Define the email subject and create the HTML content using the template
+            
+            html = Html()  # Assume Html class is properly defined elsewhere
+            password_confirmation_html = html.password_confirmation_template(
+                name = user.firstname, 
+                reset_link = reset_link
+            )
+
+            # Send the email to all recipients
+            Utils().send_email_message(
+                subject='Lahf Password Reset Request',
+                message='',  # Optional plain-text message
+                from_email=settings.EMAIL_HOST_USER,  # Sender's email address
+                recipient_list=[email],  # All recipient emails
+                html_message=password_confirmation_html  # The HTML content of the email
+            )
             return Response({'success': True, 'message': 'Password reset link sent successfully'}, status=status.HTTP_200_OK)
         return Response({'success': False, 'message': 'User with this email does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -401,6 +357,22 @@ class PasswordResetConfirmView(APIView):
             if user and default_token_generator.check_token(user, token):
                 user.set_password(new_password)
                 user.save()
+                # Define the email subject and create the HTML content using the template
+            
+                html = Html()  # Assume Html class is properly defined elsewhere
+                password_changed_html = html.password_changed_template(
+                    name = user.firstname, 
+                    new_password = new_password
+                )
+
+                # Send the email to all recipients
+                Utils().send_email_message(
+                    subject='Lahf Password Changed',
+                    message='',  # Optional plain-text message
+                    from_email=settings.EMAIL_HOST_USER,  # Sender's email address
+                    recipient_list=[user.email],  # All recipient emails
+                    html_message=password_changed_html  # The HTML content of the email
+                )
                 return Response({'success': True, 'message': 'Password reset successful'}, status=status.HTTP_200_OK)
             return Response({'success': False, 'message': 'Invalid token or user'}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'success': False, 'message': "'new_password' field is needed"}, status=status.HTTP_400_BAD_REQUEST)
@@ -624,7 +596,6 @@ class NewsletterViewSet(viewsets.ModelViewSet):
             'success': True,
             'message': 'Newsletter deleted successfully'
         }, status=status.HTTP_204_NO_CONTENT)
-
 
 
 class NewsletterReceipientsViewSet(viewsets.ModelViewSet):
@@ -889,11 +860,10 @@ class ScholarshipApplicantListCreateView(generics.ListCreateAPIView):
         
         scholarship = Scholarship.objects.get(id=data['scholarship'])
         html = Html()  # Assume Html class is properly defined elsewhere
-        scholarship_html= html.scholarship_template(
-            title=subject,
-            name=data['first_name']+' '+data['last_name'],  # Customize per recipient if needed
-            article_title=subject,  # Assuming 'title' is an attribute of Newsletter
-            article_body=f"You have successfully registered for the scholarship-{data['scholarship']}-{(scholarship)}"  # Assuming 'body' is an attribute of Newsletter
+        scholarship_html= html.scholarship_application_success_template(
+            name=data['first_name']+' '+data['last_name'], 
+            application_number=serializer.data['id'], 
+            scholarship_name=scholarship 
         )
 
         # Send the email to all recipients
@@ -969,11 +939,10 @@ class ScholarshipApplicantApprovalView(generics.UpdateAPIView):
         
         scholarship = Scholarship.objects.get(id=applicant.scholarship.id)
         html = Html()  # Assume Html class is properly defined elsewhere
-        Scholarship_html= html.scholarship_template(
-            title=subject,
-            name=applicant.first_name+' '+applicant.last_name,  # Customize per recipient if needed
-            article_title=subject,  # Assuming 'title' is an attribute of Newsletter
-            article_body=f'Congratulations, Your application for the scholarship-{applicant.scholarship}-{(scholarship.id)} has been approved'  # Assuming 'body' is an attribute of Newsletter
+        Scholarship_html= html.scholarship_application_approval_template(
+            name=applicant.first_name+' '+applicant.last_name, 
+            application_number=applicant.id, 
+            scholarship_name=scholarship 
         )
 
         # Send the email to all recipients
@@ -1010,20 +979,19 @@ class ScholarshipApplicantDisApprovalView(generics.UpdateAPIView):
         
         scholarship = Scholarship.objects.get(id=applicant.scholarship.id)
         html = Html()  # Assume Html class is properly defined elsewhere
-        Scholarship_html= html.scholarship_template(
-            title=subject,
-            name=applicant.first_name+' '+applicant.last_name,  # Customize per recipient if needed
-            article_title=subject,  # Assuming 'title' is an attribute of Newsletter
-            article_body=f'Unfortunately, Your application for the scholarship-{applicant.scholarship}-{(scholarship.id)} has been rejected'  # Assuming 'body' is an attribute of Newsletter
+        scholarship_html= html.scholarship_application_rejection_template(
+            name=applicant.first_name+' '+applicant.last_name, 
+            application_number=applicant.id, 
+            scholarship_name=scholarship 
         )
 
         # Send the email to all recipients
         Utils().send_email_message(
             subject='Lahf '+subject,
             message='',  # Optional plain-text message
-            from_email=settings.EMAIL_HOST_USER,  # Sender's email address
-            recipient_list=[applicant.email],  # All recipient emails
-            html_message=Scholarship_html  # The HTML content of the email
+            from_email=settings.EMAIL_HOST_USER, 
+            recipient_list=[applicant.email], 
+            html_message=scholarship_html 
         )
         return Response({
             'success': True,

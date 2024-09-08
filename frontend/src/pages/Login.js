@@ -26,7 +26,7 @@ const LoginPage = ({ API_URL }) => {
             localStorage.setItem('lahf_refresh_token', response.data.refresh);
             const url = redirectUrl.replace(':id', response.data.userid);
             navigate(url);
-            // message.success('Login successful'+url);
+            message.success('Login successful');
             // navigate(url);
             
         } catch (error) {
@@ -62,10 +62,14 @@ const LoginPage = ({ API_URL }) => {
                         rules={[{ required: true, message: 'Please input your password!' }]}
                     >
                         <Input.Password disabled={loading} />
+                        
                     </Form.Item>
-
                     <Form.Item>
-                        Not yet joined?, <Link to='/signup' state={{ redirectUrl }}>Sign up</Link>
+                        <Link to='/password/forgotten' style={{float: 'right' , textDecoration:'none'}} state={{ redirectUrl }}>Forgotten Password?</Link>
+                    </Form.Item>
+                    
+                    <Form.Item>
+                        Not yet joined?, <Link to='/signup' state={{ redirectUrl }} style={{textDecoration:'none'}}>Sign up</Link>
                     </Form.Item>
 
                     <Form.Item className='px-5'>

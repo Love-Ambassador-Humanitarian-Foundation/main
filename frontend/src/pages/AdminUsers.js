@@ -17,7 +17,9 @@ const Users = ({ API_URL }) => {
     
 
     useEffect(() => {
-        axios.get(`${API_URL}/api/users`)
+        
+        const fetchData = async () => {
+            axios.get(`${API_URL}/api/users`)
             .then(response => {
                 const fetchedUsers = response.data.data;
                 setUsers(fetchedUsers);
@@ -29,6 +31,15 @@ const Users = ({ API_URL }) => {
                 setIsLoading(false);
                 message.error("There was an error fetching the users!", 5);
             });
+        };
+
+        // Initial data fetch
+        fetchData();
+        // Poll the API every 2 seconds (2,000 ms)
+        const interval = setInterval(fetchData, 2000);
+
+        // Cleanup interval on unmount
+        return () => clearInterval(interval);
     }, [API_URL]);
 
     const deleteUser = (id) => {

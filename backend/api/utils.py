@@ -4,16 +4,16 @@ This software is licensed under [Proprietary License].
 You may not modify, copy, or distribute this software without permission.
 For more details, see the LICENSE file in the root of the repository."""
 
-from django.core.mail import send_mail
+from django.core.mail import send_mail,EmailMessage
 import base64
 from io import BytesIO
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
-from django.core.mail import EmailMessage
 from django.core.files.base import ContentFile
 from django.conf import settings
 import threading
+
 class Utils:
     def __init__(self):
         self.thread = None

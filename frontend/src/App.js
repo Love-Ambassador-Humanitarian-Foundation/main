@@ -47,6 +47,10 @@ import './App.css';
 import AddNewsletter from './pages/AdminAddNewsletterDetail.js';
 import NewsletterReceipients from './pages/AdminNewsletterReceipients.js';
 import NewsletterReceipientDetail from './pages/AdminNewsletterReceipientDetail.js';
+import ResetPasswordPage from './pages/ResetPasswordPage.js';
+import PasswordResetLinkSentPage from './pages/PasswordResetLinkSentPage.js';
+import NotFoundPage from './pages/NotFound';
+import ForgottenPasswordPage from './pages/ForgottenPassword.js';
 
 
 const Companyname = 'LAHF';
@@ -66,6 +70,9 @@ const App = ({API_URL}) => {
             <Route path="/email/verify" element={<EmailVerificationPage API_URL={API_URL} />} exact ></Route>
             <Route path="/email/registration/:uid/:token" element={<Registering API_URL={API_URL} />} exact ></Route>
             <Route path="/profile/:id" element={<PrivateRoute redirectUrl={"/profile/:id"} API_URL={API_URL} ><UserProfilePage API_URL={API_URL} /></PrivateRoute>} exact ></Route>
+            <Route path="/password/forgotten" element={<ForgottenPasswordPage API_URL={API_URL} />} exact ></Route>
+            <Route path="/password/reset/sent" element={<PasswordResetLinkSentPage API_URL={API_URL} />} exact ></Route>
+            <Route path="/password/reset/:uid/:token" element={<ResetPasswordPage API_URL={API_URL} />} exact ></Route>
             <Route path="/payment/:variable" element={<PrivateRoute redirectUrl={"/admin/payment/:variable"} API_URL={API_URL} ><PaymentPage API_URL={API_URL} /></PrivateRoute>} ></Route>
             <Route path="/admin/users" element={<PrivateRoute redirectUrl={"/admin/users"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<Users API_URL={API_URL} />} /></PrivateRoute>} />
             <Route path="/admin/users/add" element={<PrivateRoute redirectUrl={"/admin/users/add"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<AddUser API_URL={API_URL} />} /></PrivateRoute>} />
@@ -100,7 +107,7 @@ const App = ({API_URL}) => {
             {/* Add other routes as needed */}
             {/* <Redirect from="/" to="/" /> */}
             
-            <Route component={NotFound}  ></Route>
+            <Route component={NotFoundPage}  ></Route>
             
           </Routes>
           
