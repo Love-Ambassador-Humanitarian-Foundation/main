@@ -4,14 +4,15 @@ import { DashboardOutlined, UsergroupAddOutlined,MailOutlined, InfoCircleOutline
 import { Layout, Menu, Badge } from 'antd';
 import {useUpdateLoginStatus} from '../utils/hooks'
 import { Nav } from 'react-bootstrap';
-import { Link, useLocation} from 'react-router-dom';
+import { Link, useLocation, useNavigate} from 'react-router-dom';
+import LoginPage from './Login';
 const { Sider } = Layout;
 
 const AdminMain = ({ API_URL,Companyname, screen }) => {
     const {isLoggedIn,userDetails} = useUpdateLoginStatus(API_URL);
     const location = useLocation();
     const currentUrl = location.pathname + location.search;
-    //const navigate = useNavigate();
+    const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     
     
@@ -41,6 +42,7 @@ const AdminMain = ({ API_URL,Companyname, screen }) => {
             window.removeEventListener('resize', handleResize);
         };
     }, [API_URL]);
+
 
     return (
         <Layout style={{ minHeight: '100vh' }}>

@@ -4,7 +4,7 @@ import { useUpdateLoginStatus } from '../utils/hooks';
 
 const PrivateRoute = ({ children, redirectUrl, API_URL }) => {
     const { isLoggedIn } = useUpdateLoginStatus(API_URL);
-
+    console.log('loggedin,',isLoggedIn)
     // Wait until `isLoggedIn` is determined
     if (isLoggedIn === null) {
         return null; // or a loading spinner

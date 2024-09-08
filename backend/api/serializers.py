@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
     last_login = serializers.DateTimeField(format=DATETIME_FORMAT, input_formats=[DATETIME_FORMAT])
     class Meta:
         model = User
-        fields = ('id', 'email', 'firstname', 'lastname', 'profileImage','numberpre', 'number', 'address', 'facebook', 'instagram', 'twitter', 'linkedIn', 'whatsapp', 'is_active', 'is_staff', 'joined_at', 'last_login', 'position')
+        fields = ('id', 'email', 'firstname', 'lastname', 'profileImage','numberpre', 'number', 'address', 'facebook', 'instagram', 'twitter', 'linkedIn', 'whatsapp', 'is_active', 'is_staff','is_superuser', 'joined_at', 'last_login', 'position')
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """

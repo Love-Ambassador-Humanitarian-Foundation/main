@@ -1031,11 +1031,7 @@ export const fetchUserDetails = (API_URL) => {
   return verifyAccessToken(API_URL)
       .then((userId) => {
           if (userId) {
-              return axios.get(`${API_URL}/api/users/${userId}`, {
-                  headers: {
-                      'Authorization': `Bearer ${localStorage.getItem('lahf_access_token')}`
-                  }
-              });
+              return axios.get(`${API_URL}/api/users/${userId}`);
           } else {
               console.error('User ID not found after token verification');
               return null;
@@ -1056,10 +1052,12 @@ export const fetchUserDetails = (API_URL) => {
 
 export const verifyAccessToken = (API_URL) => {
   const token = localStorage.getItem('lahf_access_token');
+
   if (!token) {
-      console.error('No access token found');
-      return Promise.resolve(null);
-  }
+    console.error('No access token found');
+    return Promise.resolve(null); // Return a resolved Promise with null
+}
+
 
   return axios.post(`${API_URL}/api/users/token/verify`, { token })
       .then((response) => {

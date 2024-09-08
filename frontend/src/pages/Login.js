@@ -10,7 +10,9 @@ const LoginPage = ({ API_URL }) => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
     const location = useLocation();
-    const redirectUrl = location.state?.redirectUrl || '/';
+    
+    
+    const redirectUrl = location?.state?.redirectUrl || '/';
     
     const handleSubmit = async (values) => {
         setLoading(true);
@@ -24,10 +26,11 @@ const LoginPage = ({ API_URL }) => {
             
             localStorage.setItem('lahf_access_token', response.data.access);
             localStorage.setItem('lahf_refresh_token', response.data.refresh);
-            const url = redirectUrl.replace(':id', response.data.userid);
-            navigate(url);
+            // Remove '/#' if it exists at the beginning of the path
+            navigate(redirectUrl); // Provide a default redirect if redirectUrl is undefined
+            console.log(redirectUrl);
+            
             message.success('Login successful');
-            // navigate(url);
             
         } catch (error) {
             console.log(error,'=============');
