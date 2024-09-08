@@ -29,9 +29,11 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth import login, get_user_model
+from django.db.models import Q
 from django.forms.models import model_to_dict
 from django.conf import settings
 from django.db import connection
+from datetime import datetime
 
 User = get_user_model()
 
@@ -73,16 +75,24 @@ class AboutAPIView(APIView):
             if serializer.is_valid():
                 serializer.save()
 
-                return Response({'success': 'true', 'message': 'Event updated successfully', 'data': serializer.data}, status=status.HTTP_200_OK)
-            return Response({'success': 'false', 'message': 'Failed to update event', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({'success': 'false', 'message': 'Event not found', 'data':None}, status=status.HTTP_404_NOT_FOUND)
-
+                return Response({'success': 'true', 'message': 'Company details updated successfully', 'data': serializer.data}, status=status.HTTP_200_OK)
+            return Response({'success': 'false', 'message': 'Failed to update Company details', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'success': 'false', 'message': 'Company details not found', 'data':None}, status=status.HTTP_404_NOT_FOUND)
+    def patch(self, request):
+        about = About.objects.first()
+        if about:
+            serializer = AboutSerializer(about, data=request.data, partial=True)  # Use partial=True for partial updates
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'success': 'true', 'message': 'Company details updated successfully', 'data': serializer.data}, status=status.HTTP_200_OK)
+            return Response({'success': 'false', 'message': 'Failed to update company details', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'success': 'false', 'message': 'Company details not found', 'data': None}, status=status.HTTP_404_NOT_FOUND)
     def delete(self, request):
         about = About.objects.first()
         if about:
             about.delete()
-            return Response({'success': 'true', 'message': 'Event deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
-        return Response({'success': 'false', 'message': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'success': 'true', 'message': 'Company details deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'success': 'false', 'message': 'Company details not found'}, status=status.HTTP_404_NOT_FOUND)
 
 class EventAPIView(APIView):
     def get(self, request):
@@ -869,10 +879,31 @@ class ScholarshipApplicantListCreateView(generics.ListCreateAPIView):
         })
 
     def create(self, request, *args, **kwargs):
+        data=request.data
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
+        # Define the email subject and create the HTML content using the template
+        subject = "Scholarship Registration"
+        
+        scholarship = Scholarship.objects.get(id=data['scholarship'])
+        html = Html()  # Assume Html class is properly defined elsewhere
+        scholarship_html= html.scholarship_template(
+            title=subject,
+            name=data['first_name']+' '+data['last_name'],  # Customize per recipient if needed
+            article_title=subject,  # Assuming 'title' is an attribute of Newsletter
+            article_body=f"You have successfully registered for the scholarship-{data['scholarship']}-{(scholarship)}"  # Assuming 'body' is an attribute of Newsletter
+        )
+
+        # Send the email to all recipients
+        Utils().send_email_message(
+            subject='Lahf '+subject,
+            message='',  # Optional plain-text message
+            from_email=settings.EMAIL_HOST_USER,  # Sender's email address
+            recipient_list=[data['email']],  # All recipient emails
+            html_message=scholarship_html  # The HTML content of the email
+        )
         return Response({
             'success': True,
             'message': 'Applicant applied successfully',
@@ -933,6 +964,27 @@ class ScholarshipApplicantApprovalView(generics.UpdateAPIView):
         applicant.organisation_signature_date = organisation_signature_date
         applicant.save()
 
+        # Define the email subject and create the HTML content using the template
+        subject = "Scholarship Application Approval"
+        
+        scholarship = Scholarship.objects.get(id=applicant.scholarship.id)
+        html = Html()  # Assume Html class is properly defined elsewhere
+        Scholarship_html= html.scholarship_template(
+            title=subject,
+            name=applicant.first_name+' '+applicant.last_name,  # Customize per recipient if needed
+            article_title=subject,  # Assuming 'title' is an attribute of Newsletter
+            article_body=f'Congratulations, Your application for the scholarship-{applicant.scholarship}-{(scholarship.id)} has been approved'  # Assuming 'body' is an attribute of Newsletter
+        )
+
+        # Send the email to all recipients
+        Utils().send_email_message(
+            subject='Lahf '+subject,
+            message='',  # Optional plain-text message
+            from_email=settings.EMAIL_HOST_USER,  # Sender's email address
+            recipient_list=[applicant.email],  # All recipient emails
+            html_message=Scholarship_html  # The HTML content of the email
+        )
+
         return Response({
             'success': True,
             'message': 'Applicant approved successfully',
@@ -953,7 +1005,26 @@ class ScholarshipApplicantDisApprovalView(generics.UpdateAPIView):
         applicant.organisation_approved = False
         applicant.organisation_signature_date = None
         applicant.save()
+        # Define the email subject and create the HTML content using the template
+        subject = "Scholarship Application Rejection"
+        
+        scholarship = Scholarship.objects.get(id=applicant.scholarship.id)
+        html = Html()  # Assume Html class is properly defined elsewhere
+        Scholarship_html= html.scholarship_template(
+            title=subject,
+            name=applicant.first_name+' '+applicant.last_name,  # Customize per recipient if needed
+            article_title=subject,  # Assuming 'title' is an attribute of Newsletter
+            article_body=f'Unfortunately, Your application for the scholarship-{applicant.scholarship}-{(scholarship.id)} has been rejected'  # Assuming 'body' is an attribute of Newsletter
+        )
 
+        # Send the email to all recipients
+        Utils().send_email_message(
+            subject='Lahf '+subject,
+            message='',  # Optional plain-text message
+            from_email=settings.EMAIL_HOST_USER,  # Sender's email address
+            recipient_list=[applicant.email],  # All recipient emails
+            html_message=Scholarship_html  # The HTML content of the email
+        )
         return Response({
             'success': True,
             'message': 'Applicant disapproved successfully',
@@ -977,21 +1048,33 @@ class ReportView(APIView):
     }
 
     def _reportvolunteer(self):
-        # Fetch all volunteers
-        volunteers = User.objects.all()
+        # Query to filter users where position is 'Volunteer' or 'volunteer'
+        volunteers = User.objects.filter(position__iexact='volunteer')
+        serialized_volunteers = UserSerializer(volunteers, many=True).data
 
         # Create a copy of the months dictionary to hold the count of volunteers per month
         monthly_report = self.months.copy()
 
         # Iterate over volunteers and count them by month
-        for v in volunteers:
-            if v.joined_date:
-                month_name = v.joined_date.strftime('%b')  # Use abbreviated month name
-                if month_name in monthly_report:
-                    monthly_report[month_name] += 1
+        for v in serialized_volunteers:
+            joined_date_str = v.get('joined_date')
+            if joined_date_str:
+                try:
+                    # Convert string to datetime object
+                    joined_date = datetime.fromisoformat(joined_date_str)
+                    # Get the abbreviated month name
+                    month_name = joined_date.strftime('%b')
+                    if month_name in monthly_report:
+                        monthly_report[month_name] += 1
+                except ValueError:
+                    # Handle cases where the date string is not in ISO format
+                    print(f"Date conversion error for {joined_date_str}")
 
         # Convert the report data into a list of dictionaries for better readability
-        data = [{'month': month, 'count': count} for month, count in monthly_report.items()]
+        data = {
+            'chart': [{'month': month, 'count': count} for month, count in monthly_report.items()],
+            'volunteers': serialized_volunteers
+        }
 
         return Response({
             'success': True,
@@ -999,29 +1082,36 @@ class ReportView(APIView):
             'data': data
         }, status=status.HTTP_200_OK)
 
-    def _reportevents(self):
-        # Fetch all events
-        events = Event.objects.all()
-
-        # Create a copy of the months dictionary to hold the count of events per month
+    def _reportscholarships(self):
+        # Fetch all scholarships
+        scholarships = Scholarship.objects.all()
+        serialized_scholarships = ScholarshipSerializer(scholarships, many=True).data
+        
+        # Create a copy of the months dictionary to hold the count of scholarships per month
         monthly_report = self.months.copy()
 
-        # Iterate over events and count them by month
-        for event in events:
-            if event.date:
-                month_name = event.date.strftime('%b')  # Use abbreviated month name
+        # Iterate over scholarships and count them by month
+        for scholarship in serialized_scholarships:
+            created_date_str = scholarship.get('created_date')
+            if created_date_str:
+                # Convert string to datetime object
+                created_date = datetime.fromisoformat(created_date_str)
+                # Get the abbreviated month name
+                month_name = created_date.strftime('%b')
                 if month_name in monthly_report:
                     monthly_report[month_name] += 1
 
         # Convert the report data into a list of dictionaries for better readability
-        data = [{'month': month, 'count': count} for month, count in monthly_report.items()]
+        data = {
+            'chart': [{'month': month, 'count': count} for month, count in monthly_report.items()],
+            'scholarships': serialized_scholarships
+        }
         
         return Response({
             'success': True,
-            'message': 'Events report retrieved successfully',
+            'message': 'Scholarships report retrieved successfully',
             'data': data
         }, status=status.HTTP_200_OK)
-
     def _reportloggedin(self,request):
         # Define a time range for "recently logged in" (e.g., last 30 days)
         limit = request.query_params.get('limit')
@@ -1049,23 +1139,23 @@ class ReportView(APIView):
         }, status=status.HTTP_200_OK)
 
     def get(self, request, rtype):
-        types = ['volunteer', 'events', 'loggedin']
+        types = ['volunteer', 'scholarships', 'loggedin']
         if rtype not in types:
             return Response({
                 'success': False,
-                'message': "The report type must be one of ['volunteer', 'events', 'loggedin']",
+                'message': "The report type must be one of ['volunteer', 'scholarships', 'loggedin']",
                 'data': None
             }, status=status.HTTP_400_BAD_REQUEST)
 
         if rtype == 'volunteer':
             return self._reportvolunteer()
-        elif rtype == 'events':
-            return self._reportevents()
+        elif rtype == 'scholarships':
+            return self._reportscholarships()
         elif rtype == 'loggedin':
             return self._reportloggedin(request)
 
         return Response({
             'success': False,
-            'message': "The report type must be one of ['volunteer', 'events', 'loggedin']",
+            'message': "The report type must be one of ['volunteer', 'scholarships', 'loggedin']",
             'data': None
         }, status=status.HTTP_400_BAD_REQUEST)

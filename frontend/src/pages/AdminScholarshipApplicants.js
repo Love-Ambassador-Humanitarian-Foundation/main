@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { useParams,useNavigate, Link } from 'react-router-dom';
+import { useParams,useNavigate, Link, useLocation } from 'react-router-dom';
 import { Card, Table, Layout, Button, message, Breadcrumb, Tooltip } from 'antd';
 import { DeleteOutlined, HomeOutlined, PlusOutlined, ProfileOutlined, SolutionOutlined } from '@ant-design/icons';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -9,23 +9,18 @@ const { Content } = Layout;
 
 const ScholarshipApplicants = ({ API_URL }) => {
     const { id } = useParams();
+    const location = useLocation();
+    const scholarship = location?.state?.scholarship;
+    console.log(location,scholarship)
     const navigate = useNavigate();
     const currentDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
     const [applicants, setApplicants] = useState([]);
-    const [scholarship, setScholarship] =useState({})
     const [filteredApplicants, setFilteredApplicants] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         
         const fetchApplicants = async () => {
-            try {
-                const responsescholarsip = await axios.get(`${API_URL}/api/scholarships/${id}?current_date=${currentDate}`);
-                setScholarship(responsescholarsip.data.data);
-            } catch (error){
-                console.error("Error fetching scholarship", error);
-                message.error("There was an error fetching the scholarship!", 5);
-            } 
             try {
                 const response = await axios.get(`${API_URL}/api/scholarshipapplicants?scholarship_id=${id}`);
                 // console.log(response.data.data)
@@ -48,7 +43,7 @@ const ScholarshipApplicants = ({ API_URL }) => {
             const updatedApplicants = applicants.filter(applicant => applicant.id !== applicantId);
             setApplicants(updatedApplicants);
             setFilteredApplicants(updatedApplicants);
-            navigate(`/admin/scholarships/${id}/applicants`);
+            navigate(`/admin/scholarships/${id}/applicants`, {state:{scholarship:scholarship}});
             message.success("Applicant deleted successfully!", 5);
         } catch (error) {
             console.error("Error deleting applicant", error);
@@ -57,7 +52,7 @@ const ScholarshipApplicants = ({ API_URL }) => {
     };
     // Handle row click to navigate to scholarship applicant details
     const handleRowClick = (record) => {
-        navigate(`/admin/scholarships/${id}/applicants/${record.id}`, {state:{scholarshipName:scholarship.name}});
+        navigate(`/admin/scholarships/${id}/applicants/${record.id}`, {state:{scholarship:scholarship}});
     };
 
     const filterApplicants = useCallback(({ itemName,dateRange }) => {
@@ -153,7 +148,7 @@ const ScholarshipApplicants = ({ API_URL }) => {
                     ]}
                 />
                 <Tooltip title='Add Applicant'>
-                    <Link to={`/admin/scholarships/${id}/applicants/add`} style={{textDecoration:'none'}}>
+                    <Link to={`/admin/scholarships/${id}/applicants/add`} state={{scholarship:scholarship}} style={{textDecoration:'none'}}>
                         <PlusOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
                     </Link>
                 </Tooltip>

@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
-    HomeOutlined, EditOutlined, SaveOutlined,
-    InfoCircleOutlined
+    HomeOutlined, EditOutlined, SaveOutlined, InfoCircleOutlined,
+    PlusOutlined,
+    DeleteOutlined
 } from '@ant-design/icons';
 import axios from 'axios';
+import CurrencySelect from '../components/CurrencySelect';
 import LoadingSpinner from '../components/LoadingSpinner';
 import {
     Typography, Input, Button, Form, message,
     Layout, Breadcrumb, Avatar
 } from 'antd';
-import { convertImageToBase64 } from '../utils/utils';
+import { convertImageToBase64, detectenterkey } from '../utils/utils';
 
 const { Content } = Layout;
 const { Text } = Typography;
@@ -19,7 +21,7 @@ const About = ({ API_URL }) => {
     const [loading, setLoading] = useState(false);
     const [logo, setLogo] = useState('');
     const [aboutData, setAboutData] = useState({
-        _id: '',
+        id: '',
         logo: '',
         company_name: '',
         story: '',
@@ -33,32 +35,36 @@ const About = ({ API_URL }) => {
         achievements: [],
         branches: [],
         policies: '',
-        socials: {
-            facebook: '',
-            twitter: '',
-            instagram: ''
-        },
+        socials: [
+        ],
         account_details: []
     });
     const [editAbout, setEditAbout] = useState(false);
     const [form] = Form.useForm();
 
-    useEffect(() => {
+    const fetchAboutData = useCallback(async () => {
         setIsLoading(true);
-        const fetchAboutData = async () => {
-            try {
-                const response = await axios.get(`${API_URL}/api/about`);
-                setAboutData(response.data.data);
-                form.setFieldsValue(response.data.data);
-            } catch (error) {
-                console.error('Error fetching the about data:', error);
-                message.error('Error fetching the about data.');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchAboutData();
+        try {
+            const response = await axios.get(`${API_URL}/api/about`);
+            const data = response.data.data;
+            setAboutData(data);
+            form.setFieldsValue({
+                ...data,
+                socials: data.socials,
+                branches: data.branches,
+                account_details: data.account_details
+            });
+        } catch (error) {
+            console.error('Error fetching the about data:', error);
+            message.error('Error fetching the about data.');
+        } finally {
+            setIsLoading(false);
+        }
     }, [API_URL, form]);
+
+    useEffect(() => {
+        fetchAboutData();
+    }, [fetchAboutData]);
 
     const handleLogoChange = async (e) => {
         const file = e.target.files[0];
@@ -82,8 +88,8 @@ const About = ({ API_URL }) => {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             };
-            if (aboutData._id) {
-                await axios.put(`${API_URL}/api/about/${aboutData._id}`, values, { headers });
+            if (aboutData.id) {
+                await axios.put(`${API_URL}/api/about`, values, { headers });
             } else {
                 await axios.post(`${API_URL}/api/about`, values, { headers });
             }
@@ -120,7 +126,7 @@ const About = ({ API_URL }) => {
                 />
                 <EditOutlined
                     style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }}
-                    onClick={() => setEditAbout(!editAbout)}
+                    onClick={() => setEditAbout(prev => !prev)}
                 />
             </div>
             <Content className='m-2'>
@@ -130,7 +136,6 @@ const About = ({ API_URL }) => {
                         minHeight: 360,
                         background: '#fff',
                         borderRadius: '4px',
-                        height: 'calc(100vh - 140px)'
                     }}
                 >
                     <div style={{ padding: '14px' }} className='container-fluid bg-white'>
@@ -141,7 +146,7 @@ const About = ({ API_URL }) => {
                             onFinish={saveEdit}
                         >
                             <Form.Item label="Logo" name="logo">
-                                <Avatar size={150} src={aboutData.logo || logo} />
+                                <Avatar size={150} src={logo || aboutData.logo} />
                                 {editAbout && (
                                     <input type="file" accept="image/*" className='mt-2' onChange={handleLogoChange} />
                                 )}
@@ -158,7 +163,7 @@ const About = ({ API_URL }) => {
                                 name="story"
                                 rules={[{ required: true, message: 'Please enter the company story' }]}
                             >
-                                <Input.TextArea rows={4} placeholder="Enter Company Story" disabled={!editAbout} />
+                                <Input.TextArea rows={7} placeholder="Enter Company Story" disabled={!editAbout} />
                             </Form.Item>
                             <Form.Item
                                 label="Phone Number"
@@ -210,41 +215,71 @@ const About = ({ API_URL }) => {
                                 name="mission"
                                 rules={[{ required: true, message: 'Please enter the mission statement' }]}
                             >
-                                <Input.TextArea rows={4} placeholder="Enter Mission Statement" disabled={!editAbout} />
+                                <Input.TextArea rows={7} placeholder="Enter Mission Statement" disabled={!editAbout} />
                             </Form.Item>
                             <Form.Item
                                 label="Values"
                                 name="values"
                                 rules={[{ required: true, message: 'Please enter the company values' }]}
                             >
-                                <Input.TextArea rows={4} placeholder="Enter Company Values" disabled={!editAbout} />
+                                <Input.TextArea rows={7} placeholder="Enter Company Values" disabled={!editAbout} />
                             </Form.Item>
                             <Form.Item
                                 label="Policies"
                                 name="policies"
                                 rules={[{ required: true, message: 'Please enter the policies' }]}
                             >
-                                <Input.TextArea rows={4} placeholder="Enter Policies" disabled={!editAbout} />
+                                <Input.TextArea rows={7} placeholder="Enter Policies" disabled={!editAbout} />
                             </Form.Item>
-                            <Form.Item label="Facebook" name={['socials', 'facebook']}>
-                                <Input placeholder="Enter Facebook URL" disabled={!editAbout} />
-                            </Form.Item>
-                            <Form.Item label="Twitter" name={['socials', 'twitter']}>
-                                <Input placeholder="Enter Twitter URL" disabled={!editAbout} />
-                            </Form.Item>
-                            <Form.Item label="Instagram" name={['socials', 'instagram']}>
-                                <Input placeholder="Enter Instagram URL" disabled={!editAbout} />
-                            </Form.Item>
-                            <Text>Branches: {aboutData.branches.length}</Text>
-                            <Form.List name="branches">
+                            <Text className='mt-4'>Socials: {aboutData.socials.length}</Text>
+                            <Form.List name="socials">
                                 {(fields, { add, remove }) => (
                                     <>
                                         {fields.map(({ key, name, fieldKey, ...restField }) => (
-                                            <div key={key} style={{ display: 'flex' }} className='m-0'>
+                                            <div key={key} style={{ display: 'flex', alignItems: 'center', width:'100%' }}>
                                                 <Form.Item
                                                     {...restField}
                                                     name={[name, 'name']}
                                                     fieldKey={[fieldKey, 'name']}
+                                                    style={{ width:'100%' }}
+                                                    rules={[{ required: true, message: 'Please enter the social media name' }]}
+                                                >
+                                                    <Input placeholder="Name" disabled={!editAbout} style={{ width:'100%' }} />
+                                                </Form.Item>
+                                                <Form.Item
+                                                    {...restField}
+                                                    name={[name, 'link']}
+                                                    fieldKey={[fieldKey, 'link']}
+                                                    style={{ width:'100%' }}
+                                                    rules={[{ required: true, message: 'Please enter the url link' }]}
+                                                >
+                                                    <Input placeholder="Link" disabled={!editAbout} style={{ width:'100%' }} />
+                                                </Form.Item>
+                                                {editAbout && (
+                                                    <Button type="link" className='ms-2' icon={<DeleteOutlined/>} onClick={() => remove(name)}>Remove</Button>
+                                                    
+                                                )}
+                                            </div>
+                                        ))}
+                                        {editAbout && (
+                                            <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                                                Add Social Media
+                                            </Button>
+                                        )}
+                                    </>
+                                )}
+                            </Form.List>
+                            <Text >Branches: {aboutData.branches.length}</Text>
+                            <Form.List name="branches" className='mb-4'>
+                                {(fields, { add, remove }) => (
+                                    <>
+                                        {fields.map(({ key, name, fieldKey, ...restField }) => (
+                                            <div key={key} style={{ display: 'flex', alignItems: 'center', widows:'100%' }}>
+                                                <Form.Item
+                                                    {...restField}
+                                                    name={[name, 'name']}
+                                                    fieldKey={[fieldKey, 'name']}
+                                                    style={{ width:'100%' }}
                                                     rules={[{ required: true, message: 'Please enter the branch name' }]}
                                                 >
                                                     <Input placeholder="Branch Name" disabled={!editAbout} />
@@ -253,36 +288,38 @@ const About = ({ API_URL }) => {
                                                     {...restField}
                                                     name={[name, 'location']}
                                                     fieldKey={[fieldKey, 'location']}
+                                                    style={{ width:'100%' }}
                                                     rules={[{ required: true, message: 'Please enter the branch location' }]}
                                                 >
                                                     <Input placeholder="Branch Location" disabled={!editAbout} />
                                                 </Form.Item>
                                                 {editAbout && (
-                                                    <Button type="link" className='m-2 mt-1 text-white' onClick={() => remove(name)}>Remove</Button>
+                                                    <Button type="link" className='m-2 mt-1' icon={<DeleteOutlined/>} onClick={() => remove(name)}>Remove</Button>
                                                 )}
                                             </div>
                                         ))}
                                         {editAbout && (
-                                            <Button type="dashed" className='m-2 mt-1 text-white' onClick={() => add()} block icon={<SaveOutlined className='text-white' />}>
+                                            <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
                                                 Add Branch
                                             </Button>
                                         )}
                                     </>
                                 )}
                             </Form.List>
-                            <Text>Account Details: {aboutData.account_details.length}</Text>
-                            <Form.List name="account_details">
+                            <Text >Account Details: {aboutData.account_details.length}</Text>
+                            <Form.List name="account_details" >
                                 {(fields, { add, remove }) => (
                                     <>
                                         {fields.map(({ key, name, fieldKey, ...restField }) => (
-                                            <div key={key} style={{ display: 'flex' }} className='m-0'>
+                                            <div key={key} style={{ display: 'flex', alignItems: 'center', width:'100%' }}>
                                                 <Form.Item
                                                     {...restField}
                                                     name={[name, 'currency']}
                                                     fieldKey={[fieldKey, 'currency']}
+                                                    
                                                     rules={[{ required: true, message: 'Please enter the currency' }]}
                                                 >
-                                                    <Input placeholder="Currency" disabled={!editAbout} />
+                                                    <CurrencySelect placeholder="Select a currency" disabled={!editAbout} />
                                                 </Form.Item>
                                                 <Form.Item
                                                     {...restField}
@@ -317,12 +354,12 @@ const About = ({ API_URL }) => {
                                                     <Input placeholder="Account Holder Name" disabled={!editAbout} />
                                                 </Form.Item>
                                                 {editAbout && (
-                                                    <Button type="link" className='m-2 mt-1 text-white' onClick={() => remove(name)}>Remove</Button>
+                                                    <Button type="link" className='m-2 mt-1' icon={<DeleteOutlined/>} onClick={() => remove(name)}>Remove</Button>
                                                 )}
                                             </div>
                                         ))}
                                         {editAbout && (
-                                            <Button type="dashed" className='m-2 mt-1 text-white' onClick={() => add()} block icon={<SaveOutlined className='text-white' />}>
+                                            <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
                                                 Add Account Detail
                                             </Button>
                                         )}
@@ -330,10 +367,13 @@ const About = ({ API_URL }) => {
                                 )}
                             </Form.List>
                             {editAbout && (
-                                <Form.Item style={{ marginTop: '30px' }}>
-                                    <Button type="primary" htmlType="submit" loading={loading} icon={<SaveOutlined />} style={{ marginRight: '10px' }}>Save Changes</Button>
+                                <Form.Item  className='mt-5'>
+                                    <Button icon={<SaveOutlined/>} type="primary" htmlType="submit" loading={loading} disabled={!editAbout}>
+                                        Save
+                                    </Button>
                                 </Form.Item>
                             )}
+                            
                         </Form>
                     </div>
                 </div>

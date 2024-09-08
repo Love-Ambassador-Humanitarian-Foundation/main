@@ -18,21 +18,15 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import axios from 'axios';
 import currencyCodes from 'currency-codes';
 import logo from '../assets/logo.jpg';
-import dayjs from 'dayjs';  // Import dayjs for date formatting
+import dayjs from 'dayjs';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
 const { Content } = Layout;
 
-const singularUnits = [
-    'year', 'month', 'week', 'day', 'hour', 'minute', 'second'
-];
-
-const pluralUnits = [
-    'years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds'
-];
-
-const years = Array.from({ length: 20 }, (_, i) => dayjs().year() - i); // Example: last 20 years
+const singularUnits = ['year', 'month', 'week', 'day', 'hour', 'minute', 'second'];
+const pluralUnits = ['years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds'];
+const years = Array.from({ length: 20 }, (_, i) => dayjs().year() - i);
 
 const Scholarship = ({ API_URL }) => {
     const { id } = useParams();
@@ -40,30 +34,30 @@ const Scholarship = ({ API_URL }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [loading, setLoading] = useState(false);
     const [pdfLoading, setPdfLoading] = useState(false);
-    const currentDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    const currentDate = dayjs();  // Use dayjs for current date formatting
     const [formData, setFormData] = useState({
-        id:"",
+        id: "",
         name: '',
-        description:'',
+        description: '',
         year: dayjs().year(),
         amount_approved: '',
         currency: 'USD',
         duration: '',
         durationUnit: 'months',
         created_date: null,
+        is_expired: null
     });
 
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-                
-                const response = await axios.get(`${API_URL}/api/scholarships/${id}?current_date=${currentDate}`);
+                const response = await axios.get(`${API_URL}/api/scholarships/${id}?current_date=${currentDate.format('YYYY-MM-DD')}`);
                 const data = response.data.data;
 
                 setFormData({
-                    id:data.id ||'',
+                    id: data.id || '',
                     name: data.name || '',
-                    description:data.description||'',
+                    description: data.description || '',
                     year: data.year || dayjs().year(),
                     amount_approved: data.amount_approved || '',
                     currency: data.currency || 'USD',
@@ -72,7 +66,6 @@ const Scholarship = ({ API_URL }) => {
                     created_date: data.created_date ? dayjs(data.created_date) : null,
                     is_expired: data.is_expired || null
                 });
-
             } catch (error) {
                 console.error('Error fetching scholarship details:', error);
             } finally {
@@ -81,7 +74,7 @@ const Scholarship = ({ API_URL }) => {
         };
 
         fetchDetails();
-    }, [API_URL, id,currentDate]);
+    }, [API_URL, id, currentDate]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -107,13 +100,12 @@ const Scholarship = ({ API_URL }) => {
 
     const saveEdit = async () => {
         setLoading(true);
-        console.log(formData)
         try {
             await axios.patch(`${API_URL}/api/scholarships/${id}`, {
                 ...formData,
-                duration: formData.duration+' '+formData.durationUnit,
+                duration: formData.duration + ' ' + formData.durationUnit,
                 created_date: formData.created_date ? formData.created_date.format('YYYY-MM-DD') : null,
-                current_date:currentDate
+                current_date: currentDate.format('YYYY-MM-DD')
             }, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -197,14 +189,14 @@ const Scholarship = ({ API_URL }) => {
                 />
                 <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
                     <Tooltip title="View Applicants">
-                        <Link to={`/admin/scholarships/${formData.id}/applicants`} style={{ textDecoration: 'none' }}>
+                        <Link to={`/admin/scholarships/${formData.id}/applicants`} state={{scholarship:formData}} style={{ textDecoration: 'none' }}>
                             <UserOutlined className='mx-2' style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
                         </Link>
                     </Tooltip>
 
                     {pdfLoading ? <div className='spinnersmall'></div> : null}
                     <Tooltip title='Generate pdf'>
-                        <FilePdfOutlined onClick={generatePdf} className='mx-2 text-danger' style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
+                        <FilePdfOutlined onClick={generatePdf} className='mx-2 text-danger' style={{ fontSize: '20px', color: pdfLoading ? 'gray' : 'black', cursor: pdfLoading ? 'not-allowed' : 'pointer' }} />
                     </Tooltip>
                     <Tooltip title='Edit Scholarship'>
                         <EditOutlined onClick={() => setEditScholarship(!editScholarship)} className='mx-2' style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />
@@ -298,19 +290,18 @@ const Scholarship = ({ API_URL }) => {
                         <Form.Item label="Created Date">
                             <DatePicker
                                 name="created_date"
-                                value={currentDate}
+                                value={formData.created_date ? dayjs(formData.created_date) : null}
                                 onChange={handleDateChange}
                                 format="YYYY-MM-DD"
                                 disabled={!editScholarship}
                             />
                         </Form.Item>
                         {!editScholarship ? 
-                            <Form.Item label={formData.is_expired ? "Is Expired" : "Is Not Expired"}>
+                            <Form.Item label="Is Expired">
                                 <Checkbox
                                     checked={formData.is_expired}  // Use 'checked' to reflect the value
                                     disabled={true}  // Disable the checkbox to make it non-editable
-                                    
-                                    >
+                                >
                                     {formData.is_expired ? <span className='text-danger'>Expired</span>: <span className='text-success'>Not Expired</span>}
                                 </Checkbox>
                             </Form.Item> 

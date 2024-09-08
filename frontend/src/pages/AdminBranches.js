@@ -116,7 +116,7 @@ const Branches = ({API_URL}) => {
         setFilteredBranches(filtered);
     };
     const handleRowClick = useCallback((record) => {
-        navigate(`/admin/branches/${record.id}`);
+        navigate(`/admin/branches/${record.name}`);
     }, [navigate]);
 
 

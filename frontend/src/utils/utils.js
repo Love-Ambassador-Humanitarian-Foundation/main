@@ -7,6 +7,7 @@ import jsQR from 'jsqr';
  * @returns {Promise<string>} - The decoded text from the QR code.
  */
 
+
 export const decodeQRCode = async (imageSrc) => {
     return new Promise((resolve, reject) => {
         const img = new Image();
@@ -992,6 +993,23 @@ export const eventTypes = [
   { value: 'demonstration', name: 'Demonstration' },
   { value: 'fund', name: 'Fundraising' }
 ];
+
+export const OFFICER_ROLES = [
+  { value: 'founder', name: 'Founder' },
+  { value: 'co_founder', name: 'Co-Founder' },
+  { value: 'executive_director', name: 'Executive Director' },
+  { value: 'manager', name: 'Manager' },
+  { value: 'coordinator', name: 'Coordinator' },
+  { value: 'volunteer', name: 'Volunteer' },
+  { value: 'advisor', name: 'Advisor' },
+  { value: 'treasurer', name: 'Treasurer' },
+  { value: 'secretary', name: 'Secretary' },
+  { value: 'communications_officer', name: 'Communications Officer' },
+  { value: 'development_officer', name: 'Development Officer' },
+  { value: 'program_director', name: 'Program Director' },
+  { value: 'event_planner', name: 'Event Planner' },
+];
+
 
 export const getRandomBgColorClass = () => {
   const colors = [

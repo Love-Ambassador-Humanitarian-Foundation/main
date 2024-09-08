@@ -60,17 +60,18 @@ class AboutSerializer(serializers.ModelSerializer):
     """
     Serializer for About model.
     """
-    created_date = serializers.DateTimeField(format=DATETIME_FORMAT, input_formats=[DATETIME_FORMAT])
-    updated_date = serializers.DateTimeField(format=DATETIME_FORMAT, input_formats=[DATETIME_FORMAT])
     class Meta:
         model = About
-        fields = [
-            'id', 'company_name', 'story', 'logo', 'phonenumber', 'emailone',
-            'emailtwo', 'emailthree', 'address', 'mission', 'values',
-            'achievements', 'created_date', 'updated_date', 'branches',
-            'policies', 'socials', 'account_details'
-        ]
+        fields = '__all__'
 
+    def validate(self, attrs):
+        # Access the request from the context
+        request = self.context.get('request')
+        if request and request.method == 'POST':
+            # Check if an instance of About already exists
+            if About.objects.exists():
+                raise ValidationError('About instance already exists. Only one instance of About is allowed')
+        return attrs
 class PartnersSerializer(serializers.ModelSerializer):
     """
     Serializer for Partners model.

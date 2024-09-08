@@ -79,6 +79,22 @@ EVENT_TYPES = [
         ('fund', 'Fundraising')
     ]
 
+OFFICER_ROLES = [
+    ('founder', 'Founder'),
+    ('co_founder', 'Co-Founder'),
+    ('executive_director', 'Executive Director'),
+    ('manager', 'Manager'),
+    ('coordinator', 'Coordinator'),
+    ('volunteer', 'Volunteer'),
+    ('advisor', 'Advisor'),
+    ('treasurer', 'Treasurer'),
+    ('secretary', 'Secretary'),
+    ('communications_officer', 'Communications Officer'),
+    ('development_officer', 'Development Officer'),
+    ('program_director', 'Program Director'),
+    ('event_planner', 'Event Planner'),
+]
+
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -120,7 +136,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
     joined_at = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
-    position = models.CharField(max_length=255, blank=True)
+    position = models.CharField(max_length=MAX_LENGTH, blank=True, choices=OFFICER_ROLES,default='Volunteer')  # Provide a default value if blank=True)
     groups = models.ManyToManyField(Group, related_name='custom_user_set')
     user_permissions = models.ManyToManyField(Permission, related_name='custom_user_set')
 
@@ -149,8 +165,8 @@ class About(models.Model):
     mission = models.TextField(blank=True, null=True)
     values = models.TextField(blank=True, null=True)
     achievements = models.JSONField(blank=True, null=True)
-    created_date = models.DateTimeField()
-    updated_date = models.DateTimeField()
+    created_date = models.DateTimeField(auto_now_add=True)  # Set on creation
+    updated_date = models.DateTimeField(auto_now=True)      # Updated on every save
     branches = models.JSONField(blank=True, null=True)
     policies = models.TextField(blank=True, null=True)
     socials = models.JSONField(blank=True, null=True)
@@ -161,11 +177,6 @@ class About(models.Model):
 
     class Meta:
         ordering = ['-created_date']
-
-@receiver(pre_save, sender=About)
-def limit_about_instance(sender, instance, **kwargs):
-    if About.objects.exists() and not instance.pk:
-        raise ValidationError("Only one instance of About is allowed")
 
 class Partners(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -363,6 +374,8 @@ class ScholarshipApplicant(models.Model):
     def save(self, *args, **kwargs):
         if not self.qrcode and self.organisation_approved:
             self.qrcode = self.generate_qr_code()
+        else:
+            self.qrcode = None
         super().save(*args, **kwargs)
 
     def generate_qr_code(self):

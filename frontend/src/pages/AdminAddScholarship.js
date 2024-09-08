@@ -4,6 +4,7 @@ import { HomeOutlined, ProfileOutlined, SaveOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import currencyCodes from 'currency-codes';
+import CurrencySelect from '../components/CurrencySelect';
 import dayjs from 'dayjs';  // Import dayjs for date handling
 
 const { Content } = Layout;
@@ -204,13 +205,7 @@ const AddScholarship = ({ API_URL }) => {
                             name="currency"
                             rules={[{ required: true, message: 'Please select the currency' }]}
                         >
-                            <Select 
-                                name="currency"
-                                value={formData.currency}
-                                onChange={(value) => setFormData({ ...formData, currency: value })}
-                            >
-                                {currencyOptions}
-                            </Select>
+                            <CurrencySelect name="currency" value={formData.currency} onChange={(value) => setFormData({ ...formData, currency: value })} placeholder="Select a currency" />
                         </Form.Item>
 
                         <Form.Item

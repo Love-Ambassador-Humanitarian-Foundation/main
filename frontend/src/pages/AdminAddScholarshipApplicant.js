@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Layout, Breadcrumb, Form, Input, Button, DatePicker, message,Select } from 'antd';
 import { HomeOutlined, ProfileOutlined, SaveOutlined, SolutionOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams , useLocation, Link} from 'react-router-dom';
 import dayjs from 'dayjs';  // Import dayjs for date handling
 
 const { Content } = Layout;
@@ -18,9 +18,10 @@ const CLASS_LEVEL_CHOICES = [
 
 const AddScholarshipApplicant = ({ API_URL }) => {
     const { id } = useParams();
-    console.log(useParams());
     const [loading, setLoading] = useState(false);
-    const [scholarship, setScholarship] =useState({})
+    const location = useLocation()
+    const scholarship = location?.state?.scholarship;
+    // console.log(location,scholarship)
     const currentDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
     const [formData, setFormData] = useState({
         scholarship:id,
@@ -44,27 +45,16 @@ const AddScholarshipApplicant = ({ API_URL }) => {
     const navigate = useNavigate();
     const [form] = Form.useForm();
 
-    useEffect(() => {
-        const fetchScholarship = async () =>{
-            try {
-                const responsescholarsip = await axios.get(`${API_URL}/api/scholarships/${id}?current_date=${currentDate}`);
-                setScholarship(responsescholarsip.data.data);
-            } catch (error){
-                console.error("Error fetching scholarship", error);
-                message.error("There was an error fetching the scholarship!", 5);
-            } 
-        }
-        fetchScholarship()
-    })
 
     const onFinish = async () => {
         setLoading(true);
         try {
             await axios.post(`${API_URL}/api/scholarshipapplicants`, formData);
             message.success('Application submitted successfully!');
-            navigate(`/admin/scholarships/${id}/applicants`);
+            navigate(`/admin/scholarships/${id}/applicants`, {state:{scholarship:scholarship}});
+
         } catch (error) {
-            console.error('There was an error submitting the application!', error.response?.data || error.message);
+            console.log('There was an error submitting the application!', error);
             message.error('Failed to submit the application. Please try again.');
 
             if (error.response && error.response.data && error.response.data.errors) {
@@ -110,8 +100,19 @@ const AddScholarshipApplicant = ({ API_URL }) => {
                     items={[
                         { href: '/', title: <HomeOutlined /> },
                         { href: '/#/admin/scholarships', title: (<><ProfileOutlined /><span style={{textDecoration:'none'}}>Scholarships</span></>) },
-                        { href: `/#/admin/scholarships/${id}`, title: (<span style={{textDecoration:'none'}}>{scholarship.name}</span>) },
-                        { href: `/#/admin/scholarships/${id}/applicants`, title: (<><SolutionOutlined /><span style={{textDecoration:'none'}}>Applicants</span></>) },
+                        { href: `/#/admin/scholarships/${id}`, title: (<span style={{textDecoration:'none'}}>{scholarship?.name}</span>) },
+                        {
+                            title: (
+                                <Link
+                                    to={`/admin/scholarships/${id}/applicants`}
+                                    state={{ scholarship: scholarship }}
+                                    style={{ textDecoration: 'none' }}
+                                    >
+                                    <SolutionOutlined />
+                                    <span>Applicants</span>
+                                </Link>
+                            )
+                            },
                         { title: (<span style={{textDecoration:'none'}}>Add Application</span>) },
                     ]}
                 />

@@ -3,7 +3,7 @@ import { Layout, Breadcrumb, Form, Input, Button, Checkbox, message, Upload, Sel
 import { HomeOutlined, UserAddOutlined, SaveOutlined, UploadOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { countryCodes } from '../utils/utils'; // Adjust the path as necessary
+import { countryCodes, OFFICER_ROLES } from '../utils/utils'; // Adjust the path as necessary
 
 const { Content } = Layout;
 const { Option } = Select;
@@ -135,7 +135,13 @@ const AddUser = ({ API_URL }) => {
                             name="position"
                             rules={[{ required: true, message: 'Please enter the role/position' }]}
                         >
-                            <Input placeholder="Enter Role/Position" />
+                            <Select placeholder="Enter Role/Position" >
+                                {OFFICER_ROLES.map((position) => (
+                                    <Option key={position.value} value={position.value}>
+                                        {position.name}
+                                    </Option>
+                                ))}
+                            </Select>
                         </Form.Item>
 
                         {/* Phone Number Input with Country Code Prefix */}

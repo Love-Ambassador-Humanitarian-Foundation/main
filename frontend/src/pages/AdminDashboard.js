@@ -2,15 +2,15 @@ import React, { useRef, useState, useEffect } from 'react';
 import {
     DashboardOutlined,
     UsergroupAddOutlined,
-    InteractionOutlined,
-    UserOutlined,
     BranchesOutlined,
+    ProfileOutlined,
+    UserSwitchOutlined,
     HomeOutlined,
-    UserSwitchOutlined
+    UserOutlined
 } from '@ant-design/icons';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { Link } from 'react-router-dom';
-import { Card, Row, Col, theme, Layout, Breadcrumb, Button } from 'antd';
+import { Card, Row, Col, theme, Layout, Breadcrumb, Button, Spin } from 'antd';
 import axios from 'axios';
 
 const { Content } = Layout;
@@ -21,94 +21,74 @@ const Dashboard = ({ API_URL }) => {
     const vref = useRef(null);
     const { token: { colorBgContainer, borderRadiusSM } } = theme.useToken();
 
-    const [volunteerloading, setIsVolunteerLoading] = useState(false);
-    const [volunteers, setVolunteers] = useState([]);
-    const [branchesloading, setIsBranchesLoading] = useState(false);
-    const [branches, setBranches] = useState([]);
-    const [eventsloading, setIsEventsLoading] = useState(false);
-    const [events, setEvents] = useState([]);
-    const [partnersloading, setIsPartnersLoading] = useState(false);
-    const [partners, setPartners] = useState([]);
-    const [volunteerchartloading, setIsVolunteerChartLoading] = useState(false);
-    const [volunteerschart, setVolunteersChart] = useState([]);
-    const [eventschartloading, setIsEventChartLoading] = useState(false);
-    const [eventschart, setEventChart] = useState([]);
-    const [lastloginloading, setIsLastLoginLoading] = useState(false);
-    const [lastloginchart, setLastLoginChart] = useState([]);
+    const [loadingStates, setLoadingStates] = useState({
+        volunteer: false,
+        branches: false,
+        partners: false,
+        scholarships: false,
+        volunteerChart: false,
+        scholarshipsChart: false,
+        lastLogin: false
+    });
+    const [data, setData] = useState({
+        volunteers: [],
+        branches: [],
+        partners: [],
+        scholarships: [],
+        volunteersChart: [],
+        scholarshipsChart: [],
+        lastLoginChart: []
+    });
 
     useEffect(() => {
         const fetchData = async () => {
-            setIsVolunteerLoading(true);
-            setIsBranchesLoading(true);
-            setIsPartnersLoading(true);
-            setIsEventsLoading(true);
-            setIsVolunteerChartLoading(true);
-            setIsEventChartLoading(true);
-            setIsLastLoginLoading(true);
-        
-            try {
-                const volunteersResponse = await axios.get(`${API_URL}/api/users`);
-                setVolunteers(volunteersResponse.data.data);
-            } catch (error) {
-                console.error('Error fetching volunteers:', error);
-            } finally {
-                setIsVolunteerLoading(false);
-            }
-        
+            setLoadingStates(prev => ({ ...prev, volunteer: true, branches: true, partners: true, scholarships: true, volunteerChart: true, scholarshipsChart: true, lastLogin: true }));
+
             try {
                 const branchesResponse = await axios.get(`${API_URL}/api/about`);
-                setBranches(branchesResponse.data.data.branches);
+                setData(prev => ({ ...prev, branches: branchesResponse.data.data.branches }));
             } catch (error) {
                 console.error('Error fetching branches:', error);
             } finally {
-                setIsBranchesLoading(false);
+                setLoadingStates(prev => ({ ...prev, branches: false }));
             }
+
             try {
                 const partnersResponse = await axios.get(`${API_URL}/api/partners`);
-                setPartners(partnersResponse.data.data);
+                setData(prev => ({ ...prev, partners: partnersResponse.data.data }));
             } catch (error) {
                 console.error('Error fetching partners:', error);
             } finally {
-                setIsPartnersLoading(false);
+                setLoadingStates(prev => ({ ...prev, partners: false }));
             }
-        
-            try {
-                const eventsResponse = await axios.get(`${API_URL}/api/events`);
-                setEvents(eventsResponse.data.data);
-            } catch (error) {
-                console.error('Error fetching events:', error);
-            } finally {
-                setIsEventsLoading(false);
-            }
-        
+
             try {
                 const volunteersChartResponse = await axios.get(`${API_URL}/api/reports/volunteer`);
-                setVolunteersChart(volunteersChartResponse.data.data);
+                setData(prev => ({ ...prev, volunteersChart: volunteersChartResponse.data.data.chart, volunteers: volunteersChartResponse.data.data.volunteers }));
             } catch (error) {
                 console.error('Error fetching volunteer chart:', error);
             } finally {
-                setIsVolunteerChartLoading(false);
+                setLoadingStates(prev => ({ ...prev, volunteerChart: false, volunteer: false }));
             }
-        
+
             try {
-                const eventsChartResponse = await axios.get(`${API_URL}/api/reports/events`);
-                setEventChart(eventsChartResponse.data.data);
+                const scholarshipsChartResponse = await axios.get(`${API_URL}/api/reports/scholarships`);
+                setData(prev => ({ ...prev, scholarshipsChart: scholarshipsChartResponse.data.data.chart, scholarships: scholarshipsChartResponse.data.data.scholarships }));
             } catch (error) {
-                console.error('Error fetching event chart:', error);
+                console.error('Error fetching scholarship chart:', error);
             } finally {
-                setIsEventChartLoading(false);
+                setLoadingStates(prev => ({ ...prev, scholarshipsChart: false, scholarships: false }));
             }
-        
+
             try {
                 const lastLoginResponse = await axios.get(`${API_URL}/api/reports/loggedin?limit=20`);
-                setLastLoginChart(lastLoginResponse.data.data);
+                setData(prev => ({ ...prev, lastLoginChart: lastLoginResponse.data.data }));
             } catch (error) {
                 console.error('Error fetching last login chart:', error);
             } finally {
-                setIsLastLoginLoading(false);
+                setLoadingStates(prev => ({ ...prev, lastLogin: false }));
             }
         };
-        
 
         fetchData();
 
@@ -131,28 +111,28 @@ const Dashboard = ({ API_URL }) => {
             url: '/admin/profiles',
             icon: <UsergroupAddOutlined className="rounded-5 p-1" style={{ backgroundColor: '#fa5a7d' }} />,
             title: 'Volunteers',
-            description: volunteerloading ? <Button className='bg-transparent border-0' loading={volunteerloading}></Button> : volunteers.length,
+            description: loadingStates.volunteer ? <Spin /> : data.volunteers.length,
             bgcolor: '#ffe2e6'
         },
         {
             url: '/admin/branches',
             icon: <BranchesOutlined className='rounded-5 p-1' style={{ backgroundColor: '#fe947a' }} />,
             title: 'Branches',
-            description: branchesloading ? <Button className='bg-transparent border-0' loading={branchesloading}></Button> : branches.length,
+            description: loadingStates.branches ? <Spin /> : data.branches.length,
             bgcolor: '#fff4de'
         },
         {
-            url: '/admin/events',
-            icon: <InteractionOutlined className='rounded-5 p-1' style={{ backgroundColor: '#3cd856' }} />,
-            title: 'Events',
-            description: eventsloading ? <Button className='bg-transparent border-0' loading={eventsloading}></Button> : events.length,
+            url: '/admin/scholarships',
+            icon: <ProfileOutlined className='rounded-5 p-1' style={{ backgroundColor: '#3cd856' }} />,
+            title: 'Scholarships',
+            description: loadingStates.scholarships ? <Spin /> : data.scholarships.length,
             bgcolor: '#dcfce7'
         },
         {
             url: '/admin/partners',
             icon: <UserSwitchOutlined className='rounded-5 p-1' style={{ backgroundColor: '#bf83ff' }} />,
             title: 'Partners',
-            description: partnersloading ? <Button className='bg-transparent border-0' loading={partnersloading}></Button> : partners.length,
+            description: loadingStates.partners ? <Spin /> : data.partners.length,
             bgcolor: '#f4e8ff'
         }
     ];
@@ -192,7 +172,6 @@ const Dashboard = ({ API_URL }) => {
                         minHeight: 360,
                         background: colorBgContainer,
                         borderRadius: borderRadiusSM,
-                        height: 'calc(100vh - 140px)'
                     }}
                 >
                     <Row gutter={[16, 16]}>
@@ -226,9 +205,9 @@ const Dashboard = ({ API_URL }) => {
                             <small className='fw-bold'>Recently Logged In</small>
                             <div style={{ ...styles.scrollableRow, ...styles.noScrollbar }}>
                                 <Row gutter={[4, 4]}>
-                                    {lastloginloading ?
-                                        <Button className='bg-transparent border-0' loading={lastloginloading}></Button> :
-                                        lastloginchart.map((user, index) => (
+                                    {loadingStates.lastLogin ?
+                                        <Spin /> :
+                                        data.lastLoginChart.map((user, index) => (
                                             <Col xs={24} key={index}>
                                                 <Link to={`/admin/users/${user.id}`} style={{ textDecoration: 'none' }}>
                                                     <Card style={{ borderRadius: borderRadiusSM, height: '40px' }}>
@@ -249,9 +228,9 @@ const Dashboard = ({ API_URL }) => {
                         <Col id="vref" ref={vref} xs={24} md={12} style={{ borderRadius: borderRadiusSM }}>
                             <small className='fw-bold'>Volunteers Joined</small>
                             
-                            {volunteerchartloading ?
-                                <Button className='bg-transparent border-0' loading={volunteerchartloading}></Button> :
-                                <BarChart width={barwidth} height={300} data={volunteerschart} style={{ marginLeft: '-50px' }}>
+                            {loadingStates.volunteerChart ?
+                                <Spin /> :
+                                <BarChart width={barwidth} height={300} data={data.volunteersChart} style={{ marginLeft: '-50px' }}>
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis dataKey="month" />
                                     <YAxis />
@@ -262,11 +241,11 @@ const Dashboard = ({ API_URL }) => {
                             }
                         </Col>
                         <Col xs={24} md={12} style={{ borderRadius: borderRadiusSM }}>
-                            <small className='fw-bold'>Events Held</small>
+                            <small className='fw-bold'>Scholarships in Progress</small>
 
-                            { eventschartloading ?
-                                <Button className='bg-transparent border-0' loading={eventschartloading}></Button> :
-                                <BarChart width={barwidth} height={300} data={eventschart} style={{ marginLeft: '-50px' }}>
+                            {loadingStates.scholarshipsChart ?
+                                <Spin /> :
+                                <BarChart width={barwidth} height={300} data={data.scholarshipsChart} style={{ marginLeft: '-50px' }}>
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis dataKey="month" />
                                     <YAxis />

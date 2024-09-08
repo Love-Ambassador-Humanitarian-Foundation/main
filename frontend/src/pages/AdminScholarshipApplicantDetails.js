@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useCallback } from 'react';
 import {
     HomeOutlined,
     EditOutlined,
@@ -16,7 +16,7 @@ import {
     Checkbox, Tooltip,
     Image
 } from 'antd';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, Link } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import axios from 'axios';
 import logo from '../assets/logo.jpg';
@@ -38,7 +38,8 @@ const CLASS_LEVEL_CHOICES = [
 const ScholarshipApplicant = ({ API_URL }) => {
     const { id, applicantid } = useParams();
     const location = useLocation();
-    const { scholarshipName } = location.state || {}; // Access the state
+    
+    const scholarship = location?.state?.scholarship || {}; // Access the state
     
     const [editScholarshipApplication, setEditScholarshipApplication] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -69,45 +70,7 @@ const ScholarshipApplicant = ({ API_URL }) => {
     const [approved, setApproved] =useState(formData.organisation_approved)
     const [organisation_signature_date, setOrganisationSignatureDate] = useState(formData.organisation_signature_date ? dayjs(formData.organisation_signature_date) : null)
 
-    useEffect(() => {
-        const fetchDetails = async () => {
-            try {
-                const response = await axios.get(`${API_URL}/api/scholarshipapplicants/${applicantid}?id=${id}`);
-                const data = response.data.data;
-
-                setFormData({
-                    id: data.id || '',
-                    first_name: data.first_name || '',
-                    middle_name: data.middle_name || '',
-                    last_name: data.last_name || '',
-                    birthday: data.birthday ? dayjs(data.birthday) : null,
-                    home_address: data.home_address || '',
-                    email: data.email || '',
-                    phone_number: data.phone_number || '',
-                    guardian_parent_name: data.guardian_parent_name || '',
-                    guardian_parent_home_address: data.guardian_parent_home_address || '',
-                    guardian_parent_email: data.guardian_parent_email || '',
-                    guardian_parent_phone_number: data.guardian_parent_phone_number || '',
-                    name_of_institution: data.name_of_institution || '',
-                    address_of_institution: data.address_of_institution || '',
-                    class_level: data.class_level || '',
-                    qrcode: data.qrcode || '',
-                    organisation_approved: data.organisation_approved || false,
-                    organisation_signature_date: data.organisation_signature_date ? dayjs(data.organisation_signature_date) : null,
-                    candidate_signature_date: data.candidate_signature_date ? dayjs(data.candidate_signature_date) : null
-                });
-                setApproved(data.organisation_approved || false)
-                setOrganisationSignatureDate(data.organisation_signature_date ? dayjs(data.organisation_signature_date) : null)
-
-            } catch (error) {
-                console.error('Error fetching scholarship details:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchDetails();
-    }, [API_URL, id, applicantid]);
+    
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -141,6 +104,7 @@ const ScholarshipApplicant = ({ API_URL }) => {
                 }
             });
             message.success('Scholarship applicant Approved successfully');
+            fetchDetails();
             setEditScholarshipApplication(false);
         } catch (error) {
             console.error('Error approving applicant:', error);
@@ -163,6 +127,7 @@ const ScholarshipApplicant = ({ API_URL }) => {
                 }
             });
             message.success('Scholarship applicant DisApproved successfully');
+            fetchDetails()
             setEditScholarshipApplication(false);
         } catch (error) {
             console.error('Error Disapproving applicant:', error);
@@ -189,6 +154,7 @@ const ScholarshipApplicant = ({ API_URL }) => {
             });
             message.success('Scholarship applicant details updated');
             setEditScholarshipApplication(false);
+
         } catch (error) {
             console.error('Error updating scholarship details:', error);
             message.error('Error updating scholarship details');
@@ -244,7 +210,45 @@ const ScholarshipApplicant = ({ API_URL }) => {
         }
     };
 
-    
+    const fetchDetails = useCallback(async () => {
+        try {
+            const response = await axios.get(`${API_URL}/api/scholarshipapplicants/${applicantid}?id=${id}`);
+            const data = response.data.data;
+
+            setFormData({
+                id: data.id || '',
+                first_name: data.first_name || '',
+                middle_name: data.middle_name || '',
+                last_name: data.last_name || '',
+                birthday: data.birthday ? dayjs(data.birthday) : null,
+                home_address: data.home_address || '',
+                email: data.email || '',
+                phone_number: data.phone_number || '',
+                guardian_parent_name: data.guardian_parent_name || '',
+                guardian_parent_home_address: data.guardian_parent_home_address || '',
+                guardian_parent_email: data.guardian_parent_email || '',
+                guardian_parent_phone_number: data.guardian_parent_phone_number || '',
+                name_of_institution: data.name_of_institution || '',
+                address_of_institution: data.address_of_institution || '',
+                class_level: data.class_level || '',
+                qrcode: data.qrcode || '',
+                organisation_approved: data.organisation_approved || false,
+                organisation_signature_date: data.organisation_signature_date ? dayjs(data.organisation_signature_date) : null,
+                candidate_signature_date: data.candidate_signature_date ? dayjs(data.candidate_signature_date) : null
+            });
+            setApproved(data.organisation_approved || false);
+            setOrganisationSignatureDate(data.organisation_signature_date ? dayjs(data.organisation_signature_date) : null);
+
+        } catch (error) {
+            console.error('Error fetching scholarship details:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [API_URL, applicantid, id]); // Dependencies
+
+    useEffect(() => {
+        fetchDetails(); // Call the memoized fetchDetails
+    }, [fetchDetails]); // Dependency array
 
     if (isLoading) {
         return <LoadingSpinner />;
@@ -253,15 +257,32 @@ const ScholarshipApplicant = ({ API_URL }) => {
     return (
         <Layout style={{ marginTop: '70px', height: '100vh' }}>
             <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{ backgroundColor: '#d7d7e9' }}>
-                <Breadcrumb
-                    items={[
-                        { href: '/', title: <HomeOutlined /> },
-                        { href: '/#/admin/scholarships', title: (<><ProfileOutlined /><span style={{textDecoration:'none'}}>Scholarships</span></>) },
-                        { href: `/#/admin/scholarships/${id}`, title: (<span style={{textDecoration:'none'}}>{scholarshipName}</span>) },
-                        { href: `/#/admin/scholarships/${id}/applicants`, title: (<><SolutionOutlined /><span style={{textDecoration:'none'}}>Applicants</span></>) },
-                        { title: (<span style={{textDecoration:'none'}}>{formData.first_name+' '+formData.last_name}</span>) },
-                    ]}
+            <Breadcrumb
+                items={[
+                    { href: '/', title: <HomeOutlined /> },
+                    { href: '/#/admin/scholarships', title: (<><ProfileOutlined /><span style={{ textDecoration: 'none' }}>Scholarships</span></>) },
+                    {
+                    href: `/#/admin/scholarships/${id}`,
+                    title: (<span style={{ textDecoration: 'none' }}>{scholarship?.name}</span>)
+                    },
+                    {
+                    title: (
+                        <Link
+                            to={`/admin/scholarships/${id}/applicants`}
+                            state={{ scholarship: scholarship }}
+                            style={{ textDecoration: 'none' }}
+                            >
+                            <SolutionOutlined />
+                            <span>Applicants</span>
+                        </Link>
+                    )
+                    },
+                    {
+                    title: (<span style={{ textDecoration: 'none' }}>{formData.first_name + ' ' + formData.last_name}</span>)
+                    },
+                ]}
                 />
+
                 <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
                     {
                         approved?
