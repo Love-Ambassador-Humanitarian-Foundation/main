@@ -18,7 +18,7 @@ const pluralUnits = [
     'years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds'
 ];
 
-const AddScholarship = ({ API_URL }) => {
+const AddAdminScholarship = ({ API_URL }) => {
     const [loading, setLoading] = useState(false);
     const currentDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
     const [formData, setFormData] = useState({
@@ -256,4 +256,4 @@ const AddScholarship = ({ API_URL }) => {
     );
 };
 
-export default AddScholarship;
+export default AddAdminScholarship;

@@ -29,7 +29,7 @@ const { Content } = Layout;
 const { Dragger } = Upload;
 const {Option} = Select;
 
-const Event = ({ API_URL }) => {
+const AdminEvent = ({ API_URL }) => {
     const { id } = useParams();
     const [editEvent, setEditEvent] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -437,4 +437,4 @@ const Event = ({ API_URL }) => {
     );
 };
 
-export default Event;
+export default AdminEvent;

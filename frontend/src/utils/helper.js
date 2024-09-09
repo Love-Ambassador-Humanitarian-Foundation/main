@@ -1107,3 +1107,15 @@ export const detectenterkey = (e,rows, setRows) =>{
     setRows(rows => rows + 1);  // Increase the number of rows
 }
 }
+export const parseDuration = (durationStr) => {
+  const parts = durationStr.split(' ');
+  if (parts.length !== 2) return [null, null];
+  
+  const amount = parseInt(parts[0], 10);
+  const unit = parts[1].toLowerCase();
+  
+  // Convert plural forms to singular, if necessary
+  const singularUnit = unit.endsWith('s') ? unit.slice(0, -1) : unit;
+  
+  return [amount, singularUnit];  // Return amount and the unit
+};

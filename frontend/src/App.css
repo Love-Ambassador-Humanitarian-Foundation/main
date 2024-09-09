@@ -65,6 +65,23 @@
   background-color: #34356b !important;
   border-radius: 0%;
 }
+.ant-radio-button,
+.ant-radio-button-wrapper {
+  border: 1px solid whitesmoke !important;
+  border-radius: 0% !important;
+}
+.ant-radio-button-checked,
+.ant-radio-button-wrapper-checked {
+  border-color: #34356b !important;
+  background-color: whitesmoke !important;
+}
+.ant-radio-button-wrapper {
+  color: #34356b !important;
+}
+.ant-radio-button-wrapper-checked::before {
+  background-color: #34356b !important;
+}
+
 .form-control:hover,
 .form-control:focus,
 .form-control:active,
@@ -225,4 +242,22 @@
 }
 .bg-transparent{
   background-color: transparent !important;
+}
+
+/* styles.css */
+@keyframes pulse {
+  0% {
+    background-color: #34356b; /* Primary color */
+    
+  }
+  50% {
+    background-color: #ab9cff; /* Light blue */
+  }
+  100% {
+    background-color: #34356b; /* Primary color */
+  }
+}
+
+.pulse-animation {
+  animation: pulse 2s infinite;
 }

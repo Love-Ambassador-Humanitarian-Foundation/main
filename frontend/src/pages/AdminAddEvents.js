@@ -10,7 +10,7 @@ const { Content } = Layout;
 const { Option } = Select;
 const { Dragger } = Upload;
 
-const AddEvent = ({ API_URL }) => {
+const AddAdminEvent = ({ API_URL }) => {
     const [loading, setLoading] = useState(false);
     const [form] = Form.useForm();
     const navigate = useNavigate();
@@ -259,4 +259,4 @@ const AddEvent = ({ API_URL }) => {
     );
 };
 
-export default AddEvent;
+export default AddAdminEvent;

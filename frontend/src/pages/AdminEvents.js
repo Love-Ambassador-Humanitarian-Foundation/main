@@ -9,7 +9,7 @@ import { getEvents } from '../services/api';
 
 const { Content } = Layout;
 
-const Events = ({ onSetContent, API_URL }) => {
+const AdminEvents = ({ onSetContent, API_URL }) => {
     const navigate = useNavigate();
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const [events, setEvents] = useState([]);
@@ -175,4 +175,4 @@ const Events = ({ onSetContent, API_URL }) => {
     );
 };
 
-export default Events;
+export default AdminEvents;

@@ -7,7 +7,7 @@ import { SaveOutlined, HomeOutlined, EditOutlined, DollarOutlined, UploadOutline
 const { Title, Text } = Typography;
 const { Content } = Layout;
 
-const Payment = ({ item, API_URL }) => {
+const AdminPayment = ({ item, API_URL }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     //const { paymentDetails } = useParams();
     const [editpage, setEditPage] = useState(false);
@@ -117,4 +117,4 @@ const Payment = ({ item, API_URL }) => {
     );
 };
 
-export default Payment;
+export default AdminPayment;

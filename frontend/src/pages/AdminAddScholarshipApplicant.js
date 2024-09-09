@@ -4,6 +4,7 @@ import { HomeOutlined, ProfileOutlined, SaveOutlined, SolutionOutlined } from '@
 import axios from 'axios';
 import { useNavigate, useParams , useLocation, Link} from 'react-router-dom';
 import dayjs from 'dayjs';  // Import dayjs for date handling
+import { addScholarshipApplication } from '../services/api';
 
 const { Content } = Layout;
 const { Option } = Select;
@@ -49,7 +50,7 @@ const AddScholarshipApplicant = ({ API_URL }) => {
     const onFinish = async () => {
         setLoading(true);
         try {
-            await axios.post(`${API_URL}/api/scholarshipapplicants`, formData);
+            await addScholarshipApplication(API_URL, formData);
             message.success('Application submitted successfully!');
             navigate(`/admin/scholarships/${id}/applicants`, {state:{scholarship:scholarship}});
 

@@ -26,7 +26,7 @@ import 'swiper/css/pagination';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import { getAbout, getEvents, getPartners, getScholarships, getUsers } from '../services/api';
 
-const LandingPage = ({API_URL}) => {
+const LandingPage = ({API_URL,Companyname}) => {
     const {isLoggedIn,userDetails} = useUpdateLoginStatus(API_URL);
 
     const [data, setData] = useState({});
@@ -273,7 +273,7 @@ const LandingPage = ({API_URL}) => {
     
     return (
         <>
-            <HeaderComponent Companyname={data != null?data.name:'LAHF'} isloggedIn={isLoggedIn} userDetails={userDetails} /> {/* Include the header component */}
+            <HeaderComponent Companyname={Companyname} isloggedIn={isLoggedIn} userDetails={userDetails} /> {/* Include the header component */}
         
             <div style={{
                 backgroundImage: `url(${LandingPageImg})`,

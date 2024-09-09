@@ -35,7 +35,7 @@ const CLASS_LEVEL_CHOICES = [
     { label: 'Tertiary', value: 'Tertiary' }
 ];
 
-const ScholarshipApplicant = ({ API_URL }) => {
+const AdminScholarshipApplicant = ({ API_URL }) => {
     const { id, applicantid } = useParams();
     const location = useLocation();
     
@@ -520,4 +520,4 @@ const ScholarshipApplicant = ({ API_URL }) => {
     );
 };
 
-export default ScholarshipApplicant;
+export default AdminScholarshipApplicant;

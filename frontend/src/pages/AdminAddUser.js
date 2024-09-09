@@ -8,7 +8,7 @@ import { countryCodes, OFFICER_ROLES } from '../utils/helper'; // Adjust the pat
 const { Content } = Layout;
 const { Option } = Select;
 
-const AddUser = ({ API_URL }) => {
+const AddAdminUser = ({ API_URL }) => {
     const [loading, setLoading] = useState(false);
     const [profileImage, setProfileImage] = useState(null);
     const navigate = useNavigate();
@@ -252,4 +252,4 @@ const AddUser = ({ API_URL }) => {
     );
 };
 
-export default AddUser;
+export default AddAdminUser;

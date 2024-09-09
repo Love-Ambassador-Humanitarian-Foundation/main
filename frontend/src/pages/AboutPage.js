@@ -289,7 +289,7 @@ const AboutPage = ({API_URL,Companyname}) => {
             </div>
             
             </div>
-            <Footer Companyname={data.name} /> {/* Include the footer component */}
+            <Footer Companyname={data?.name || Companyname} /> {/* Include the footer component */}
         </div>
         
     );

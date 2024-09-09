@@ -9,7 +9,7 @@ import { SaveOutlined, HomeOutlined, EditOutlined, EnvironmentOutlined, BankOutl
 const { Title, Text } = Typography;
 const { Content } = Layout;
 
-const Branch = ({ API_URL }) => {
+const AdminBranch = ({ API_URL }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const { name } = useParams();
     const [editPage, setEditPage] = useState(false);
@@ -152,4 +152,4 @@ const Branch = ({ API_URL }) => {
     );
 };
 
-export default Branch;
+export default AdminBranch;

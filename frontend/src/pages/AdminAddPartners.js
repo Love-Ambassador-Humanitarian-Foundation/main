@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 const { Content } = Layout;
 
-const AddPartner = ({ API_URL }) => {
+const AddAdminPartner = ({ API_URL }) => {
     const [loading, setLoading] = useState(false);
     const [logoImage, setLogoImage] = useState(null);
     const navigate = useNavigate();
@@ -133,4 +133,4 @@ const AddPartner = ({ API_URL }) => {
     );
 };
 
-export default AddPartner;
+export default AddAdminPartner;

@@ -10,7 +10,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 const { Title, Text } = Typography;
 const { Content } = Layout;
 
-const NewsletterReceipientDetail = ({ API_URL }) => {
+const AdminNewsletterReceipientDetail = ({ API_URL }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const [editNewsletterReceipient, setEditNewsletterReceipient] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -182,4 +182,4 @@ const NewsletterReceipientDetail = ({ API_URL }) => {
     );
 };
 
-export default NewsletterReceipientDetail;
+export default AdminNewsletterReceipientDetail;

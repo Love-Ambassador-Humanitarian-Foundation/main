@@ -11,7 +11,7 @@ import FilterComponent from '../components/Filter';
 
 const { Content } = Layout;
 
-const EventParticipants = ({ API_URL }) => {
+const AdminEventParticipants = ({ API_URL }) => {
     const { id: eventid } = useParams(); // Extracting the event id
     const navigate = useNavigate();
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
@@ -235,4 +235,4 @@ const EventParticipants = ({ API_URL }) => {
     );
 };
 
-export default EventParticipants;
+export default AdminEventParticipants;

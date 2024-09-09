@@ -10,7 +10,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 
 const { Content } = Layout;
 
-const AddNewsletter = ({ API_URL }) => {
+const AddAdminNewsletter = ({ API_URL }) => {
     const { isLoggedIn, userDetails } = useUpdateLoginStatus(API_URL);
     console.log('loggedin :',isLoggedIn)
     const [loading, setLoading] = useState(false);
@@ -204,4 +204,4 @@ const AddNewsletter = ({ API_URL }) => {
     );
 };
 
-export default AddNewsletter;
+export default AddAdminNewsletter;

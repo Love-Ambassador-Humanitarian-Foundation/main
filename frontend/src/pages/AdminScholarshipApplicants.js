@@ -7,7 +7,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import FilterComponent from '../components/Filter'; // Make sure this path is correct
 const { Content } = Layout;
 
-const ScholarshipApplicants = ({ API_URL }) => {
+const AdminScholarshipApplicants = ({ API_URL }) => {
     const { id } = useParams();
     const location = useLocation();
     const scholarship = location?.state?.scholarship;
@@ -182,4 +182,4 @@ const ScholarshipApplicants = ({ API_URL }) => {
     );
 };
 
-export default ScholarshipApplicants;
+export default AdminScholarshipApplicants;

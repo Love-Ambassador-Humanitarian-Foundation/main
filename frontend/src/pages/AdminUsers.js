@@ -9,7 +9,7 @@ import {getRandomBgColorClass} from '../utils/helper';
 import { getUsers } from '../services/api';
 const { Content } = Layout;
 
-const Users = ({ API_URL }) => {
+const AdminUsers = ({ API_URL }) => {
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
@@ -206,4 +206,4 @@ const Users = ({ API_URL }) => {
     );
 };
 
-export default Users;
+export default AdminUsers;

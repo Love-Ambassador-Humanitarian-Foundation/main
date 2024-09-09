@@ -7,7 +7,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 const { Content } = Layout;
 
-const NewsletterReceipients = ({ onSetContent,API_URL  }) => {
+const AdminNewsletterReceipients = ({ onSetContent,API_URL  }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const navigate = useNavigate();
     const [newsletterReceipients, setNewsletterReceipients] = useState([]);
@@ -139,4 +139,4 @@ const NewsletterReceipients = ({ onSetContent,API_URL  }) => {
     );
 };
 
-export default NewsletterReceipients;
+export default AdminNewsletterReceipients;

@@ -22,7 +22,7 @@ import { getPartnerbyId, updatePartnerbyId } from '../services/api';
 const { Title, Text } = Typography;
 const { Content } = Layout;
 
-const Partner = ({ API_URL }) => {
+const AdminPartner = ({ API_URL }) => {
     const { id } = useParams();
     const [editPartner, setEditPartner] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -275,4 +275,4 @@ const Partner = ({ API_URL }) => {
     );
 };
 
-export default Partner;
+export default AdminPartner;

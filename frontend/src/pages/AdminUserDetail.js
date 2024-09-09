@@ -26,7 +26,7 @@ const { Option } = Select;
 const { Title, Text } = Typography;
 const { Content } = Layout;
 
-const User = ({ API_URL }) => {
+const AdminUser = ({ API_URL }) => {
     const { id: userId } = useParams();
     const [userDetails, setUserDetails] = useState(null);
     const [editProfile, setEditProfile] = useState(false);
@@ -388,4 +388,4 @@ const User = ({ API_URL }) => {
     );
 };
 
-export default User;
+export default AdminUser;

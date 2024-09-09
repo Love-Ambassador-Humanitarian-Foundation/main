@@ -17,7 +17,7 @@ import FilterComponent from '../components/Filter'; // Assuming you have this co
 
 const { Content } = Layout;
 
-const AddEventParticipant = ({ API_URL }) => {
+const AddAdminEventParticipant = ({ API_URL }) => {
     const { id } = useParams();
     const location = useLocation();
     const event = location.state?.event; // Default to empty participants if no event
@@ -249,4 +249,4 @@ const AddEventParticipant = ({ API_URL }) => {
     );
 };
 
-export default AddEventParticipant;
+export default AddAdminEventParticipant;

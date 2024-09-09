@@ -16,7 +16,7 @@ import { convertImageToBase64, detectenterkey } from '../utils/helper';
 const { Content } = Layout;
 const { Text } = Typography;
 
-const About = ({ API_URL }) => {
+const AdminAbout = ({ API_URL }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [loading, setLoading] = useState(false);
     const [logo, setLogo] = useState('');
@@ -382,4 +382,4 @@ const About = ({ API_URL }) => {
     );
 };
 
-export default About;
+export default AdminAbout;

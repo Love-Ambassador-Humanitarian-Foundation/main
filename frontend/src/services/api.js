@@ -7,11 +7,20 @@ export const getAbout = async(API_URL) => {
 };
 
 //-------------scholarships-----------------
+export const addScholarship = async(API_URL, id,payload) => {
+    await axios.post(`${API_URL}/api/scholarships`,payload,{
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    return null;
+};
 export const getScholarships = async(API_URL,currentDate) => {
     const response = await axios.get(`${API_URL}/api/scholarships?current_date=${currentDate}`);
     //console.log(response)
     return response.data.data;
 };
+
 export const getScholarshipbyId = async(API_URL, id,currentDate) => {
     const response = await axios.get(`${API_URL}/api/scholarships/${id}?current_date=${currentDate.format('YYYY-MM-DD')}`);
     return response.data.data;
@@ -28,6 +37,18 @@ export const deleteScholarship = async(API_URL,id) => {
     await axios.delete(`${API_URL}/api/scholarships/${id}`);
     return null;
 };
+
+//-------------------scholarship applicants----------------------
+
+export const addScholarshipApplication = async(API_URL, payload) => {
+    await axios.post(`${API_URL}/api/scholarshipapplicants`,payload,{
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    return null;
+};
+
 
 //-------------partners------------------
 export const getPartners = async(API_URL) => {

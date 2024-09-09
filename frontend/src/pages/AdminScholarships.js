@@ -9,7 +9,7 @@ import { getScholarships } from '../services/api';
 
 const { Content } = Layout;
 
-const Scholarships = ({ API_URL }) => {
+const AdminScholarships = ({ API_URL }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const navigate = useNavigate();
 
@@ -189,4 +189,4 @@ const Scholarships = ({ API_URL }) => {
     );
 };
 
-export default Scholarships;
+export default AdminScholarships;

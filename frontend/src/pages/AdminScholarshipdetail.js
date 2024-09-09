@@ -29,7 +29,7 @@ const singularUnits = ['year', 'month', 'week', 'day', 'hour', 'minute', 'second
 const pluralUnits = ['years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds'];
 const years = Array.from({ length: 20 }, (_, i) => dayjs().year() - i);
 
-const Scholarship = ({ API_URL }) => {
+const AdminScholarship = ({ API_URL }) => {
     const { id } = useParams();
     const [editScholarship, setEditScholarship] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -326,4 +326,4 @@ const Scholarship = ({ API_URL }) => {
     );
 };
 
-export default Scholarship;
+export default AdminScholarship;
