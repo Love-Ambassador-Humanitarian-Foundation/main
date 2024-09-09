@@ -3,7 +3,7 @@ import { Layout, Breadcrumb, Form, Input, Button, Select, DatePicker, message, U
 import { HomeOutlined, CalendarOutlined, SaveOutlined, InboxOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { eventTypes } from '../utils/utils';
+import { eventTypes } from '../utils/helper';
 import axios from 'axios';
 
 const { Content } = Layout;

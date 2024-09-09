@@ -17,7 +17,7 @@ import {
     
 } from '@ant-design/icons';
 import { DatePicker, Layout, Typography, theme, Input, Button, message,Tooltip, Breadcrumb, Select, Avatar, Row } from 'antd';
-import { countryCodes, fetchUserDetails, convertImageToBase64 } from '../utils/utils'; // Ensure these functions are correctly defined
+import { countryCodes, fetchUserDetails, convertImageToBase64 } from '../utils/helper'; // Ensure these functions are correctly defined
 import { useParams } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import axios from 'axios';

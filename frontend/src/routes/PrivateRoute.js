@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useUpdateLoginStatus } from '../utils/hooks';
+import { useUpdateLoginStatus } from '../hooks/hooks';
 
 const PrivateRoute = ({ children, redirectUrl, API_URL }) => {
     const { isLoggedIn } = useUpdateLoginStatus(API_URL);

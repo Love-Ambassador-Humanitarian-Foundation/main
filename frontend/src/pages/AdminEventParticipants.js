@@ -6,7 +6,7 @@ import {
 import { Card, Row, Col, Table, theme, Button, message, Layout, Breadcrumb, Tooltip, Avatar } from 'antd';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { getRandomBgColorClass } from '../utils/utils';
+import { getRandomBgColorClass } from '../utils/helper';
 import FilterComponent from '../components/Filter';
 
 const { Content } = Layout;

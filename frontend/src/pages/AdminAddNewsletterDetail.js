@@ -4,8 +4,8 @@ import { SaveOutlined, HomeOutlined, MailOutlined} from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import { detectenterkey } from '../utils/utils';
-import { useUpdateLoginStatus } from '../utils/hooks';
+import { detectenterkey } from '../utils/helper';
+import { useUpdateLoginStatus } from '../hooks/hooks';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 const { Content } = Layout;

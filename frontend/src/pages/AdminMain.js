@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import HeaderComponent from '../components/AdminHeader';
 import { DashboardOutlined, UsergroupAddOutlined,MailOutlined, InfoCircleOutlined,CalendarOutlined,TeamOutlined, DollarOutlined, BankOutlined, UserOutlined, BellOutlined, SolutionOutlined } from '@ant-design/icons';
 import { Layout, Menu, Badge } from 'antd';
-import {useUpdateLoginStatus} from '../utils/hooks'
+import {useUpdateLoginStatus} from '../hooks/hooks'
 import { Nav } from 'react-bootstrap';
 import { Link, useLocation, useNavigate} from 'react-router-dom';
 import LoginPage from './Login';

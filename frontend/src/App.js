@@ -28,7 +28,7 @@ import Partner from './pages/AdminPartnerDetail';
 import Payment from './pages/AdminPaymentDetail';
 import Branch from './pages/AdminBranchDetail';
 import Event from './pages/AdminEventDetail';
-import PrivateRoute from './utils/PrivateRoute.js';
+import PrivateRoute from './routes/PrivateRoute.js';
 import LogoutPage from './pages/Logout.js';
 import EmailVerificationPage from './pages/EmailVerificationPage.js';
 import Registering from './pages/Registering.js';

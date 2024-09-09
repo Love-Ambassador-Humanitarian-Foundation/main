@@ -13,8 +13,8 @@ import {
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
 import { Row, Col, theme,Avatar, Typography, Breadcrumb, Input, message, Select, Button, Layout, Form, Tooltip } from 'antd';
-import { countryCodes, fetchUserDetails, convertImageToBase64 } from '../utils/utils';
-import { useUpdateLoginStatus } from '../utils/hooks';
+import { countryCodes, fetchUserDetails, convertImageToBase64 } from '../utils/helper';
+import { useUpdateLoginStatus } from '../hooks/hooks';
 import { useParams } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import axios from 'axios';

@@ -4,7 +4,7 @@ import { Button } from '../components/button';
 import { SendOutlined, TwitterOutlined, InstagramOutlined, FacebookOutlined, WhatsAppOutlined, LinkedinOutlined } from '@ant-design/icons'; // Import social icons from Ant Design
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
-import { useUpdateLoginStatus } from '../utils/hooks';
+import { useUpdateLoginStatus } from '../hooks/hooks';
 const ContactUsPage = ({Companyname,API_URL}) => {
     const {isLoggedIn,userDetails} = useUpdateLoginStatus(API_URL);
     return (

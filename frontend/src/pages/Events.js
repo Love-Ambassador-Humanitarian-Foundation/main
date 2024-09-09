@@ -3,7 +3,7 @@ import { Row, Col, Input} from 'antd';
 import Timeline from '../components/Timeline';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
-import { useUpdateLoginStatus } from '../utils/hooks';
+import { useUpdateLoginStatus } from '../hooks/hooks';
 const { Search } = Input;
 
 const EventPage = ({Companyname, API_URL}) => {

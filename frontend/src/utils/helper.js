@@ -1000,7 +1000,7 @@ export const OFFICER_ROLES = [
   { value: 'executive_director', name: 'Executive Director' },
   { value: 'manager', name: 'Manager' },
   { value: 'coordinator', name: 'Coordinator' },
-  { value: 'volunteer', name: 'Volunteer' },
+  { value: 'member', name: 'Member' },
   { value: 'advisor', name: 'Advisor' },
   { value: 'treasurer', name: 'Treasurer' },
   { value: 'secretary', name: 'Secretary' },

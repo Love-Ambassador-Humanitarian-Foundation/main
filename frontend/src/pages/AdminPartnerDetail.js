@@ -17,6 +17,7 @@ import { useParams } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import axios from 'axios';
 import dayjs from 'dayjs';  // Import dayjs for date formatting
+import { getPartnerbyId, updatePartnerbyId } from '../services/api';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -56,8 +57,7 @@ const Partner = ({ API_URL }) => {
         const fetchDetails = async () => {
             try {
                 setIsLoading(true);
-                const response = await axios.get(`${API_URL}/api/partners/${id}`);
-                const data = response.data.data;
+                const data = await getPartnerbyId(API_URL, id);
 
                 setFormData({
                     id: data.id || '',
@@ -104,14 +104,10 @@ const Partner = ({ API_URL }) => {
     const saveEdit = async () => {
         setLoading(true);
         try {
-            await axios.patch(`${API_URL}/api/partners/${id}`, {
+            await updatePartnerbyId(API_URL, id,{
                 ...formData,
                 created_date: formData.created_date ? formData.created_date.format('YYYY-MM-DD') : null,
-            }, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+            })
 
             message.success('Partner details updated');
             setEditPartner(false);

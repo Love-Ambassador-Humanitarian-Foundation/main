@@ -7,7 +7,7 @@ import Footer from '../components/Footer';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { useUpdateLoginStatus } from '../utils/hooks';
+import { useUpdateLoginStatus } from '../hooks/hooks';
 const { Meta } = Card;
 const { Text } = Typography;
 
@@ -114,6 +114,12 @@ const AboutPage = ({API_URL,Companyname}) => {
                 accountDetails.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
             }
         }
+        // if (hash === '#socials'){
+        //     const socials = document.getElementById(hash.replace('#',''));
+        //     if (socials) {
+        //         socials.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+        //     }
+        // }
     }
     scrolltotop(location.hash);
 
@@ -241,6 +247,27 @@ const AboutPage = ({API_URL,Companyname}) => {
             
             <div id='accountdetails'>
                 <h5 className="text-center text-dark fw-bold">Account Details</h5>
+                <Row justify="center" align="middle" style={{display: 'flex',alignItems: 'flex-start'}}>
+                
+                    {bankaccounts.map((account, index) => (
+                        <Col key={index} xs={24} sm={12} md={12} lg={12} xl={12} style={{flex:1,marginBottom: 8}} className='p-1'>
+                            <Card hoverable >
+                                <div className='d-flex flex-column justify-content-left'>
+                                    {account.currency ? <Text strong>Currency: {account.currency}</Text> : null}
+                                    {account.number ? <Text strong>Account Number: {account.number}</Text> : null}
+                                    {account.sortcode ? <Text strong>Sort Code: {account.sortcode}</Text> : null}
+                                    {account.iban ? <Text strong>IBAN: {account.iban}</Text> : null}
+                                    {account.swiftbic ? <Text strong>SWIFT: {account.swiftbic}</Text> : null}
+                                    {account.bankname ? <Text strong>Bank Name: {account.bankname}</Text> : null}
+                                    {account.holdername ? <Text strong>Account Holder's Name: {account.holdername}</Text> : null}
+                                </div>
+                            </Card>
+                        </Col>
+                    ))}
+                </Row>
+            </div>
+            <div id='socials'>
+                <h5 className="text-center text-dark fw-bold">Social Media</h5>
                 <Row justify="center" align="middle" style={{display: 'flex',alignItems: 'flex-start'}}>
                 
                     {bankaccounts.map((account, index) => (

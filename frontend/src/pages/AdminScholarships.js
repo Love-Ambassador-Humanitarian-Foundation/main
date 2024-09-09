@@ -5,6 +5,7 @@ import { DeleteOutlined, HomeOutlined, PlusOutlined, ProfileOutlined } from '@an
 import { Card, Row, Col, Table, theme, Button, message, Layout, Breadcrumb, Tooltip } from 'antd';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { getScholarships } from '../services/api';
 
 const { Content } = Layout;
 
@@ -20,8 +21,7 @@ const Scholarships = ({ API_URL }) => {
     const fetchScholarships = useCallback(async () => {
         try {
             const currentDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
-            const response = await axios.get(`${API_URL}/api/scholarships?current_date=${currentDate}`);
-            const fetchedScholarships = response.data.data;
+            const fetchedScholarships = await getScholarships(API_URL,currentDate);
             setScholarships(fetchedScholarships);
             setFilteredScholarships(fetchedScholarships);
         } catch (error) {
@@ -39,7 +39,7 @@ const Scholarships = ({ API_URL }) => {
     // Handle deletion of a scholarship
     const deleteScholarship = async (id) => {
         try {
-            await axios.delete(`${API_URL}/api/scholarships/${id}`);
+            deleteScholarship(API_URL,id);
             const updatedScholarships = scholarships.filter(scholarship => scholarship.id !== id);
             setScholarships(updatedScholarships);
             setFilteredScholarships(updatedScholarships);

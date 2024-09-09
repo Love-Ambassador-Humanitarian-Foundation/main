@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchUserDetails } from '../utils/utils';
+import { fetchUserDetails } from '../utils/helper';
 
 // Custom hook to update login status
 export const useUpdateLoginStatus = (API_URL ) => {

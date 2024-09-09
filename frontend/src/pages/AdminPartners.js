@@ -6,6 +6,7 @@ import { DeleteOutlined, HomeOutlined, TeamOutlined, PlusOutlined } from '@ant-d
 import { Card, Table, Row, Col, theme, message, Layout, Breadcrumb, Button, Tooltip, Avatar } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import debounce from 'lodash/debounce';  // Import debounce from lodash
+import { getPartners } from '../services/api';
 
 const { Content } = Layout;
 
@@ -19,15 +20,14 @@ const Partners = ({ API_URL }) => {
     useEffect(() => {
         const fetchPartners = async () => {
             try {
-                const response = await axios.get(`${API_URL}/api/partners`);
-                const fetchedPartners = response.data;
+                const fetchedPartners = await getPartners(API_URL);
 
-                if (Array.isArray(fetchedPartners.data)) {
-                    setPartners(fetchedPartners.data);
-                    setFilteredPartners(fetchedPartners.data);
+                if (Array.isArray(fetchedPartners)) {
+                    setPartners(fetchedPartners);
+                    setFilteredPartners(fetchedPartners);
                 } else {
                     console.error("The response data is not an array:", fetchedPartners.data);
-                    message.error(fetchedPartners.message);
+                    message.error("There was an error fetching the partners!");
                 }
             } catch (error) {
                 console.error("There was an error fetching the partners!", error.response);
@@ -42,7 +42,7 @@ const Partners = ({ API_URL }) => {
 
     const deletePartner = useCallback(async (id) => {
         try {
-            await axios.delete(`${API_URL}/api/partners/${id}`);
+            await deletePartner(API_URL, id);
             setPartners(prev => prev.filter(partner => partner.id !== id));
             setFilteredPartners(prev => prev.filter(partner => partner.id !== id));
             message.success("Partner deleted successfully!", 5);

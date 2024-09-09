@@ -19,6 +19,7 @@ import axios from 'axios';
 import currencyCodes from 'currency-codes';
 import logo from '../assets/logo.jpg';
 import dayjs from 'dayjs';
+import { getScholarshipbyId, updateScholarshipbyId } from '../services/api';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
@@ -51,8 +52,9 @@ const Scholarship = ({ API_URL }) => {
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-                const response = await axios.get(`${API_URL}/api/scholarships/${id}?current_date=${currentDate.format('YYYY-MM-DD')}`);
-                const data = response.data.data;
+
+                const response = await getScholarshipbyId(API_URL,id,currentDate);
+                const data = response;
 
                 setFormData({
                     id: data.id || '',
@@ -101,15 +103,11 @@ const Scholarship = ({ API_URL }) => {
     const saveEdit = async () => {
         setLoading(true);
         try {
-            await axios.patch(`${API_URL}/api/scholarships/${id}`, {
+            await updateScholarshipbyId(API_URL,id, {
                 ...formData,
                 duration: formData.duration + ' ' + formData.durationUnit,
                 created_date: formData.created_date ? formData.created_date.format('YYYY-MM-DD') : null,
                 current_date: currentDate.format('YYYY-MM-DD')
-            }, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
             });
             message.success('Scholarship details updated');
             setEditScholarship(false);

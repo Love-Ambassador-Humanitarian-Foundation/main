@@ -11,13 +11,14 @@ import {
     LinkedinOutlined
 } from '@ant-design/icons';
 import { Layout, Row, Col, Typography, Input, Button, message, Breadcrumb, Select, Avatar } from 'antd';
-import { countryCodes, fetchUserDetails, convertImageToBase64, OFFICER_ROLES } from '../utils/utils';
+import { countryCodes, fetchUserDetails, convertImageToBase64, OFFICER_ROLES } from '../utils/helper';
 import { useParams } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import DateTimeInput from '../components/DateTimeSetter';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import buddhistEra from 'dayjs/plugin/buddhistEra';
+import { updateUserbyId } from '../services/api';
 
 dayjs.extend(buddhistEra);
 
@@ -172,8 +173,6 @@ const User = ({ API_URL }) => {
 
     const saveEdit = async () => {
         setLoading(true);
-        const token = localStorage.getItem('lahf_access_token');
-
         const formData = {
             firstname,
             lastname,
@@ -195,13 +194,7 @@ const User = ({ API_URL }) => {
         };
 
         try {
-            const response = await axios.patch(`${API_URL}/api/users/${userId}`, formData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            const user = response.data.data;
+            const user = updateUserbyId(API_URL, userId,formData);
             setUserDetails(user);
             setFirstName(user.firstname);
             setLastName(user.lastname);

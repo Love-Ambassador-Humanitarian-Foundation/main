@@ -1017,7 +1017,7 @@ class ReportView(APIView):
 
     def _reportvolunteer(self):
         # Query to filter users where position is 'Volunteer' or 'volunteer'
-        volunteers = User.objects.filter(position__iexact='volunteer')
+        volunteers = User.objects.all()
         serialized_volunteers = UserSerializer(volunteers, many=True).data
 
         # Create a copy of the months dictionary to hold the count of volunteers per month

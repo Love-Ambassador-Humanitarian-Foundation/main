@@ -3,15 +3,15 @@ import { Container, Card, Row, Col } from 'react-bootstrap';
 import { Modal, message, Card as AntCard} from 'antd';
 import LandingPageImg from '../assets/landingimg.jpg';
 import VolunteerImg from '../assets/volunteerimg.jpg';
-import { HeartFilled, BookFilled, ArrowRightOutlined, PlusOutlined} from '@ant-design/icons';
+import { HeartFilled, BookFilled, ArrowRightOutlined, PlusOutlined, CalendarOutlined, DollarOutlined, UserAddOutlined, RightOutlined, ProfileOutlined} from '@ant-design/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faSeedling,faPeopleArrows,faUsersViewfinder,faHandHoldingDollar} from '@fortawesome/free-solid-svg-icons';
+import {faSeedling,faPeopleArrows,faUsersViewfinder,faHandHoldingDollar, faCalendarCheck, faCalendarAlt, faBuilding, faVolumeHigh} from '@fortawesome/free-solid-svg-icons';
 import {Button, IconButton} from '../components/button';
 import CustomAccordion from '../components/Accordion';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
 import LoadingSpinner from '../components/LoadingSpinner';
-import {useUpdateLoginStatus} from '../utils/hooks'
+import {useUpdateLoginStatus} from '../hooks/hooks'
 import axios from 'axios';
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -24,16 +24,31 @@ import 'swiper/css/pagination';
 
 // import required modules
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import { getAbout, getEvents, getPartners, getScholarships, getUsers } from '../services/api';
 
 const LandingPage = ({API_URL}) => {
     const {isLoggedIn,userDetails} = useUpdateLoginStatus(API_URL);
 
-    const [data, setData] = useState(null);
+    const [data, setData] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     // Modal state
     const [visible, setVisible] = useState(false);
     const [currentActivity, setCurrentActivity] = useState(null);
+    
+    const [scholarships, setScholarships] = useState([]);
+    const [partners, setPartners] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [events, setEvents] = useState([]);
+
+    const [activities, setActivities] = useState([
+        { title: 'Scholarships', description: scholarships.length, color: '#044a18' },
+        { title: 'Partners', description: partners.length, color: 'green' },
+        { title: 'Volunteers', description: users.length, color: 'orange' },
+        { title: 'Socials', description: data.socials?.length || 0, color: '#04364a' },
+        { title: 'Events', description: events.length, color: 'red' },
+        { title: 'Branches', description: data.branches?.length || 0, color: 'orangered' }
+    ]);
     const slide_inner_item_style = {
         background: '#fff',
         borderRadius: '4px',
@@ -106,15 +121,7 @@ const LandingPage = ({API_URL}) => {
         { img: img1 },
         { img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80' }
     ];
-    const activities = [
-        { title: 'Scholarships', description: '10', color: '#044a18' },
-        { title: 'Partners', description: '1k', color: 'green' },
-        { title: 'Volunteers', description: '29', color: 'orange' },
-        { title: 'Achievements', description: '3', color: '#04364a' },
-        { title: 'Events', description: '7', color: 'red' },
-        { title: 'Branches', description: '1', color: 'orangered' }
-        // Add more achievements as needed
-    ];
+    
 
     const [image, setImage] = useState(images.length > 0 ? images[0].img : '');
 
@@ -142,15 +149,29 @@ const LandingPage = ({API_URL}) => {
         
         window.addEventListener('resize', setHeights);
         window.addEventListener('load', setHeights);
+        
         const fetchData = async () => {
+            const activitylist = []
+            const currentDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
+            try{
+                const fetchedScholarships = await getScholarships(API_URL,currentDate);
+                activitylist.push({ title: 'Scholarships', description: fetchedScholarships.length, color: '#044a18' },)
+                setScholarships(fetchedScholarships)
+            }catch(error){
+                if (error.response){
+                    message.error(error.response.data.message);
+                }
+                else{
+                    message.error(error.message);
+                }  
+            }
             try {
-                const response = await axios.get(API_URL + '/api/about');
-                setData(response.data.response);
-                console.log(response.data.response,'====')
-                setIsLoading(false);
-                message.success(response.data.response.message)
+                const response = await getAbout(API_URL);
+                activitylist.push({ title: 'Socials', description: response.socials?.length || 0, color: '#04364a' })
+                activitylist.push({ title: 'Branches', description: response.branches?.length || 0, color: 'orangered' })
+                
+                setData(response);
             } catch (error) {
-                setIsLoading(false);
                 if (error.response){
                     message.error(error.response.data.message);
                 }
@@ -158,17 +179,94 @@ const LandingPage = ({API_URL}) => {
                     message.error(error.message);
                 }   
             }
+            try{
+                const fetchedPartners = await getPartners(API_URL);
+                activitylist.push({ title: 'Partners', description: fetchedPartners.length, color: 'green' })
+                
+                setPartners(fetchedPartners)
+            }catch(error){
+                if (error.response){
+                    message.error(error.response.data.message);
+                }
+                else{
+                    message.error(error.message);
+                }  
+            }
+            try{
+                const fetchedUsers = await getUsers(API_URL);
+                activitylist.push({ title: 'Volunteers', description: fetchedUsers.length, color: 'orange' })
+                
+                setUsers(fetchedUsers)
+            }catch(error){
+                if (error.response){
+                    message.error(error.response.data.message);
+                }
+                else{
+                    message.error(error.message);
+                }  
+            }
+            try{
+                const fetchedEvents = await getEvents(API_URL);
+                activitylist.push({ title: 'Events', description: fetchedEvents.length, color: 'red' })
+                
+                setEvents(fetchedEvents)
+            }catch(error){
+                if (error.response){
+                    message.error(error.response.data.message);
+                }
+                else{
+                    message.error(error.message);
+                }  
+            }
+            setActivities(activitylist);
+            
+            setIsLoading(false);
         };
 
         // Cleanup function to remove the event listener when the component unmounts
         fetchData();
+        
+        
         return () => {
             window.removeEventListener('resize', setHeights);
             window.removeEventListener('load', setHeights);
         };
 
     }, [API_URL]);
-
+    const help_act = [
+        {
+            title: { name: 'Socials', icon: faSeedling },
+            description: 'Supports persons who are unable to help themselves.',
+            btn: { link: '/about', hash:'#socials', text: 'View Social Media', icon: <PlusOutlined style={{ color: 'green' }} /> }
+        },
+        {
+            title: { name: 'Volunteer Program', icon: faUsersViewfinder },
+            description: 'Be a part of a dedicated volunteer group.',
+            btn: { link: '/signup', text: 'Join Now', icon: <UserAddOutlined style={{ color: 'orange' }} /> }
+        },
+        {
+            title: { name: 'Donations', icon: faHandHoldingDollar },
+            description: 'Help provide resources to those in need.',
+            btn: { link: '/contact', text: 'Donate Now', icon: <DollarOutlined style={{ color: '#044a18' }} />,color: '#044a18' }
+        },
+        {
+            title: { name: 'Events', icon: faSeedling },
+            description: 'Join our events to support the cause.',
+            btn: { link: '/events', text: 'View Events', icon: <CalendarOutlined style={{ color: 'red' }} />,color: 'red' }
+        },
+        {
+            title: { name: 'Community Support', icon: faBuilding },
+            description: 'Help build stronger communities.',
+            btn: { link: '/contact', text: 'Give Now', icon: <ArrowRightOutlined style={{ color: '#04364a' }} />,color: '#04364a' }
+        },
+        {
+            title: { name: 'Scholarships', icon: faVolumeHigh },
+            description: 'Spread awareness for our cause.',
+            btn: { link: '/scholarships', text: 'Learn More', icon: <ProfileOutlined style={{ color: 'green' }} /> , color:'green'}
+        }
+    ];
+    
+    
     if (isLoading) {
         return <LoadingSpinner />;
     }
@@ -201,6 +299,7 @@ const LandingPage = ({API_URL}) => {
             <div className="row mt-3">
                 <div className="col" style={{alignContent:'center'}}>
                     <Row className='p-1 m-0 ms-auto'>
+                        
                         {activities.map((activity, index) => (
                             <Col key={index} xs={6} sm={4} md={3} lg={2} className='mb-2'>
                                 <AntCard
@@ -234,75 +333,23 @@ const LandingPage = ({API_URL}) => {
                 
                 {isMobile ? (
                     <Col className='col-sm-12 col-md-8 align-self-center'>
-                        <Card className='col-sm-6 col-md-4 col-lg-4 mt-2' style={slide_inner_item_style}>
-                            <Card.Body>
-                                <Card.Title>
-                                    <IconButton style={{'color':'green'}} className='seedling-menu' hover={false} icon={<FontAwesomeIcon icon={faSeedling} size='xl' />} />
-                                    <h6 className="text-dark fw-bold">Fund Raiser</h6>
-                                </Card.Title>
-                                <h6>supports persons who are unable to help themselves.</h6>
-                                <div className='mb-5 mt-5'></div>
-                                <Button to='/about' text='Give Now' icon={<PlusOutlined style={{ color: 'green' }} />}></Button>
-                            </Card.Body>
-                        </Card>
-                        <Card className='col-sm-6 col-md-4 col-lg-4' style={slide_inner_item_style}>
-                            <Card.Body>
-                                <Card.Title>
-                                    <IconButton style={{'color':'orange'}} className='seedling-menu' hover={false} icon={<FontAwesomeIcon icon={faUsersViewfinder} size='xl' />} />
-                                    <h6 className="text-dark fw-bold">Be A Volunteer</h6>
-                                </Card.Title>
-                                <h6>supports persons who are unable to help themselves.</h6>
-                                <div className='mb-5 mt-5'></div>
-                                <Button to='/about' text='Join Now' icon={<PlusOutlined style={{ color: 'orange' }} />}></Button>
-                            </Card.Body>
-                        </Card>
-                        <Card className='col-sm-6 col-md-4 col-lg-4' style={slide_inner_item_style}>
-                            <Card.Body>
-                                <Card.Title>
-                                    <IconButton style={{'color':'#044a18'}} className='seedling-menu' hover={false} icon={<FontAwesomeIcon icon={faHandHoldingDollar} size='xl' />} />
-                                    <h6 className="text-dark fw-bold">Give Donation</h6>
-                                </Card.Title>
-                                <h6>supports persons who are unable to help themselves.</h6>
-                                <div className='mb-5 mt-5'></div>
-                                <Button to='/about' text='Donate Now' icon={<PlusOutlined style={{ color: '#044a18' }} />}></Button>
-                            </Card.Body>
-                        </Card>
-                        <Card className='col-sm-6 col-md-4 col-lg-4 ' style={slide_inner_item_style}>
-                                    <Card.Body>
-                                        <Card.Title>
-                                            <IconButton style={{'color':'red'}} className='seedling-menu' hover={false} icon={<FontAwesomeIcon icon={faSeedling} size='xl' />} />
-                                            <h6 className="text-dark fw-bold">Seminars</h6>
-                                        </Card.Title>
-                                        <h6>supports persons who are unable to help themselves.</h6>
-                                        <div className='mb-5 mt-5'></div>
-                                        <Button to='/about' text='Give Now' icon={<PlusOutlined style={{ color: 'red' }} />}></Button>
-                                    </Card.Body>
-                                </Card>
-                                <Card className='col-sm-6 col-md-4 col-lg-4 ' style={slide_inner_item_style}>
-                                    <Card.Body>
-                                        <Card.Title>
-                                            <IconButton style={{'color':'#04364a'}} className='seedling-menu' hover={false} icon={<FontAwesomeIcon icon={faSeedling} size='xl' />} />
-                                            <h6 className="text-dark fw-bold">Achievements</h6>
-                                        </Card.Title>
-                                        <h6>supports persons who are unable to help themselves.</h6>
-                                        <div className='mb-5 mt-5'></div>
-                                        <Button to='/about' text='Give Now' icon={<PlusOutlined style={{ color: '#04364a' }} />}></Button>
-                                    </Card.Body>
-                                </Card>
-                                <Card className='col-sm-6 col-md-4 col-lg-4' style={slide_inner_item_style}>
-                                    <Card.Body>
-                                        <Card.Title>
-                                            <IconButton style={{'color':'green'}} className='seedling-menu' hover={false} icon={<FontAwesomeIcon icon={faSeedling} size='xl' />} />
-                                            <h6 className="text-dark fw-bold">Awareness</h6>
-                                        </Card.Title>
-                                        <h6>supports persons who are unable to help themselves.</h6>
-                                        <div className='mb-5 mt-5'></div>
-                                        <Button to='/about' text='Give Now' icon={<PlusOutlined style={{ color: 'green' }} />}></Button>
-                                    </Card.Body>
-                                </Card>
+                        {help_act.map((item, index)=>(
+                            <Card className='col-sm-6 col-md-4 col-lg-4 mt-2' style={slide_inner_item_style}>
+                                <Card.Body>
+                                    <Card.Title>
+                                        <IconButton style={{'color':item.btn.color}} className='seedling-menu' hover={false} icon={<FontAwesomeIcon icon={item.title.icon} size='xl' />} />
+                                        <h6 className="text-dark fw-bold">{item.title.name}</h6>
+                                    </Card.Title>
+                                    <h6>{item.description}</h6>
+                                    <div className='mb-5 mt-5'></div>
+                                    <Button to={item.btn.link} text={item.btn.text} icon={item.btn.icon}></Button>
+                                </Card.Body>
+                            </Card>
+                        ))}
                     </Col>
                 ) :(
                     <>
+                    
                         <Col className='col-sm-12 col-md-4 align-self-center '>
                             <Card style={{ width: '100%', marginLeft: '10px', border:'0px' }}>
                                 <Card.Body>
@@ -324,76 +371,36 @@ const LandingPage = ({API_URL}) => {
                             className="mySwiper"
                             modules={[Navigation, Pagination, Autoplay]}
                             style={{ height: '300px', width: '100%', backgroundColor: 'whitesmoke' }}
-                            >
+                            >     
                             <SwiperSlide className='row ms-1 mt-4'>
-                                <Card className='col-sm-6 col-md-4 col-lg-4' style={slide_inner_item_style}>
-                                    <Card.Body className='m-0'>
-                                        <Card.Title>
-                                            <IconButton style={{'color':'green'}} className='seedling-menu' hover={false} icon={<FontAwesomeIcon icon={faSeedling} size='xl' />} />
-                                            <h6 className="text-dark fw-bold">Fund Raiser</h6>
-                                        </Card.Title>
-                                        <h6>supports persons who are unable to help themselves.</h6>
-                                        <div className='mb-2 mt-2'></div>
-                                        <Button to='/about' text='Give Now' icon={<PlusOutlined style={{ color: 'green' }} />}></Button>
-                                    </Card.Body>
-                                </Card>
-                                <Card className='col-sm-6 col-md-4 col-lg-4' style={slide_inner_item_style}>
-                                    <Card.Body>
-                                        <Card.Title>
-                                            <IconButton style={{'color':'orange'}} className='seedling-menu' hover={false} icon={<FontAwesomeIcon icon={faUsersViewfinder} size='xl' />} />
-                                            <h6 className="text-dark fw-bold">Volunteer</h6>
-                                        </Card.Title>
-                                        <h6>supports persons who are unable to help themselves.</h6>
-                                        <div className='mb-2 mt-2'></div>
-                                        <Button to='/about' text='Join Now' icon={<PlusOutlined style={{ color: 'orange' }} />}></Button>
-                                    </Card.Body>
-                                </Card>
-                                <Card className='col-sm-6 col-md-4 col-lg-4' style={slide_inner_item_style}>
-                                    <Card.Body>
-                                        <Card.Title>
-                                            <IconButton style={{'color':'#044a18'}} className='seedling-menu' hover={false} icon={<FontAwesomeIcon icon={faHandHoldingDollar} size='xl' />} />
-                                            <h6 className="text-dark fw-bold">Donation</h6>
-                                        </Card.Title>
-                                        <h6>supports persons who are unable to help themselves.</h6>
-                                        <div className='mb-2 mt-2'></div>
-                                        <Button to='/about' text='Donate Now' icon={<PlusOutlined style={{ color: '#044a18' }} />}></Button>
-                                    </Card.Body>
-                                </Card>
+                                {help_act.slice(0,3).map((item, index)=>(
+                                        <Card className='col-sm-6 col-md-4 col-lg-4 mt-2' style={slide_inner_item_style}>
+                                            <Card.Body>
+                                                <Card.Title>
+                                                    <IconButton style={{'color':item.btn.color}} className='seedling-menu' hover={false} icon={<FontAwesomeIcon icon={item.title.icon} size='xl' />} />
+                                                    <h6 className="text-dark fw-bold">{item.title.name}</h6>
+                                                </Card.Title>
+                                                <h6>{item.description}</h6>
+                                                <div className='mb-5 mt-5'></div>
+                                                <Button to={item.btn.link} text={item.btn.text} icon={item.btn.icon}></Button>
+                                            </Card.Body>
+                                        </Card>
+                                    ))}
                             </SwiperSlide>
                             <SwiperSlide className='row ms-2 mt-4'>
-                                <Card className='col-sm-6 col-md-4 col-lg-4 ' style={slide_inner_item_style}>
-                                    <Card.Body>
-                                        <Card.Title>
-                                            <IconButton style={{'color':'red'}} className='seedling-menu' hover={false} icon={<FontAwesomeIcon icon={faSeedling} size='xl' />} />
-                                            <h6 className="text-dark fw-bold">Seminars</h6>
-                                        </Card.Title>
-                                        <h6>supports persons who are unable to help themselves.</h6>
-                                        <div className='mb-2 mt-2'></div>
-                                        <Button to='/about' text='Give Now' icon={<PlusOutlined style={{ color: 'red' }} />}></Button>
-                                    </Card.Body>
-                                </Card>
-                                <Card className='col-sm-6 col-md-4 col-lg-4 ' style={slide_inner_item_style}>
-                                    <Card.Body>
-                                        <Card.Title>
-                                            <IconButton style={{'color':'#04364a'}} className='seedling-menu' hover={false} icon={<FontAwesomeIcon icon={faSeedling} size='xl' />} />
-                                            <h6 className="text-dark fw-bold">Communities</h6>
-                                        </Card.Title>
-                                        <h6>supports persons who are unable to help themselves.</h6>
-                                        <div className='mb-2 mt-2'></div>
-                                        <Button to='/about' text='Give Now' icon={<PlusOutlined style={{ color: '#04364a' }} />}></Button>
-                                    </Card.Body>
-                                </Card>
-                                <Card className='col-sm-6 col-md-4 col-lg-4' style={slide_inner_item_style}>
-                                    <Card.Body>
-                                        <Card.Title>
-                                            <IconButton style={{'color':'green'}} className='seedling-menu' hover={false} icon={<FontAwesomeIcon icon={faSeedling} size='xl' />} />
-                                            <h6 className="text-dark fw-bold">Awareness</h6>
-                                        </Card.Title>
-                                        <h6>supports persons who are unable to help themselves.</h6>
-                                        <div className='mb-2 mt-2'></div>
-                                        <Button to='/about' text='Give Now' icon={<PlusOutlined style={{ color: 'green' }} />}></Button>
-                                    </Card.Body>
-                                </Card>
+                                {help_act.slice(3,6).map((item, index)=>(
+                                        <Card className='col-sm-6 col-md-4 col-lg-4 mt-2' style={slide_inner_item_style}>
+                                            <Card.Body>
+                                                <Card.Title>
+                                                    <IconButton style={{'color':item.btn.color}} className='seedling-menu' hover={false} icon={<FontAwesomeIcon icon={item.title.icon} size='xl' />} />
+                                                    <h6 className="text-dark fw-bold">{item.title.name}</h6>
+                                                </Card.Title>
+                                                <h6>{item.description}</h6>
+                                                <div className='mb-5 mt-5'></div>
+                                                <Button to={item.btn.link} text={item.btn.text} icon={item.btn.icon}></Button>
+                                            </Card.Body>
+                                        </Card>
+                                    ))}
                             </SwiperSlide>
                             
                         </Swiper>

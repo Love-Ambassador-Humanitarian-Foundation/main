@@ -58,7 +58,7 @@ const HeaderComponent = ({ Companyname,isloggedIn,userDetails }) => {
                     </Navbar.Brand>
                     <div className="d-flex justify-content-between align-items-center m-1" style={{marginLeft: 'auto'}}>
                         <Dropdown overlay={profileMenu} placement="bottomLeft" trigger={['click']}>
-                            <Avatar size={30} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
+                            <Avatar src={userDetails?userDetails.profileImage:null} size={50} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
                         </Dropdown>
                         {isMenuOpen ? (
                             <IconButton hover={false} onClick={onClose} className="close-menu ms-0" icon={<CloseOutlined />} />
@@ -120,7 +120,7 @@ const HeaderComponent = ({ Companyname,isloggedIn,userDetails }) => {
                     <NavLink to="/contact" text="Contact" className="m-2" />
                     
                     <Dropdown overlay={profileMenu} placement="bottomLeft" trigger={['click']}>
-                        <Avatar src={userDetails?userDetails.image:null} size={30} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
+                        <Avatar src={userDetails?userDetails.profileImage:null} size={50} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
                     </Dropdown>
                     <Button to="/contribute" text="Contribute" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
                 </Container>

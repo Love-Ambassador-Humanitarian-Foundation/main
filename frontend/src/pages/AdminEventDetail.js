@@ -19,9 +19,10 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import axios from 'axios';
 import logo from '../assets/logo.jpg';
 import dayjs from 'dayjs';
-import { eventTypes } from '../utils/utils';
+import { eventTypes } from '../utils/helper';
 import { UploadOutlined, DeleteOutlined } from '@ant-design/icons';
 import _ from 'lodash'; // lodash for debounce
+import { getEventbyId, updateEventbyId } from '../services/api';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -53,8 +54,7 @@ const Event = ({ API_URL }) => {
     useEffect(() => {
         const fetchEventDetails = async () => {
             try {
-                const response = await axios.get(`${API_URL}/api/events/${id}`);
-                const data = response.data.data;
+                const data = await getEventbyId(API_URL, id);
 
                 setFormData({
                     id: data.id || '',
@@ -95,11 +95,11 @@ const Event = ({ API_URL }) => {
     const saveEdit = async () => {
         setLoading(true);
         try {
-            await axios.put(`${API_URL}/api/events/${id}`, {
+            await updateEventbyId(API_URL, id,{
                 ...formData,
                 start_date: formData.start_date ? formData.start_date : null,
                 end_date: formData.end_date ? formData.end_date : null,
-            });
+            })
             message.success('Event details updated');
             setEditEvent(false);
         } catch (error) {

@@ -5,7 +5,8 @@ import axios from 'axios';
 import { Link, useNavigate} from 'react-router-dom';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
-import {getRandomBgColorClass} from '../utils/utils';
+import {getRandomBgColorClass} from '../utils/helper';
+import { getUsers } from '../services/api';
 const { Content } = Layout;
 
 const Users = ({ API_URL }) => {
@@ -19,18 +20,16 @@ const Users = ({ API_URL }) => {
     useEffect(() => {
         
         const fetchData = async () => {
-            axios.get(`${API_URL}/api/users`)
-            .then(response => {
-                const fetchedUsers = response.data.data;
+            try {
+                const fetchedUsers = await getUsers(API_URL);
                 setUsers(fetchedUsers);
                 setFilteredUsers(fetchedUsers);
-                setIsLoading(false);
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error("There was an error fetching the users!", error);
-                setIsLoading(false);
                 message.error("There was an error fetching the users!", 5);
-            });
+            } finally {
+                setIsLoading(false);
+            }
         };
 
         // Initial data fetch
@@ -42,19 +41,18 @@ const Users = ({ API_URL }) => {
         return () => clearInterval(interval);
     }, [API_URL]);
 
-    const deleteUser = (id) => {
-        axios.delete(`${API_URL}/api/users/${id}`)
-            .then(response => {
-                const newUsers = users.filter(user => user.id !== id);
-                setUsers(newUsers);
-                setFilteredUsers(newUsers);
-                navigate(`/admin/users`);
-                message.success("User deleted successfully!", 5);
-            })
-            .catch(error => {
-                console.error("There was an error deleting the user!", error);
-                message.error("There was an error deleting the user!", 5);
-            });
+    const deleteUser = async (id) => {
+        try {
+            await deleteUser(API_URL, id);
+            const newUsers = users.filter(user => user.id !== id);
+            setUsers(newUsers);
+            setFilteredUsers(newUsers);
+            navigate(`/admin/users`);
+            message.success("User deleted successfully!", 5);
+        } catch (error) {
+            console.error("There was an error deleting the user!", error);
+            message.error("There was an error deleting the user!", 5);
+        }
     };
     const handleRowClick = (record) => {
         navigate(`/admin/users/${record.id}`);

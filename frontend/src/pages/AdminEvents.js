@@ -5,6 +5,7 @@ import { Card, Row, Col, Table, theme, Button, message, Layout, Breadcrumb, Tool
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { Link, useNavigate } from 'react-router-dom';
+import { getEvents } from '../services/api';
 
 const { Content } = Layout;
 
@@ -16,47 +17,38 @@ const Events = ({ onSetContent, API_URL }) => {
     const [isLoading, setIsLoading] = useState(true);
 
     // Function to format the current date and time
-    const formatCurrentDateTime = () => {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-    };
-
+    
     useEffect(() => {
-        const currentDateTime = formatCurrentDateTime();
-
-        axios.get(`${API_URL}/api/events?current_date=${currentDateTime}`)
-            .then(response => {
-                const fetchedEvents = response.data.data;
+        
+        const fetchEvents = async()=>{
+            try {
+                const currentDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
+                const fetchedEvents = await getEvents(API_URL,currentDate);
                 setEvents(fetchedEvents);
                 setFilteredEvents(fetchedEvents);
-                setIsLoading(false);
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error("There was an error fetching the events!", error);
-                
+                message.error("There was an error fetching the events!", 5);
+            } finally {
                 setIsLoading(false);
-            });
+            }
+        }
+        fetchEvents()
     }, [API_URL]);
 
-    const deleteEvent = (id) => {
-        axios.delete(`${API_URL}/api/events/${id}`)
-            .then(response => {
-                const newEvents = events.filter(event => event.id !== id);
-                setEvents(newEvents);
-                setFilteredEvents(newEvents);
-                navigate('admin/events')
-                message.success("Event deleted successfully!", 5);
-            })
-            .catch(error => {
-                console.error("There was an error deleting the event!", error);
-                message.error("There was an error deleting the event!", 5);
-            });
+    const deleteEvent = async(id) => {
+        try {
+            deleteEvent(API_URL,id);
+            const newEvents = events.filter(event => event.id !== id);
+            setEvents(newEvents);
+            setFilteredEvents(newEvents);
+            navigate('admin/events')
+            message.success("Event deleted successfully!", 5);
+        } catch (error) {
+            console.error("There was an error deleting the event!", error);
+            message.error("There was an error deleting the event!", 5);
+        }
+        
     };
 
     const columns = [

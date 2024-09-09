@@ -85,7 +85,7 @@ OFFICER_ROLES = [
     ('executive_director', 'Executive Director'),
     ('manager', 'Manager'),
     ('coordinator', 'Coordinator'),
-    ('volunteer', 'Volunteer'),
+    ('member', 'Member'),
     ('advisor', 'Advisor'),
     ('treasurer', 'Treasurer'),
     ('secretary', 'Secretary'),

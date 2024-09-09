@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
-import { useUpdateLoginStatus } from '../utils/hooks';
+import { useUpdateLoginStatus } from '../hooks/hooks';
 
 const PaymentPage = ({Companyname, API_URL}) => {
     const [cardNumber, setCardNumber] = useState('');

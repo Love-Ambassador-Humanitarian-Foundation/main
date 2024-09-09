@@ -11,7 +11,7 @@ import {
     Typography, Input, Button, Form, message,
     Layout, Breadcrumb, Avatar
 } from 'antd';
-import { convertImageToBase64, detectenterkey } from '../utils/utils';
+import { convertImageToBase64, detectenterkey } from '../utils/helper';
 
 const { Content } = Layout;
 const { Text } = Typography;
