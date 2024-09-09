@@ -8,6 +8,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useUpdateLoginStatus } from '../hooks/hooks';
+import { getAbout } from '../services/api';
 const { Meta } = Card;
 const { Text } = Typography;
 
@@ -94,18 +95,7 @@ const AboutPage = ({API_URL,Companyname}) => {
             console.error(`Index ${index} is out of bounds for images array`);
         }
     };
-    const fetchData = async (API_URL) => {
-        try {
-          const response = await axios.get(API_URL+'/api/about');
-          setData(response.data.data);
-          setIsLoading(false);
-          console.log(response.data);
-        } catch (error) {
-          setError(error.message);
-          setIsLoading(false);
-          console.log(error);
-        }
-      };
+    
     
     function scrolltotop(hash){
         if (hash === '#accountdetails'){
@@ -124,7 +114,19 @@ const AboutPage = ({API_URL,Companyname}) => {
     scrolltotop(location.hash);
 
     useEffect(() => {
-        fetchData(API_URL);
+        const fetchData = async () => {
+            try {
+                const response = await getAbout(API_URL);
+                setData(response);
+                console.log(response);
+            } catch (error) {
+                setError(error.message);
+                console.log(error);
+            }finally{
+                setIsLoading(false);
+            }
+          };
+        fetchData();
     }, [API_URL]);
 
     if (isLoading) {

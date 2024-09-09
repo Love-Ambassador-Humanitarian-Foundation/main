@@ -49,10 +49,11 @@ import NotFoundPage from './pages/NotFound';
 import ForgottenPasswordPage from './pages/ForgottenPassword.js';
 import Scholarships from './pages/Scholarships.js';
 import Scholarship from './pages/ScholarshipDetails.js';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
 import ScholarshipApplication from './pages/ScholarshipApplication.js';
 import EventDetail from './pages/EventDetails.js';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
+
 
 
 

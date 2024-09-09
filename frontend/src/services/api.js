@@ -3,6 +3,7 @@ import axios from 'axios';
 //-------------about------------------------
 export const getAbout = async(API_URL) => {
     const response = await axios.get(`${API_URL}/api/about`);
+    console.log(response.data.data);
     return(response.data.data);
 };
 
