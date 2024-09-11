@@ -5,6 +5,7 @@ You may not modify, copy, or distribute this software without permission.
 For more details, see the LICENSE file in the root of the repository."""
 
 import os
+import threading
 from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -32,6 +33,8 @@ from django.contrib.auth import login, get_user_model
 from django.db.models import Q
 from django.forms.models import model_to_dict
 from django.conf import settings
+from django.core.mail import send_mail
+
 from django.db import connection
 from datetime import datetime
 
@@ -619,6 +622,7 @@ class NewsletterReceipientsViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+        print(serializer)
 
         custom_response = {
             'success': True,
@@ -1127,3 +1131,36 @@ class ReportView(APIView):
             'message': "The report type must be one of ['volunteer', 'scholarships', 'loggedin']",
             'data': None
         }, status=status.HTTP_400_BAD_REQUEST)
+
+class ContactUs(APIView):
+    
+    def post(self, request):
+        name = request.data.get('name')
+        email = request.data.get('email')
+        message = request.data.get('message')
+
+        # Check if all fields are filled
+        if not name or not email or not message:
+            return Response({'success': False, 'message': 'All fields are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Define the email sending function
+        def send_email():
+            try:
+                send_mail(
+                    subject=f'Message from {name} via Contact Form',
+                    message=message,
+                    from_email=email,
+                    recipient_list=[settings.EMAIL_HOST_USER],  # Admin email set in Django settings
+                    fail_silently=False,
+                )
+                return Response({'success': True, 'message': 'Email sent successfully!'}, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({'success': False, 'message': 'Failed to send email.', 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        # Start the thread to send email
+        try:
+            thread = threading.Thread(target=send_email)
+            thread.start()
+            return Response({'success': True, 'message': 'Your message is being sent.'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'success': False, 'message': 'Failed to initiate email sending.', 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -129,7 +129,7 @@ const PaymentPage = ({Companyname, API_URL}) => {
                     </Col>
                 </Row>
             </Container>
-            <Footer Companyname={Companyname} /> {/* Include the footer component */}
+            <Footer Companyname={Companyname} API_URL={API_URL}  /> {/* Include the footer component */}
         </>
     );
 };

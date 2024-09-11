@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { Button, NavLink, IconButton } from './button';
 import { Link } from 'react-router-dom';
-import { HeartFilled, CloseOutlined, MenuOutlined,UserOutlined } from '@ant-design/icons';
+import { HeartFilled, CloseOutlined, MenuOutlined,UserOutlined, LoginOutlined } from '@ant-design/icons';
 
 import { Drawer,Avatar,Dropdown, Menu } from 'antd';
 import Logo from '../assets/logo.jpg';
@@ -96,12 +96,18 @@ const HeaderComponent = ({ Companyname,isloggedIn,userDetails }) => {
                                 
                             >
                                 <Dropdown overlay={profileMenu} placement="bottomLeft" trigger={['click']}>
-                                    <Avatar src={(userDetails && userDetails.image)?userDetails.image:null} size={30} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
+                                    <Avatar src={userDetails?userDetails.profileImage:null} size={30} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
                                 </Dropdown>
                             </Link>
                         </Nav.Item>
                             
-                        <Button to="/contribute" text="Contribute" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
+                        {!isloggedIn ? (
+                            userDetails ? (
+                                <Button to="/signup" text="Sign Up" icon={<LoginOutlined style={{ color: '#ec3237' }} />} />
+                            ) : (
+                                <Button to="/login" text="Log In" icon={<LoginOutlined style={{ color: '#ec3237' }} />} />
+                            )
+                        ) : null}
                     </Drawer>
 
                 </Container>
@@ -124,7 +130,14 @@ const HeaderComponent = ({ Companyname,isloggedIn,userDetails }) => {
                     <Dropdown overlay={profileMenu} placement="bottomLeft" trigger={['click']}>
                         <Avatar src={userDetails?userDetails.profileImage:null} size={50} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
                     </Dropdown>
-                    <Button to="/contribute" text="Contribute" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
+                    {!isloggedIn ? (
+                        userDetails ? (
+                            <Button to="/signup" text="Sign Up" icon={<LoginOutlined style={{ color: '#ec3237' }} />} />
+                        ) : (
+                            <Button to="/login" text="Log In" icon={<LoginOutlined style={{ color: '#ec3237' }} />} />
+                        )
+                    ) : null}
+
                 </Container>
             )}
         </Navbar>

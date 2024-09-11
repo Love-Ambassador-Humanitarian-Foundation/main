@@ -14,7 +14,8 @@ import {
     Row, Col, Typography, Input, Button, message,
     Breadcrumb, Select, Layout, Form, DatePicker,
     Checkbox, Tooltip,
-    Image
+    Image,
+    Modal
 } from 'antd';
 import { useParams, useLocation, Link } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -45,6 +46,7 @@ const AdminScholarshipApplicant = ({ API_URL }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [loading, setLoading] = useState(false);
     const [pdfLoading, setPdfLoading] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
     const [formData, setFormData] = useState({
         id: '',
         first_name: '',
@@ -64,13 +66,13 @@ const AdminScholarshipApplicant = ({ API_URL }) => {
         qrcode: '',
         organisation_approved: false,
         organisation_signature_date: null,
-        candidate_signature_date: null
+        candidate_signature_date: null,
+        termsandconditionsaccepted: false
+        
     });
     const currentDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
-    const [approved, setApproved] =useState(formData.organisation_approved)
+    const [approved, setApproved] =useState(formData.organisation_approved);
     const [organisation_signature_date, setOrganisationSignatureDate] = useState(formData.organisation_signature_date ? dayjs(formData.organisation_signature_date) : null)
-
-    
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -141,12 +143,14 @@ const AdminScholarshipApplicant = ({ API_URL }) => {
 
     const saveEdit = async () => {
         setLoading(true);
+        
         try {
             await axios.patch(`${API_URL}/api/scholarshipapplicants/${applicantid}`, {
                 ...formData,
                 birthday: formData.birthday ? formData.birthday.format('YYYY-MM-DD') : null,
                 organisation_signature_date: formData.organisation_signature_date ? formData.organisation_signature_date.format('YYYY-MM-DD') : null,
-                candidate_signature_date: formData.candidate_signature_date ? formData.candidate_signature_date.format('YYYY-MM-DD') : null
+                candidate_signature_date: formData.candidate_signature_date ? formData.candidate_signature_date.format('YYYY-MM-DD') : null,
+                
             }, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -234,7 +238,8 @@ const AdminScholarshipApplicant = ({ API_URL }) => {
                 qrcode: data.qrcode || '',
                 organisation_approved: data.organisation_approved || false,
                 organisation_signature_date: data.organisation_signature_date ? dayjs(data.organisation_signature_date) : null,
-                candidate_signature_date: data.candidate_signature_date ? dayjs(data.candidate_signature_date) : null
+                candidate_signature_date: data.candidate_signature_date ? dayjs(data.candidate_signature_date) : null,
+                termsandconditionsaccepted: data.termsandconditionsaccepted || false
             });
             setApproved(data.organisation_approved || false);
             setOrganisationSignatureDate(data.organisation_signature_date ? dayjs(data.organisation_signature_date) : null);
@@ -249,6 +254,25 @@ const AdminScholarshipApplicant = ({ API_URL }) => {
     useEffect(() => {
         fetchDetails(); // Call the memoized fetchDetails
     }, [fetchDetails]); // Dependency array
+
+    const handleAcceptedChange = (e) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            termsandconditionsaccepted: e.target.checked,
+        }));
+    };
+
+    const showTermsModal = () => {
+        setModalVisible(true);
+    };
+
+    const handleModalOk = () => {
+        setModalVisible(false);
+    };
+
+    const handleModalCancel = () => {
+        setModalVisible(false);
+    };
 
     if (isLoading) {
         return <LoadingSpinner />;
@@ -472,6 +496,7 @@ const AdminScholarshipApplicant = ({ API_URL }) => {
                                     disabled={!editScholarshipApplication}
                                 />
                             </Form.Item>
+
                             </>
                         : null
                             }
@@ -486,6 +511,20 @@ const AdminScholarshipApplicant = ({ API_URL }) => {
                                 disabled={!editScholarshipApplication}
                             />
                         </Form.Item>
+                        <Form.Item label="Terms and Conditions">
+                            <span onClick={showTermsModal} className='mx-2 text-info' style={{cursor:'pointer'}}>View Terms and Conditions</span>
+                            <Checkbox
+                                checked={formData.termsandconditionsaccepted}
+                                onChange={handleAcceptedChange}
+                                disabled={true}
+                            >
+                                {formData.termsandconditionsaccepted 
+                                    ? <span className='text-success'>Accepted</span> 
+                                    : <span className='text-danger'>Not Accepted</span>}
+                            </Checkbox>
+                        </Form.Item>
+                        
+                        
                         {editScholarshipApplication && (
                             <Row justify="center">
                                 <Col>
@@ -514,6 +553,19 @@ const AdminScholarshipApplicant = ({ API_URL }) => {
                             </Row>
                         )}
                     </Form>
+                    <Modal
+                        title="Terms and Conditions"
+                        visible={modalVisible}
+                        onOk={handleModalOk}
+                        onCancel={handleModalCancel}
+                        footer={[
+                            <Button key="back" onClick={handleModalCancel}>
+                                Close
+                            </Button>,
+                        ]}
+                    >
+                        <p>{scholarship.termsandconditions}</p>
+                    </Modal>
                 </div>
             </Content>
         </Layout>

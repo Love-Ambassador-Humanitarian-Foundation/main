@@ -1,300 +1,322 @@
-import React, { useState, useEffect} from 'react';
-import { Row, Col, Card, Pagination, Modal,Typography } from 'antd';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Row, Col, Card, Pagination, Tooltip, Avatar, Tag, Typography } from 'antd';
 import img1 from '../assets/landing.jpg';
-import CustomAccordion from '../components/Accordion';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useLocation } from 'react-router-dom';
-import axios from 'axios';
+import { FacebookOutlined, WhatsAppOutlined, LinkedinOutlined, TwitterOutlined, InstagramOutlined, UserOutlined } from '@ant-design/icons';
 import { useUpdateLoginStatus } from '../hooks/hooks';
-import { getAbout } from '../services/api';
+import { getAbout, getPartners, getUsers } from '../services/api';
+
 const { Meta } = Card;
 const { Text } = Typography;
 
-const AboutPage = ({API_URL,Companyname}) => {
-    const location = useLocation();
-    const {isLoggedIn,userDetails} = useUpdateLoginStatus(API_URL);
-    const [data, setData] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
-    // Dummy data for team members
-    const teamMembers = [
-        { name: 'Mr Ifeanyi Onyenoro', position: 'Co-Founder', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
-        { name: 'Mrs Esther Onyenoro', position: 'Co-Founder', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
-        { name: 'Alice Johnson', position: 'Lead Developer', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
-        { name: 'Bob Brown', position: 'Designer', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
-        { name: 'Bob Brown', position: 'Designer', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
-        { name: 'Bob Brown', position: 'Designer', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
-        { name: 'Bob Brown', position: 'Designer', image: 'https://via.placeholder.com/150', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
-    ];
+const AboutPage = ({ API_URL, Companyname }) => {
+  const location = useLocation();
+  const { isLoggedIn, userDetails } = useUpdateLoginStatus(API_URL);
+  const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [partners, setPartners] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
 
-    // Dummy data for achievements
-    const achievements = [
-        { title: 'Award 1', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
-        { title: 'Award 2', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
-        { title: 'Award 3', description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
-        // Add more achievements as needed
-    ];
-    const items = [
-        { title: 'Fundraising', content: 'Ongoing: mama davis orphanage',link:'/payment' },
-        { title: 'Volunteering', content: 'Ongoing: Join Us as as volunteeer' },
-        { title: 'Donation', content: 'Not Ongoing: ...',link:'/payment' },
-        { title: 'Seminars', content: 'Not Ongoing: Location -> 32 badagri road, bla bla' },
-        { title: 'Awareness', content: 'Not Ongoing: Facebook link' },
-        { title: 'Branches', content: 'Ongoing: 64 branches: (1.Lagos), (2.Lagos), (3.Lagos),' },
-    ];
-    const bankaccounts =[
-        {currency: 'NGN', number: '1234567890', sortcode: '00-00-00',bankname:'Access Bank', holdername:'John Doe'},
-        {currency: 'USD', number: '0987654321', sortcode: '11-11-11',bankname:'Guaranty Trust Bank', holdername:'David John'}
-    ]
+  const pageSize = 4; // Number of team members per page
 
-    // Paginate team members
-    const pageSize = 4; // Number of team members per page
-    const totalMembers = teamMembers.length;
-    //const totalPages = Math.ceil(totalMembers / pageSize);
-    const [currentPage, setCurrentPage] = useState(1);
-
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
-    };
-
-    // Slice team members based on pagination
+  // Memoized paginated members
+  const paginatedMembers = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    const paginatedMembers = teamMembers.slice(startIndex, endIndex);
+    return teamMembers.slice(startIndex, startIndex + pageSize);
+  }, [teamMembers, currentPage]);
 
-    // Modal state
-    const [visible, setVisible] = useState(false);
-    const [currentAchievement, setCurrentAchievement] = useState(null);
+  const totalMembers = teamMembers.length;
 
-    // Show modal with achievement details
-    const showModal = (achievement) => {
-        setCurrentAchievement(achievement);
-        setVisible(true);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const aboutResponse = await getAbout(API_URL);
+        setData(aboutResponse);
+
+        const membersResponse = await getUsers(API_URL);
+        setTeamMembers(membersResponse);
+
+        const partnersResponse = await getPartners(API_URL);
+        setPartners(partnersResponse);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
+      }
     };
+    fetchData();
+  }, [API_URL]);
 
-    // Hide modal
-    const handleCancel = () => {
-          setVisible(false);
-      };
-      const images = [
-        { img: img1 },
-        { img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80' },
-        { img: img1 },
-        { img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80' }
-    ];
-    
-    const [image, setImage] = useState(images.length > 0 ? images[0].img : '');
-    
-    const switchImage = (index) => {
-        if (images.length > index) {
-            setImage(images[index].img);
-            console.log(image);
+  useEffect(() => {
+    const scrollToHashElement = (hash) => {
+      if (hash) {
+        const elementId = hash.replace('#', '');
+        const element = document.getElementById(elementId);
+
+        if (element) {
+          console.log(`Scrolling to element with ID: ${elementId}`);
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         } else {
-            console.error(`Index ${index} is out of bounds for images array`);
+          console.log(`No element found for ID: ${elementId}`);
         }
+      }
     };
-    
-    
-    function scrolltotop(hash){
-        if (hash === '#accountdetails'){
-            const accountDetails = document.getElementById(hash.replace('#',''));
-            if (accountDetails) {
-                accountDetails.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
-            }
-        }
-        // if (hash === '#socials'){
-        //     const socials = document.getElementById(hash.replace('#',''));
-        //     if (socials) {
-        //         socials.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
-        //     }
-        // }
+
+    if (location.hash) {
+      scrollToHashElement(location.hash);
     }
-    scrolltotop(location.hash);
+  }, [location]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await getAbout(API_URL);
-                setData(response);
-                console.log(response);
-            } catch (error) {
-                setError(error.message);
-                console.log(error);
-            }finally{
-                setIsLoading(false);
-            }
-          };
-        fetchData();
-    }, [API_URL]);
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
-    if (isLoading) {
-        return <LoadingSpinner/>;
-    }
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
-    if (error) {
-        return <div>Error: {error}</div>;
-    }
-      
-    
-    return (
-        <div id='about'>
-            <HeaderComponent Companyname={Companyname} isloggedIn={isLoggedIn} userDetails={userDetails} /> {/* Include the header component */}
-            <div className="container py-5">
-            <div className="row align-items-center mt-4">
-                <div className="col-xs-12 col-md-6">
-                    <img src={img1} alt="About Us" className="img-fluid mt-2" width={'100%'} />
-                </div>
-                <div className="col-xs-12 col-md-6">
-                    <div className="text-center text-md-start">
-                        <h2 className="mb-4">Our Story</h2>
-                        <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris non ipsum libero. Proin euismod metus nec sapien ultricies, ac consectetur ligula tristique.
-                        </p>
-                        <p>
-                            Nullam suscipit eget felis id interdum. Sed ut eros vitae justo convallis placerat. Vestibulum nec faucibus felis, vel sagittis nisi.
-                        </p>
-                        <p>
-                            Integer nec ipsum ac velit sollicitudin ultrices. Vestibulum quis eros eget turpis cursus aliquet.
-                        </p>
-                    </div>
-                </div>
+  return (
+    <div id="about">
+      <HeaderComponent Companyname={Companyname} isloggedIn={isLoggedIn} userDetails={userDetails} />
+      <div className="container py-5">
+        <div className="row d-flex align-items-start mt-5" id="story">
+          <div className="col-xs-12 col-md-6">
+            <img src={img1} alt="About Us" className="img-fluid" style={{ width: '100%' }} />
+          </div>
+          <div className="col-xs-12 col-md-6">
+            <div className="text-center text-md-start">
+              <h2 className="mb-4">Our Story</h2>
+              <p style={{ textAlign: 'justify', textIndent: '60px' }}>{data.story}</p>
             </div>
-            <hr />
-            <div className="row mt-5">
-                <div className="col">
-                    <h2 className="mb-4 text-center">Our Mission</h2>
-                    <p className="text-center">
-                        {data.about}
-                    </p>
-                </div>
-            </div>
-            <hr />
-            <div className="row mt-5">
-                <div className="col">
-                    <h2 className="mb-4 text-center">Our Values</h2>
-                    <p className="text-center">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris non ipsum libero. Proin euismod metus nec sapien ultricies, ac consectetur ligula tristique.
-                    </p>
-                </div>
-            </div>
-            <hr />
-            <div className="row mt-5">
-                <div className="col">
-                    <h2 className="mb-4 text-center">Our Team</h2>
-                    <Row gutter={[16, 16]}>
-                        {paginatedMembers.map((member, index) => (
-                            <Col key={index} xs={24} sm={12} md={8} lg={6}>
-                                <Card
-                                    hoverable
-                                    cover={<img alt="Team Member" src={member.image} />}
-                                >
-                                    <Meta title={member.name} description={member.position} />
-                                </Card>
-                            </Col>
-                        ))}
-                    </Row>
-                    <Pagination
-                        className="mt-4"
-                        current={currentPage}
-                        pageSize={pageSize}
-                        total={totalMembers}
-                        onChange={handlePageChange}
-                    />
-                </div>
-            </div>
-            <hr />
-            <div className="row mt-5">
-                <div className="col">
-                    <h2 className="mb-4 text-center">Our Achievements</h2>
-                    <Row gutter={[16, 16]}>
-                        {achievements.map((achievement, index) => (
-                            <Col key={index} xs={24} sm={12} md={8} lg={6}>
-                                <Card hoverable onClick={() => showModal(achievement)}>
-                                    <Meta title={achievement.title} description={achievement.description} />
-                                </Card>
-                            </Col>
-                        ))}
-                    </Row>
-                    <Modal
-                        title={currentAchievement ? currentAchievement.title : ''}
-                        visible={visible}
-                        onCancel={handleCancel}
-                        footer={null}
-                    >
-                        {currentAchievement ? <p>{currentAchievement.description}</p> : null}
-                    </Modal>
-                </div>
-            </div>
-            <hr />
-            <div className='mt-5 mb-3'>
-                <h5 className="text-center text-dark fw-bold">Activities</h5>
-                <Row className='mt-5 mb-2'>
-                
-                    <Col className='col-12 col-sm-12 col-md-6 col-lg-6'>
-                        <CustomAccordion
-                            onClick={(e) => switchImage(e)}
-                            items={items}
-                            isloggedIn={isLoggedIn}
-                        />
-
-                    </Col>
-                    <Col className='col-12 col-sm-12 col-md-6 col-lg-6 align-self-center'>
-                        <img src={image} className='img-fluid' alt='Services' height={'300px'} width={'100%'} style={{maxHeight:'300px', maxWidth:'100%'}}/>
-                    </Col>
-                </Row>
-                
-            </div>
-            
-            <div id='accountdetails'>
-                <h5 className="text-center text-dark fw-bold">Account Details</h5>
-                <Row justify="center" align="middle" style={{display: 'flex',alignItems: 'flex-start'}}>
-                
-                    {bankaccounts.map((account, index) => (
-                        <Col key={index} xs={24} sm={12} md={12} lg={12} xl={12} style={{flex:1,marginBottom: 8}} className='p-1'>
-                            <Card hoverable >
-                                <div className='d-flex flex-column justify-content-left'>
-                                    {account.currency ? <Text strong>Currency: {account.currency}</Text> : null}
-                                    {account.number ? <Text strong>Account Number: {account.number}</Text> : null}
-                                    {account.sortcode ? <Text strong>Sort Code: {account.sortcode}</Text> : null}
-                                    {account.iban ? <Text strong>IBAN: {account.iban}</Text> : null}
-                                    {account.swiftbic ? <Text strong>SWIFT: {account.swiftbic}</Text> : null}
-                                    {account.bankname ? <Text strong>Bank Name: {account.bankname}</Text> : null}
-                                    {account.holdername ? <Text strong>Account Holder's Name: {account.holdername}</Text> : null}
-                                </div>
-                            </Card>
-                        </Col>
-                    ))}
-                </Row>
-            </div>
-            <div id='socials'>
-                <h5 className="text-center text-dark fw-bold">Social Media</h5>
-                <Row justify="center" align="middle" style={{display: 'flex',alignItems: 'flex-start'}}>
-                
-                    {bankaccounts.map((account, index) => (
-                        <Col key={index} xs={24} sm={12} md={12} lg={12} xl={12} style={{flex:1,marginBottom: 8}} className='p-1'>
-                            <Card hoverable >
-                                <div className='d-flex flex-column justify-content-left'>
-                                    {account.currency ? <Text strong>Currency: {account.currency}</Text> : null}
-                                    {account.number ? <Text strong>Account Number: {account.number}</Text> : null}
-                                    {account.sortcode ? <Text strong>Sort Code: {account.sortcode}</Text> : null}
-                                    {account.iban ? <Text strong>IBAN: {account.iban}</Text> : null}
-                                    {account.swiftbic ? <Text strong>SWIFT: {account.swiftbic}</Text> : null}
-                                    {account.bankname ? <Text strong>Bank Name: {account.bankname}</Text> : null}
-                                    {account.holdername ? <Text strong>Account Holder's Name: {account.holdername}</Text> : null}
-                                </div>
-                            </Card>
-                        </Col>
-                    ))}
-                </Row>
-            </div>
-            
-            </div>
-            <Footer Companyname={data?.name || Companyname} /> {/* Include the footer component */}
+          </div>
         </div>
-        
-    );
+
+        <hr />
+        <div className="row mt-5" id="mission">
+          <div className="col">
+            <h2 className="mb-4 text-center">Our Mission</h2>
+            <p style={{ textAlign: 'justify', textIndent: '60px' }}>{data.mission}</p>
+          </div>
+        </div>
+        <hr />
+        <div className="row mt-5" id="policies">
+          <div className="col">
+            <h2 className="mb-4 text-center">Our Policies</h2>
+            <p style={{ textAlign: 'justify', textIndent: '60px' }}>{data.policies}</p>
+          </div>
+        </div>
+
+        <hr />
+        <div className="row mt-5" id="values">
+          <div className="col">
+            <h2 className="mb-4 text-center">Our Values</h2>
+            <p style={{ textAlign: 'justify', textIndent: '60px' }}>{data.values}</p>
+          </div>
+        </div>
+
+        <hr />
+        <div className="row mt-5" id="team">
+          <div className="col">
+            <h2 className="mb-4 text-center">Our Team</h2>
+            <Row gutter={[16, 16]}>
+              {paginatedMembers.map((member, index) => (
+                <Col key={index} xs={24} sm={12} md={8} lg={6}>
+                  <Card
+                    hoverable
+                    cover={
+                      <Avatar
+                        size={'100%'}
+                        shape="square"
+                        src={member.profileImage}
+                        icon={
+                          <UserOutlined
+                            style={{
+                              fontSize: '172px',
+                              width: '100%',
+                              height: '100%',
+                              display: 'flex',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                            }}
+                          />
+                        }
+                        style={{
+                          display: 'block',
+                          margin: '0 auto',
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    }
+                    bodyStyle={{ padding: '10px' }}
+                  >
+                    <Meta title={`${member.firstname} ${member.lastname}`} description={member.position} />
+                    <div style={{ marginTop: '8px', textAlign: 'center' }}>
+                      {(member.facebook || member.instagram || member.linkedin || member.twitter || member.whatsapp) && (
+                        <>
+                          {member.facebook && (
+                            <Tooltip title="Facebook">
+                              <a href={member.facebook} target="_blank" rel="noopener noreferrer">
+                                <FacebookOutlined style={{ fontSize: '16px', margin: '0 10px', color: '#3b5998' }} />
+                              </a>
+                            </Tooltip>
+                          )}
+                          {member.instagram && (
+                            <Tooltip title="Instagram">
+                              <a href={member.instagram} target="_blank" rel="noopener noreferrer">
+                                <InstagramOutlined style={{ fontSize: '16px', margin: '0 10px', color: '#d6249f' }} />
+                              </a>
+                            </Tooltip>
+                          )}
+                          {member.linkedin && (
+                            <Tooltip title="LinkedIn">
+                              <a href={member.linkedin} target="_blank" rel="noopener noreferrer">
+                                <LinkedinOutlined style={{ fontSize: '16px', margin: '0 10px', color: '#0a66c2' }} />
+                              </a>
+                            </Tooltip>
+                          )}
+                          {member.twitter && (
+                            <Tooltip title="Twitter">
+                              <a href={member.twitter} target="_blank" rel="noopener noreferrer">
+                                <TwitterOutlined style={{ fontSize: '16px', margin: '0 10px', color: '#0a66c2' }} />
+                              </a>
+                            </Tooltip>
+                          )}
+                          {member.whatsapp && (
+                            <Tooltip title="WhatsApp">
+                              <a href={member.whatsapp} target="_blank" rel="noopener noreferrer">
+                                <WhatsAppOutlined style={{ fontSize: '16px', margin: '0 10px', color: '#25d366' }} />
+                              </a>
+                            </Tooltip>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+            <Pagination
+              className="mt-4 text-center"
+              current={currentPage}
+              total={totalMembers}
+              pageSize={pageSize}
+              onChange={(page) => setCurrentPage(page)}
+            />
+          </div>
+        </div>
+
+        <hr />
+        <div className="row mt-5" id="partners">
+          <div className="col">
+            <h2 className="mb-4 text-center">Our Partners</h2>
+            <Row gutter={[16, 16]}>
+              {partners.length > 0 ? (
+                partners.map((partner, index) => (
+                  <Col key={index} xs={24} sm={12} md={8} lg={6}>
+                    <Card
+                      hoverable
+                      cover={
+                        partner.logo ? (
+                          <img
+                            alt={partner.title}
+                            src={partner.logo}
+                            style={{ height: '150px', objectFit: 'contain' }}
+                          />
+                        ) : (
+                          <div
+                            style={{
+                              height: '150px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              backgroundColor: '#f0f0f0',
+                            }}
+                          >
+                            <span>No Logo</span>
+                          </div>
+                        )
+                      }
+                      onClick={() => window.open(partner.link, '_blank')}
+                    >
+                      <Meta title={partner.title} description={partner.description} />
+                    </Card>
+                  </Col>
+                ))
+              ) : (
+                <Tag color="orange">No Partners</Tag>
+              )}
+            </Row>
+          </div>
+        </div>
+
+        <hr />
+        <div className="row mt-5" id="accountdetails">
+          {data.account_details.length > 0 ? (
+            <div className="col">
+              <h2 className="mb-4 text-center">Bank Accounts</h2>
+              <Row gutter={[16, 16]}>
+                {data.account_details.map((account, index) => (
+                  <Col key={index} xs={24} sm={12} md={8} lg={6}>
+                    <Card hoverable bodyStyle={{ padding: '12px' }} style={{ borderRadius: '0px' }}>
+                      <Meta
+                        description={
+                          <div>
+                            <p>
+                              <strong>Bank Name:</strong> {account.bankname || 'N/A'}
+                            </p>
+                            <p>
+                              <strong>Account Holder's Name:</strong> {account.holdername || 'N/A'}
+                            </p>
+                            {account.currency && (
+                              <p>
+                                <strong>Currency:</strong> {account.currency}
+                              </p>
+                            )}
+                            {account.number && (
+                              <p>
+                                <strong>Account Number:</strong> {account.number}
+                              </p>
+                            )}
+                            {account.sortcode && (
+                              <p>
+                                <strong>Sort Code:</strong> {account.sortcode}
+                              </p>
+                            )}
+                            {account.iban && (
+                              <p>
+                                <strong>IBAN:</strong> {account.iban}
+                              </p>
+                            )}
+                            {account.swiftbic && (
+                              <p>
+                                <strong>SWIFT:</strong> {account.swiftbic}
+                              </p>
+                            )}
+                          </div>
+                        }
+                      />
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
+            </div>
+          ) : (
+            <div className="col text-center">
+              <Tag color="orange">No Bank Accounts Yet</Tag>
+            </div>
+          )}
+        </div>
+      </div>
+      <Footer Companyname={Companyname} API_URL={API_URL}  />
+    </div>
+  );
 };
 
 export default AboutPage;

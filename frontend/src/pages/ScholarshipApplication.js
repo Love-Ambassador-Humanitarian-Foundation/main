@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, Card, Typography, Layout, message, DatePicker, Select } from 'antd';
+import { Button, Form, Input, Card, Typography, Layout, message, DatePicker, Select, Checkbox, Modal } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
-import {PlusOutlined} from '@ant-design/icons';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
 import { useUpdateLoginStatus } from '../hooks/hooks';
@@ -27,6 +26,8 @@ const ScholarshipApplication = ({ API_URL, Companyname }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const currentDate = dayjs();  // Use dayjs for current date formatting
+    const [modalVisible, setModalVisible] = useState(false);
+    const [accepted, setAccepted]  = useState(false)
 
     useEffect(() => {
         const today = dayjs();  // Use dayjs for current date formatting
@@ -47,12 +48,18 @@ const ScholarshipApplication = ({ API_URL, Companyname }) => {
 
     const onFinish = async (values) => {
         setIsSubmitting(true);
+        if (!accepted) {
+            message.error('Terms and conditions must be accepted');
+            setIsSubmitting(false);
+            return;
+        }
         try {
             await addScholarshipApplication(API_URL, {
                 ...values,
                 scholarship: id,  // Pass scholarship ID in the request
                 birthday:values.birthday.format('YYYY-MM-DD'),
                 candidate_signature_date: currentDate.format('YYYY-MM-DD'),
+                termsandconditionsaccepted:accepted
             });
             message.success('Application submitted successfully!');
             navigate(`/scholarships/${id}`);
@@ -75,6 +82,21 @@ const ScholarshipApplication = ({ API_URL, Companyname }) => {
             setIsSubmitting(false);
         }
     };
+    const showTermsModal = () => {
+        setModalVisible(true);
+    };
+
+    const handleModalOk = () => {
+        setModalVisible(false);
+    };
+
+    const handleModalCancel = () => {
+        setModalVisible(false);
+    };
+    const handleAcceptedChange = (e) => {
+        
+        setAccepted(e.target.checked)
+    };
 
     if (isLoading) {
         return <LoadingSpinner />;
@@ -91,7 +113,7 @@ const ScholarshipApplication = ({ API_URL, Companyname }) => {
                             name="application"
                             layout="vertical"
                             onFinish={onFinish}
-                            initialValues={{ scholarship: id, candidate_signature_date: currentDate }} // Initialize form with values
+                            initialValues={{ scholarship: id, candidate_signature_date: currentDate, termsandconditionsaccepted:false }} // Initialize form with values
                         >
                             <Form.Item
                                 label="Scholarship ID"
@@ -230,6 +252,18 @@ const ScholarshipApplication = ({ API_URL, Companyname }) => {
                             >
                                 <DatePicker format="YYYY-MM-DD" value={currentDate} disabled />
                             </Form.Item>
+                            <Form.Item 
+                                label="Terms And Conditions "
+                                name="termsandconditionsaccepted"
+                                rules={[{ required: true, message: 'This must be accepted' }]}>
+                                <span onClick={showTermsModal} className='mx-2 text-info' style={{cursor:'pointer'}}>View Terms and Conditions</span>
+                                <Checkbox onChange={handleAcceptedChange}
+                                >
+                                    {accepted 
+                                    ? <span className='text-success'>Accepted</span> 
+                                    : <span className='text-danger'>Not Accepted</span>}
+                                </Checkbox>
+                            </Form.Item>
 
                             <Form.Item>
                                 <Button type="primary" htmlType="submit" loading={isSubmitting} >
@@ -237,10 +271,23 @@ const ScholarshipApplication = ({ API_URL, Companyname }) => {
                                 </Button>
                             </Form.Item>
                         </Form>
+                        <Modal
+                            title="Terms and Conditions"
+                            visible={modalVisible}
+                            onOk={handleModalOk}
+                            onCancel={handleModalCancel}
+                            footer={[
+                                <Button key="back" onClick={handleModalCancel}>
+                                    Close
+                                </Button>,
+                            ]}
+                        >
+                            <p>{scholarship.termsandconditions}</p>
+                        </Modal>
                     </Card>
                 </div>
             </Content>
-            <Footer Companyname={Companyname} />
+            <Footer Companyname={Companyname} API_URL={API_URL} />
         </Layout>
     );
 };

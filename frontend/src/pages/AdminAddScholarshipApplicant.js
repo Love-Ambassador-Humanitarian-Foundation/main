@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Layout, Breadcrumb, Form, Input, Button, DatePicker, message,Select } from 'antd';
+import React, { useState } from 'react';
+import { Layout, Breadcrumb, Form, Input, Button, DatePicker, message, Select, Checkbox, Modal } from 'antd';
 import { HomeOutlined, ProfileOutlined, SaveOutlined, SolutionOutlined } from '@ant-design/icons';
-import axios from 'axios';
-import { useNavigate, useParams , useLocation, Link} from 'react-router-dom';
-import dayjs from 'dayjs';  // Import dayjs for date handling
+import { useNavigate, useParams, useLocation, Link } from 'react-router-dom';
+import dayjs from 'dayjs';
 import { addScholarshipApplication } from '../services/api';
 
 const { Content } = Layout;
@@ -17,15 +16,14 @@ const CLASS_LEVEL_CHOICES = [
     { value: 'Tertiary', label: 'Tertiary' },
 ];
 
-const AddScholarshipApplicant = ({ API_URL }) => {
+const AddAdminScholarshipApplicant = ({ API_URL }) => {
     const { id } = useParams();
     const [loading, setLoading] = useState(false);
-    const location = useLocation()
+    const location = useLocation();
     const scholarship = location?.state?.scholarship;
-    // console.log(location,scholarship)
-    const currentDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    const currentDate = dayjs().format('YYYY-MM-DD');
     const [formData, setFormData] = useState({
-        scholarship:id,
+        scholarship: id,
         first_name: "",
         middle_name: "",
         last_name: "",
@@ -40,25 +38,29 @@ const AddScholarshipApplicant = ({ API_URL }) => {
         name_of_institution: "",
         address_of_institution: "",
         class_level: "",
-        candidate_signature_date: currentDate
+        candidate_signature_date: currentDate,
+        termsandconditionsaccepted: false
     });
+    const [form] = Form.useForm();
+    const [modalVisible, setModalVisible] = useState(false);
 
     const navigate = useNavigate();
-    const [form] = Form.useForm();
-
 
     const onFinish = async () => {
         setLoading(true);
+        if (!formData.termsandconditionsaccepted) {
+            message.error('Terms and conditions must be accepted');
+            setLoading(false);
+            return;
+        }
         try {
             await addScholarshipApplication(API_URL, formData);
             message.success('Application submitted successfully!');
-            navigate(`/admin/scholarships/${id}/applicants`, {state:{scholarship:scholarship}});
-
+            navigate(`/admin/scholarships/${id}/applicants`, { state: { scholarship: scholarship } });
         } catch (error) {
-            console.log('There was an error submitting the application!', error);
+            console.error('Error submitting the application:', error);
             message.error('Failed to submit the application. Please try again.');
-
-            if (error.response && error.response.data && error.response.data.errors) {
+            if (error.response?.data?.errors) {
                 Object.keys(error.response.data.errors).forEach((key) => {
                     const messages = error.response.data.errors[key];
                     messages.forEach((msg) => {
@@ -75,23 +77,43 @@ const AddScholarshipApplicant = ({ API_URL }) => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
+        setFormData((prevData) => ({
+            ...prevData,
             [name]: value,
-        });
+        }));
     };
 
     const handleDateChange = (date, dateString) => {
-        setFormData({
-            ...formData,
+        setFormData((prevData) => ({
+            ...prevData,
             birthday: dateString,
-        });
+        }));
     };
+
     const handleSelectChange = (value) => {
-        setFormData({
-            ...formData,
+        setFormData((prevData) => ({
+            ...prevData,
             class_level: value,
-        });
+        }));
+    };
+
+    const handleAcceptedChange = (e) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            termsandconditionsaccepted: e.target.checked,
+        }));
+    };
+
+    const showTermsModal = () => {
+        setModalVisible(true);
+    };
+
+    const handleModalOk = () => {
+        setModalVisible(false);
+    };
+
+    const handleModalCancel = () => {
+        setModalVisible(false);
     };
 
     return (
@@ -100,21 +122,21 @@ const AddScholarshipApplicant = ({ API_URL }) => {
                 <Breadcrumb
                     items={[
                         { href: '/', title: <HomeOutlined /> },
-                        { href: '/#/admin/scholarships', title: (<><ProfileOutlined /><span style={{textDecoration:'none'}}>Scholarships</span></>) },
-                        { href: `/#/admin/scholarships/${id}`, title: (<span style={{textDecoration:'none'}}>{scholarship?.name}</span>) },
+                        { href: '/#/admin/scholarships', title: (<><ProfileOutlined /><span style={{ textDecoration: 'none' }}>Scholarships</span></>) },
+                        { href: `/#/admin/scholarships/${id}`, title: (<span style={{ textDecoration: 'none' }}>{scholarship?.name}</span>) },
                         {
                             title: (
                                 <Link
                                     to={`/admin/scholarships/${id}/applicants`}
                                     state={{ scholarship: scholarship }}
                                     style={{ textDecoration: 'none' }}
-                                    >
+                                >
                                     <SolutionOutlined />
                                     <span>Applicants</span>
                                 </Link>
                             )
-                            },
-                        { title: (<span style={{textDecoration:'none'}}>Add Application</span>) },
+                        },
+                        { title: (<span style={{ textDecoration: 'none' }}>Add Application</span>) },
                     ]}
                 />
             </div>
@@ -317,6 +339,18 @@ const AddScholarshipApplicant = ({ API_URL }) => {
                             </Select>
                         </Form.Item>
 
+                        <Form.Item label="Terms and Conditions">
+                            <span onClick={showTermsModal} className='mx-2 text-info' style={{cursor:'pointer'}}>View Terms and Conditions</span>
+                            <Checkbox
+                                checked={formData.termsandconditionsaccepted}
+                                onChange={handleAcceptedChange}
+                            >
+                                {formData.termsandconditionsaccepted 
+                                    ? <span className='text-success'>Accepted</span> 
+                                    : <span className='text-danger'>Not Accepted</span>}
+                            </Checkbox>
+                        </Form.Item>
+
                         <Form.Item>
                             <Button 
                                 type="primary" 
@@ -328,10 +362,24 @@ const AddScholarshipApplicant = ({ API_URL }) => {
                             </Button>
                         </Form.Item>
                     </Form>
+
+                    <Modal
+                        title="Terms and Conditions"
+                        visible={modalVisible}
+                        onOk={handleModalOk}
+                        onCancel={handleModalCancel}
+                        footer={[
+                            <Button key="back" onClick={handleModalCancel}>
+                                Close
+                            </Button>,
+                        ]}
+                    >
+                        <p>{scholarship.termsandconditions}</p>
+                    </Modal>
                 </div>
             </Content>
         </Layout>
     );
 };
 
-export default AddScholarshipApplicant;
+export default AddAdminScholarshipApplicant;

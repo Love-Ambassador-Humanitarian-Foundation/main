@@ -146,7 +146,7 @@ const EventPage = ({ Companyname, API_URL }) => {
                     {viewMode === 'grid' ? renderGridLayout() : renderListLayout()}
                 </div>
             </Content>
-            <Footer Companyname={Companyname} />
+            <Footer Companyname={Companyname} API_URL={API_URL}  />
         </Layout>
     );
 };

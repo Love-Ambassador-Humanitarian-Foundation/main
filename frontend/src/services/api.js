@@ -3,7 +3,6 @@ import axios from 'axios';
 //-------------about------------------------
 export const getAbout = async(API_URL) => {
     const response = await axios.get(`${API_URL}/api/about`);
-    console.log(response.data.data);
     return(response.data.data);
 };
 
@@ -118,4 +117,25 @@ export const updateEventbyId = async(API_URL, id,payload) => {
 export const deleteEvent = async(API_URL,id) => {
     await axios.delete(`${API_URL}/api/events/${id}`);
     return null;
+};
+
+//---------------------contactus---------------------------
+export const contactUs = async(API_URL, payload) => {
+    const response = await axios.post(`${API_URL}/api/contactus`,payload,{
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    return response;
+};
+
+//---------------------news letter receipeints---------------------------
+export const addnewsLetterReceipients = async(API_URL, payload) => {
+    const response = await axios.post(`${API_URL}/api/newsletter-recipients`,payload,{
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    console.log(response)
+    return response.data.data;
 };

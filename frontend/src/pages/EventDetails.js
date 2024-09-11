@@ -50,8 +50,8 @@ const EventDetail = ({ API_URL, Companyname }) => {
         const eventStart = dayjs(startDate);
         const eventEnd = dayjs(endDate);
 
-        if (currentDate.isBefore(eventStart)) return 'Not Started';
-        if (currentDate.isBetween(eventStart, eventEnd, null, '[]')) return 'Ongoing';
+        if (currentDate < eventStart) return 'Not Started';
+        if (currentDate > eventStart && currentDate < eventEnd) return 'Ongoing';
         return 'Completed';
     };
 
@@ -91,18 +91,18 @@ const EventDetail = ({ API_URL, Companyname }) => {
         if (!mediaItem) return null;
 
         if (mediaItem.includes('jpg') || mediaItem.includes('jpeg') || mediaItem.includes('png') || mediaItem.includes('gif')) {
-            return <Image key={index} width={140} height={100} src={mediaItem} alt={`Event media ${index}`} style={{ marginBottom: '8px', maxWidth: '100%', maxHeight: '200px' }} />;
+            return <Image className='ms-1' key={index} width={140} height={100} src={mediaItem} alt={`Event media ${index}`} style={{ maxWidth: '100%', maxHeight: '200px' }} />;
         }
 
-        if (mediaItem.includes('mp4') || mediaItem.includes('avi') || mediaItem.includes('webm')) {
-            return <video key={index} width={140} height={100} src={mediaItem} controls style={{ marginBottom: '8px', maxWidth: '100%' }} />;
+        if (mediaItem.includes('mp4') || mediaItem.includes('avi') || mediaItem.includes('webm')|| mediaItem.includes('mov')) {
+            return <video className='ms-1' key={index} width={140} height={100} src={mediaItem} controls style={{ maxWidth: '100%' }} />;
         }
 
         if (mediaItem.includes('mp3') || mediaItem.includes('wav')) {
-            return <audio key={index} src={mediaItem} controls style={{ marginBottom: '8px', width: '100%' }} />;
+            return <audio className='ms-1' key={index} src={mediaItem} controls style={{ width: '100%' }} />;
         }
 
-        return <a key={index} href={mediaItem} target="_blank" rel="noopener noreferrer" style={{ marginBottom: '8px', display: 'block' }}>Link: {mediaItem}</a>;
+        return <a className='ms-1' key={index} href={mediaItem} target="_blank" rel="noopener noreferrer" style={{ display: 'block' }}>Link: {mediaItem}</a>;
     };
 
 
@@ -182,7 +182,7 @@ const EventDetail = ({ API_URL, Companyname }) => {
                     </Row>
                 </div>
             </Content>
-            <Footer Companyname={Companyname} />
+            <Footer Companyname={Companyname} API_URL={API_URL}  />
         </Layout>
     );
 };

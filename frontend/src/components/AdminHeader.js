@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Drawer, Badge, Avatar, Dropdown, Menu } from 'antd';
-import { MailOutlined, BellOutlined, CloseOutlined, LogoutOutlined, LoginOutlined, MenuOutlined, UserOutlined } from '@ant-design/icons';
+import { Drawer, Avatar, Dropdown, Menu } from 'antd';
+import { CloseOutlined, LogoutOutlined, LoginOutlined, MenuOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, NavLink, IconButton } from './button';
 import Logo from '../assets/logo.jpg';
 import { Link } from 'react-router-dom';

@@ -3,7 +3,7 @@ import { Container, Card, Row, Col } from 'react-bootstrap';
 import { Modal, message, Card as AntCard} from 'antd';
 import LandingPageImg from '../assets/landingimg.jpg';
 import VolunteerImg from '../assets/volunteerimg.jpg';
-import { HeartFilled, BookFilled, ArrowRightOutlined, PlusOutlined, CalendarOutlined, DollarOutlined, UserAddOutlined, RightOutlined, ProfileOutlined} from '@ant-design/icons';
+import { HeartFilled, BookFilled, ArrowRightOutlined, PlusOutlined, CalendarOutlined, DollarOutlined, UserAddOutlined, RightOutlined, ProfileOutlined, BuildOutlined, PictureOutlined} from '@ant-design/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faSeedling,faPeopleArrows,faUsersViewfinder,faHandHoldingDollar, faCalendarCheck, faCalendarAlt, faBuilding, faVolumeHigh} from '@fortawesome/free-solid-svg-icons';
 import {Button, IconButton} from '../components/button';
@@ -235,34 +235,34 @@ const LandingPage = ({API_URL,Companyname}) => {
     }, [API_URL]);
     const help_act = [
         {
-            title: { name: 'Socials', icon: faSeedling },
+            title: { name: 'Socials', icon: <PictureOutlined style={{ color: 'green' }}  /> },
             description: 'Supports persons who are unable to help themselves.',
-            btn: { link: '/about', hash:'#socials', text: 'View Social Media', icon: <PlusOutlined style={{ color: 'green' }} /> }
+            btn: { link: '/about', hash:'#socials', text: 'View Social Media', icon: <ArrowRightOutlined style={{ color: 'green' }} /> }
         },
         {
-            title: { name: 'Volunteer Program', icon: faUsersViewfinder },
+            title: { name: 'Volunteer Program', icon: <UserAddOutlined style={{ color: 'orange' }} /> },
             description: 'Be a part of a dedicated volunteer group.',
-            btn: { link: '/signup', text: 'Join Now', icon: <UserAddOutlined style={{ color: 'orange' }} /> }
+            btn: { link: '/signup', text: 'Join Now', icon: <ArrowRightOutlined style={{ color: 'orange' }} /> }
         },
         {
-            title: { name: 'Donations', icon: faHandHoldingDollar },
+            title: { name: 'Donations', icon: <DollarOutlined style={{ color: '#044a18' }} /> },
             description: 'Help provide resources to those in need.',
-            btn: { link: '/contact', text: 'Donate Now', icon: <DollarOutlined style={{ color: '#044a18' }} />,color: '#044a18' }
+            btn: { link: '/contact', text: 'Donate Now', icon: <ArrowRightOutlined style={{ color: '#044a18' }} />,color: '#044a18' }
         },
         {
-            title: { name: 'Events', icon: faSeedling },
+            title: { name: 'Events', icon: <CalendarOutlined style={{ color: 'red' }} /> },
             description: 'Join our events to support the cause.',
-            btn: { link: '/events', text: 'View Events', icon: <CalendarOutlined style={{ color: 'red' }} />,color: 'red' }
+            btn: { link: '/events', text: 'View Events', icon: <ArrowRightOutlined style={{ color: 'red' }} />,color: 'red' }
         },
         {
-            title: { name: 'Community Support', icon: faBuilding },
+            title: { name: 'Community Support', icon: <BuildOutlined style={{ color: '#04364a' }} /> },
             description: 'Help build stronger communities.',
             btn: { link: '/contact', text: 'Give Now', icon: <ArrowRightOutlined style={{ color: '#04364a' }} />,color: '#04364a' }
         },
         {
-            title: { name: 'Scholarships', icon: faVolumeHigh },
+            title: { name: 'Scholarships', icon: <ProfileOutlined style={{ color: 'green' }} /> },
             description: 'Spread awareness for our cause.',
-            btn: { link: '/scholarships', text: 'Learn More', icon: <ProfileOutlined style={{ color: 'green' }} /> , color:'green'}
+            btn: { link: '/scholarships', text: 'Learn More', icon: <ArrowRightOutlined style={{ color: 'green' }} /> , color:'green'}
         }
     ];
     
@@ -377,7 +377,7 @@ const LandingPage = ({API_URL,Companyname}) => {
                                         <Card className='col-sm-6 col-md-4 col-lg-4 mt-2' style={slide_inner_item_style}>
                                             <Card.Body>
                                                 <Card.Title>
-                                                    <IconButton style={{'color':item.btn.color}} className='seedling-menu' hover={false} icon={<FontAwesomeIcon icon={item.title.icon} size='xl' />} />
+                                                    <IconButton style={{'color':item.btn.color}} className='seedling-menu' hover={false} icon={item.title.icon} />
                                                     <h6 className="text-dark fw-bold">{item.title.name}</h6>
                                                 </Card.Title>
                                                 <h6>{item.description}</h6>
@@ -392,7 +392,7 @@ const LandingPage = ({API_URL,Companyname}) => {
                                         <Card className='col-sm-6 col-md-4 col-lg-4 mt-2' style={slide_inner_item_style}>
                                             <Card.Body>
                                                 <Card.Title>
-                                                    <IconButton style={{'color':item.btn.color}} className='seedling-menu' hover={false} icon={<FontAwesomeIcon icon={item.title.icon} size='xl' />} />
+                                                    <IconButton style={{'color':item.btn.color}} className='seedling-menu' hover={false} icon={item.title.icon} />
                                                     <h6 className="text-dark fw-bold">{item.title.name}</h6>
                                                 </Card.Title>
                                                 <h6>{item.description}</h6>
@@ -419,10 +419,10 @@ const LandingPage = ({API_URL,Companyname}) => {
                         <CustomAccordion
                             onClick={(e) => switchImage(e)}
                             items={[
-                                { title: 'History', content: 'Content for item 1' },
-                                { title: 'Slogan/Motto', content: 'Content for item 3' },
-                                { title: 'Services', content: 'Content for item 2' },
-                                { title: 'Values', content: 'Content for item 3' },
+                                { title: 'History', content: data.story, hash:'story' },
+                                { title: 'Mission', content: data.mission,hash:'mission' },
+                                { title: 'Policies', content: data.policies,hash:'policies' },
+                                { title: 'Values', content: data.values,hash:'values' },
                             ]}
                         />
 
@@ -465,14 +465,14 @@ const LandingPage = ({API_URL,Companyname}) => {
                             <h1 className="text-center fw-bold mb-3 mt-3">Want to know how you can help?</h1>
                             <p className="text-center fw-bold mb-4">Join others in a quest to better the lives of others <br />support humanitarian causes around the globe.</p>
                             <div className="d-flex justify-content-center">
-                                <Button to="/signup" text="Contact Us" icon={<FontAwesomeIcon icon={faPeopleArrows} style={{ 'color': '#ec3237' }} />} />
+                                <Button to="/contact" text="Contact Us" icon={<FontAwesomeIcon icon={faPeopleArrows} style={{ 'color': '#ec3237' }} />} />
                             </div>
                         </Container>
                     </div>
 
     
             </div>  
-        <Footer Companyname={data != null?data.name:'LAHF'} /> {/* Include the footer component */}
+        <Footer Companyname={Companyname} API_URL={API_URL}  /> {/* Include the footer component */}
     </>
   );
 };

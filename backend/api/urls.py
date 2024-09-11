@@ -66,7 +66,11 @@ urlpatterns = [
     path('scholarshipapplicants/<uuid:id>', views.ScholarshipApplicantDetailView.as_view(), name='scholarshipapplicant-detail'),
     path('scholarshipapplicants/<uuid:id>/approve', views.ScholarshipApplicantApprovalView.as_view(), name='scholarshipapplicant-approve'),
     path('scholarshipapplicants/<uuid:id>/disapprove', views.ScholarshipApplicantDisApprovalView.as_view(), name='scholarshipapplicant-disapprove'),
+    
     # ReportURLs
     path('reports/<str:rtype>', views.ReportView.as_view(), name='report-view'),
+
+    # ContactUsURLs
+    path('contactus', views.ContactUs.as_view(), name='contact-us')
 
 ]

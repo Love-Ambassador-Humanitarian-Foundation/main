@@ -63,7 +63,7 @@ const ContributePage = ({ Companyname, API_URL }) => {
                     </div>
                 </div>
             </div>
-            <Footer Companyname={Companyname} />
+            <Footer Companyname={Companyname} API_URL={API_URL}  />
         </>
     );
 };

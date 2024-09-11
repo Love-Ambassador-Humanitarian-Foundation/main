@@ -37,8 +37,14 @@ const AddAdminEvent = ({ API_URL }) => {
             message.success('Event added successfully!');
             navigate('/admin/events');
         } catch (error) {
-            console.error('Error adding the event:', error.response?.data || error.message);
+            console.error('Error adding the event:', error?.response?.data?.errors);
             message.error('Failed to add event. Please try again.');
+            // Extract and log only the values of the error dictionary
+            const errors = error.response?.data?.errors;
+            if (errors) {
+                const errorMessages = Object.values(errors).flat(); // Flatten in case values are arrays
+                errorMessages.forEach(err => message.error(err));   // Log each error message
+            } 
         } finally {
             setLoading(false);
         }
@@ -62,7 +68,8 @@ const AddAdminEvent = ({ API_URL }) => {
     };
 
     const handleFileChange = (info, type) => {
-        if (info.file.status === 'done') {
+        const { status, originFileObj } = info.file;
+        if (status === 'done' && originFileObj) {
             const reader = new FileReader();
             reader.onload = () => {
                 const fileBase64 = reader.result;
@@ -74,11 +81,53 @@ const AddAdminEvent = ({ API_URL }) => {
                     }
                 }));
             };
-            reader.readAsDataURL(info.file.originFileObj);
-        } else if (info.file.status === 'error') {
+            reader.readAsDataURL(originFileObj);
+        } else if (status === 'error') {
             message.error('File upload failed.');
         }
     };
+    
+    const uploadProps = (type) => ({
+        name: 'file',
+        multiple: true,
+        customRequest: ({ file, onSuccess, onError }) => {
+            try {
+                // Simulate successful upload
+                setTimeout(() => onSuccess("ok"), 0);
+            } catch (err) {
+                onError(err);
+            }
+        },
+        onChange(info) {
+            if (info.file.status === 'done') {
+                handleFileChange(info, type);
+            } else if (info.file.status === 'error') {
+                message.error(`${info.file.name} file upload failed.`);
+            }
+        },
+        showUploadList: false // Hide the built-in upload list, as we are using a custom list
+    });
+    
+    const renderMediaList = (type) => (
+        <List
+            bordered
+            dataSource={formData.media[type]}
+            renderItem={(item, index) => (
+                <List.Item
+                    actions={[<Button onClick={() => removeFile(item, type)} type="link">Remove</Button>]}
+                >
+                    {type === 'images' ? (
+                        <img src={item} alt={`media-${type}-${index}`} style={{ maxWidth: '100px', maxHeight: '100px' }} />
+                    ) : (
+                        <video src={item} style={{ maxWidth: '100px', maxHeight: '100px' }} controls />
+                    )}
+                </List.Item>
+            )}
+        />
+    );
+    
+
+    
 
     const removeFile = (file, type) => {
         setFormData(prevData => ({
@@ -89,34 +138,6 @@ const AddAdminEvent = ({ API_URL }) => {
             }
         }));
     };
-
-    const uploadProps = (type) => ({
-        customRequest: ({ file, onSuccess, onError }) => {
-            try {
-                handleFileChange({ file: { ...file, status: 'done', originFileObj: file } }, type);
-                onSuccess();
-            } catch (err) {
-                onError(err);
-            }
-        },
-        onChange(info) {
-            handleFileChange(info, type);
-        },
-    });
-
-    const renderMediaList = (type) => (
-        <List
-            bordered
-            dataSource={formData.media[type]}
-            renderItem={(item, index) => (
-                <List.Item
-                    actions={[<Button onClick={() => removeFile(item, type)} type="link">Remove</Button>]}
-                >
-                    <img src={item} alt={`media-${type}-${index}`} style={{ maxWidth: '100px', maxHeight: '100px' }} />
-                </List.Item>
-            )}
-        />
-    );
 
     return (
         <Layout style={{ marginTop: '70px', height: '100vh' }}>

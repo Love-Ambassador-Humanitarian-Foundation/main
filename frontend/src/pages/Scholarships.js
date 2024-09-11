@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UnorderedListOutlined, AppstoreOutlined } from '@ant-design/icons';
-import { Card, Row, Col, Button, message, Layout, Tooltip, Radio } from 'antd';
+import { Card, Row, Col, message, Layout, Radio } from 'antd';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useUpdateLoginStatus } from '../hooks/hooks';
@@ -155,7 +155,7 @@ const Scholarships = ({ API_URL, Companyname }) => {
                     {viewMode === 'grid' ? renderGridLayout() : renderListLayout()}
                 </div>
             </Content>
-            <Footer Companyname={Companyname} /> {/* Footer component */}
+            <Footer Companyname={Companyname} API_URL={API_URL} /> {/* Footer component */}
         </Layout>
     );
 };

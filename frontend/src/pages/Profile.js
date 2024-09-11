@@ -12,18 +12,16 @@ import {
 } from '@ant-design/icons';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
-import { Row, Col, theme,Avatar, Typography, Breadcrumb, Input, message, Select, Button, Layout, Form, Tooltip } from 'antd';
+import { theme,Avatar, Breadcrumb, Input, message, Select, Button, Form, Tooltip } from 'antd';
 import { countryCodes, fetchUserDetails, convertImageToBase64 } from '../utils/helper';
 import { useUpdateLoginStatus } from '../hooks/hooks';
-import { useParams } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import axios from 'axios';
 import { Content } from 'antd/es/layout/layout';
 
 const { Option } = Select;
-const { Title, Text } = Typography;
 
-const UserProfilePage = ({ API_URL }) => {
+const UserProfilePage = ({ Companyname, API_URL }) => {
     const { token: { colorBgContainer, borderRadiusXS } } = theme.useToken();
     const { isLoggedIn, userDetails } = useUpdateLoginStatus(API_URL);
     const [editProfile, setEditProfile] = useState(false);
@@ -117,7 +115,7 @@ const UserProfilePage = ({ API_URL }) => {
 
     return (
         <>
-            <HeaderComponent Companyname={'LAHF'} isloggedIn={isLoggedIn} userDetails={userDetails} />
+            <HeaderComponent Companyname={Companyname} isloggedIn={isLoggedIn} userDetails={userDetails} />
             <div className='mt-5 py-2'>
 
             </div>
@@ -279,7 +277,7 @@ const UserProfilePage = ({ API_URL }) => {
                     </Form>
                 </div>
             </Content>
-            <Footer />
+            <Footer Companyname={Companyname} API_URL={API_URL}  />
         </>
     );
 };

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Col, Row, Descriptions, Timeline, Tag, message, Affix, Layout, Typography } from 'antd';
-import { DollarOutlined, CalendarOutlined, ShareAltOutlined, HeartOutlined, CopyOutlined, PlusOutlined } from '@ant-design/icons';
+import { CalendarOutlined, CopyOutlined, PlusOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { getScholarshipbyId } from '../services/api';
@@ -28,7 +28,6 @@ const ScholarshipDetail = ({ API_URL, Companyname }) => {
     const currentDate = dayjs();  // Use dayjs for current date formatting
 
     const handleApplyNow = () => {
-        message.success('Redirecting to application page...');
         navigate(`/scholarships/${id}/apply`, {state:{scholarship:scholarship}});
     };
 
@@ -57,7 +56,8 @@ const ScholarshipDetail = ({ API_URL, Companyname }) => {
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-                const response = await getScholarshipbyId(API_URL, id, currentDate);
+                const today = dayjs(); 
+                const response = await getScholarshipbyId(API_URL, id, today);
                 setScholarship(response);
             } catch (error) {
                 console.error('Error fetching scholarship details:', error);
@@ -158,7 +158,7 @@ const ScholarshipDetail = ({ API_URL, Companyname }) => {
                     </Affix>
                 </div>
             </Content>
-            <Footer Companyname={Companyname} /> {/* Footer component */}
+            <Footer Companyname={Companyname} API_URL={API_URL}/> {/* Footer component */}
         </Layout>
     );
 };

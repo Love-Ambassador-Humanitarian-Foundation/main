@@ -94,6 +94,7 @@ OFFICER_ROLES = [
     ('program_director', 'Program Director'),
     ('event_planner', 'Event Planner'),
 ]
+TERMSANDCONDITIONS = 'Orphans and Children of the widows will be prioritized, Also the less priviledged children will be prioritized.'
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -164,7 +165,7 @@ class About(models.Model):
     address = models.TextField(blank=True, null=True)
     mission = models.TextField(blank=True, null=True)
     values = models.TextField(blank=True, null=True)
-    achievements = models.JSONField(blank=True, null=True)
+    # achievements = models.JSONField(blank=True, null=True)
     created_date = models.DateTimeField(auto_now_add=True)  # Set on creation
     updated_date = models.DateTimeField(auto_now=True)      # Updated on every save
     branches = models.JSONField(blank=True, null=True)
@@ -288,7 +289,8 @@ class Scholarship(models.Model):
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='NGN')
     duration = models.CharField(max_length=MAX_LENGTH)  # E.g., "1 year", "6 months"
     created_date = models.DateField(null=False, blank=False)  # Date when the scholarship was created
-
+    termsandconditions = models.CharField(max_length=MAX_LENGTH, default=TERMSANDCONDITIONS)
+    
     def __str__(self):
         return f'{self.name} - {self.year}'
     
@@ -370,6 +372,7 @@ class ScholarshipApplicant(models.Model):
     organisation_approved = models.BooleanField(default=False)
     organisation_signature_date = models.DateField(null=True, blank=True)
     candidate_signature_date= models.DateField(null=False, blank=False)
+    termsandconditionsaccepted = models.BooleanField(default=False)
     
     def save(self, *args, **kwargs):
         if not self.qrcode and self.organisation_approved:
