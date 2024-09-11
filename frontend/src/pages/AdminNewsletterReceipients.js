@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Card, Table, Row, Col, theme, Button, message, Layout, Breadcrumb, Tooltip } from 'antd';
-import { BellOutlined, DeleteOutlined, EditOutlined, FilterOutlined, HomeOutlined, MailOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined,FilterOutlined, HomeOutlined, MailOutlined, PlusOutlined } from '@ant-design/icons';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
+
 const { Content } = Layout;
 
 const AdminNewsletterReceipients = ({ onSetContent,API_URL  }) => {
@@ -53,6 +55,9 @@ const AdminNewsletterReceipients = ({ onSetContent,API_URL  }) => {
             title: 'Date',
             dataIndex: 'joined_at',
             key: 'joined_at',
+            render:(text, record) => (
+                <span>{dayjs(record.joined_at).format('YYYY-MM-DD HH:mm:ss')}</span>
+            )
         },
         {
             render: (text, record) => (
@@ -72,7 +77,7 @@ const AdminNewsletterReceipients = ({ onSetContent,API_URL  }) => {
 
         if (dateRange && dateRange.length === 2) {
             filtered = filtered.filter(newsletter => {
-                const newsletterDate = new Date(newsletter.date);
+                const newsletterDate = new Date(newsletter.joined_at);
                 return newsletterDate >= dateRange[0] && newsletterDate <= dateRange[1];
             });
         }

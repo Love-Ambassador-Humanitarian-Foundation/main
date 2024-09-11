@@ -1,15 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Nav, Container, Row, Col, Spinner } from 'react-bootstrap';
 import { Button, NavLink } from './button';
 import { MailOutlined, TwitterOutlined, InstagramOutlined, FacebookOutlined, WhatsAppOutlined, LinkedinOutlined } from '@ant-design/icons';
-import { addnewsLetterReceipients } from '../services/api'; // Import your service for API calls
+import { addnewsLetterReceipients, getAbout } from '../services/api'; // Import your service for API calls
+import LoadingSpinner from './LoadingSpinner';
 
 const Footer = ({ Companyname, API_URL }) => {
     const [email, setEmail] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [message, setMessage] = useState('');
     const currentYear = new Date().getFullYear(); // Get the current year
+    const [data, setData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
+    useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const aboutResponse = await getAbout(API_URL);
+            setData(aboutResponse);
+    
+          } catch (error) {
+            setError(error.message);
+          } finally {
+            setIsLoading(false);
+          }
+        };
+        fetchData();
+      }, [API_URL]);
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -50,6 +68,27 @@ const Footer = ({ Companyname, API_URL }) => {
         justifyContent: 'space-between',
         alignItems: 'center',
     };
+    const getSocialIcon = (name) => {
+        switch (name) {
+            case 'facebook':
+                return <FacebookOutlined style={{ cursor: 'pointer', fontSize: '24px', marginRight: '10px', color: '#1877F2' }} />;
+            case 'twitter':
+                return <TwitterOutlined style={{ cursor: 'pointer', fontSize: '24px', marginRight: '10px', color: '#1DA1F2' }} />;
+            case 'instagram':
+                return <InstagramOutlined style={{ cursor: 'pointer', fontSize: '24px', marginRight: '10px', color: '#E4405F' }} />;
+            case 'linkedin':
+                return <LinkedinOutlined style={{ cursor: 'pointer', fontSize: '24px', marginRight: '10px', color: '#0077B5' }} />;
+            default:
+                return null; // No icon if social network is unknown
+        }
+    };
+    if (isLoading) {
+        return <LoadingSpinner />;
+      }
+    
+      if (error) {
+        return <div>Error: {error}</div>;
+      }
 
     return (
         <Container fluid style={style}>
@@ -68,7 +107,6 @@ const Footer = ({ Companyname, API_URL }) => {
                     <Col className="col-6 col-md-2 mb-3">
                         <h4 className="text-dark">Our Support</h4>
                         <Nav className="flex-column p-0">
-                            <NavLink to="/signup" text="Contribute" className="text-dark m-0" />
                             <NavLink to="/signup" text="Volunteer" className="text-dark m-0" />
                             <NavLink to="/contact" text="Contact us" className="text-dark m-0" />
                             <NavLink to="/contact" text="Partner with us" className="text-dark m-0" />
@@ -103,21 +141,11 @@ const Footer = ({ Companyname, API_URL }) => {
                                 />
                                 {message && <p className="text-center text-success mt-2">{message}</p>}
                                 <div className="d-flex flex-row m-auto mt-4" style={{ alignItems: 'center', margin: '20px' }}>
-                                    <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">
-                                        <TwitterOutlined style={{ cursor: 'pointer', fontSize: '24px', marginRight: '10px', color: '#1DA1F2' }} />
+                                {data?.socials.map((social) => (
+                                    <a key={social.name} href={social.link} target="_blank" rel="noopener noreferrer">
+                                        {getSocialIcon(social.name)}
                                     </a>
-                                    <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
-                                        <InstagramOutlined style={{ cursor: 'pointer', fontSize: '24px', marginRight: '10px', color: '#E4405F' }} />
-                                    </a>
-                                    <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">
-                                        <FacebookOutlined style={{ cursor: 'pointer', fontSize: '24px', marginRight: '10px', color: '#1877F2' }} />
-                                    </a>
-                                    <a href="https://wa.me/1234567890" target="_blank" rel="noopener noreferrer">
-                                        <WhatsAppOutlined style={{ cursor: 'pointer', fontSize: '24px', marginRight: '10px', color: '#25D366' }} />
-                                    </a>
-                                    <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer">
-                                        <LinkedinOutlined style={{ cursor: 'pointer', fontSize: '24px', marginRight: '10px', color: '#0077B5' }} />
-                                    </a>
+                                ))}
                                 </div>
                             </div>
                         </form>

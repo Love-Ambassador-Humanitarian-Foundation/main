@@ -415,7 +415,6 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
         self.perform_destroy(instance)
         return Response({'success': True, 'message': 'User deleted successfully'})
 
-
 class VerifyTokenAPIView(APIView):
     """
     View to verify the validity of an access token.

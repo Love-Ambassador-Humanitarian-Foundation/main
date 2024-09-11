@@ -160,7 +160,6 @@ class NewsletterSerializer(serializers.ModelSerializer):
         model = Newsletter
         fields = '__all__'
 
-
 class NewsletterReceipientsSerializer(serializers.ModelSerializer):
     joined_at = serializers.DateTimeField(format=DATETIME_FORMAT, input_formats=[DATETIME_FORMAT])
     firstname = serializers.SerializerMethodField()
