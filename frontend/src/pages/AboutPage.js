@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Row, Col, Card, Pagination, Tooltip, Avatar, Tag, Typography } from 'antd';
+import { Row, Col, Card, Pagination, Tooltip, Avatar, Tag } from 'antd';
 import img1 from '../assets/landing.jpg';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
@@ -10,7 +10,6 @@ import { useUpdateLoginStatus } from '../hooks/hooks';
 import { getAbout, getPartners, getUsers } from '../services/api';
 
 const { Meta } = Card;
-const { Text } = Typography;
 
 const AboutPage = ({ API_URL, Companyname }) => {
   const location = useLocation();

@@ -5,7 +5,6 @@ import { SendOutlined, TwitterOutlined, InstagramOutlined, FacebookOutlined, Wha
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
 import { useUpdateLoginStatus } from '../hooks/hooks';
-import axios from 'axios'; // Add axios for API calls
 import { contactUs, getAbout } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -76,7 +75,7 @@ const ContactUsPage = ({ Companyname, API_URL }) => {
 
     return (
         <>
-            <HeaderComponent Companyname={Companyname} isLoggedIn={isLoggedIn} userDetails={userDetails} /> {/* Include the header component */}
+            <HeaderComponent Companyname={Companyname} isloggedIn={isLoggedIn} userDetails={userDetails} /> {/* Include the header component */}
 
             <Container className="py-5">
                 <h2 className="text-center mb-2 mt-5">Contact Us</h2>

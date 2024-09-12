@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { Button, NavLink, IconButton } from './button';
 import { Link } from 'react-router-dom';
-import { HeartFilled, CloseOutlined, MenuOutlined,UserOutlined, LoginOutlined } from '@ant-design/icons';
+import { CloseOutlined, MenuOutlined,UserOutlined, LoginOutlined } from '@ant-design/icons';
 
 import { Drawer,Avatar,Dropdown, Menu } from 'antd';
 import Logo from '../assets/logo.jpg';
@@ -102,7 +102,7 @@ const HeaderComponent = ({ Companyname,isloggedIn,userDetails }) => {
                         </Nav.Item>
                             
                         {!isloggedIn ? (
-                            userDetails ? (
+                            !userDetails ? (
                                 <Button to="/signup" text="Sign Up" icon={<LoginOutlined style={{ color: '#ec3237' }} />} />
                             ) : (
                                 <Button to="/login" text="Log In" icon={<LoginOutlined style={{ color: '#ec3237' }} />} />
@@ -131,7 +131,7 @@ const HeaderComponent = ({ Companyname,isloggedIn,userDetails }) => {
                         <Avatar src={userDetails?userDetails.profileImage:null} size={50} icon={<UserOutlined />} className="me-3" style={{ fontSize: '20px', cursor:'pointer' }} />
                     </Dropdown>
                     {!isloggedIn ? (
-                        userDetails ? (
+                        !userDetails ? (
                             <Button to="/signup" text="Sign Up" icon={<LoginOutlined style={{ color: '#ec3237' }} />} />
                         ) : (
                             <Button to="/login" text="Log In" icon={<LoginOutlined style={{ color: '#ec3237' }} />} />

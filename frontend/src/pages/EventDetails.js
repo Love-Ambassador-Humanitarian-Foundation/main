@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Col, Row, Descriptions, Timeline, Tag, message, Layout, Typography, Image } from 'antd';
 import { CalendarOutlined, CopyOutlined } from '@ant-design/icons';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { getEventbyId } from '../services/api'; // Make sure to implement this function
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -20,7 +20,6 @@ const { Title } = Typography;
 
 const EventDetail = ({ API_URL, Companyname }) => {
     const { id } = useParams();
-    const navigate = useNavigate();
     const { isLoggedIn, userDetails } = useUpdateLoginStatus(API_URL);
     const [event, setEvent] = useState(null);
     const [isLoading, setIsLoading] = useState(true);

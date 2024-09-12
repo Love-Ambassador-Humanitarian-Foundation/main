@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Nav, Container, Row, Col, Spinner } from 'react-bootstrap';
 import { Button, NavLink } from './button';
-import { MailOutlined, TwitterOutlined, InstagramOutlined, FacebookOutlined, WhatsAppOutlined, LinkedinOutlined } from '@ant-design/icons';
+import { MailOutlined, TwitterOutlined, InstagramOutlined, FacebookOutlined, LinkedinOutlined } from '@ant-design/icons';
 import { addnewsLetterReceipients, getAbout } from '../services/api'; // Import your service for API calls
 import LoadingSpinner from './LoadingSpinner';
 
@@ -48,7 +48,7 @@ const Footer = ({ Companyname, API_URL }) => {
     
         try {
             console.log(payload)
-            //const response = await addnewsLetterReceipients(API_URL, payload);
+            await addnewsLetterReceipients(API_URL, payload);
     
             // Handle response if needed
             setMessage('You have successfully subscribed!');

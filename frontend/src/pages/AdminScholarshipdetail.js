@@ -15,7 +15,6 @@ import {
 } from 'antd';
 import { useParams, Link } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
-import axios from 'axios';
 import currencyCodes from 'currency-codes';
 import logo from '../assets/logo.jpg';
 import dayjs from 'dayjs';

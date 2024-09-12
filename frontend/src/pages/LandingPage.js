@@ -3,16 +3,15 @@ import { Container, Card, Row, Col } from 'react-bootstrap';
 import { Modal, message, Card as AntCard} from 'antd';
 import LandingPageImg from '../assets/landingimg.jpg';
 import VolunteerImg from '../assets/volunteerimg.jpg';
-import { HeartFilled, BookFilled, ArrowRightOutlined, PlusOutlined, CalendarOutlined, DollarOutlined, UserAddOutlined, RightOutlined, ProfileOutlined, BuildOutlined, PictureOutlined} from '@ant-design/icons';
+import { HeartFilled, BookFilled, ArrowRightOutlined,CalendarOutlined, DollarOutlined, UserAddOutlined, ProfileOutlined, BuildOutlined, PictureOutlined} from '@ant-design/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faSeedling,faPeopleArrows,faUsersViewfinder,faHandHoldingDollar, faCalendarCheck, faCalendarAlt, faBuilding, faVolumeHigh} from '@fortawesome/free-solid-svg-icons';
+import {faPeopleArrows} from '@fortawesome/free-solid-svg-icons';
 import {Button, IconButton} from '../components/button';
 import CustomAccordion from '../components/Accordion';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
 import LoadingSpinner from '../components/LoadingSpinner';
-import {useUpdateLoginStatus} from '../hooks/hooks'
-import axios from 'axios';
+import {useUpdateLoginStatus} from '../hooks/hooks';
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
 import img1 from '../assets/landing.jpg';
@@ -291,7 +290,7 @@ const LandingPage = ({API_URL,Companyname}) => {
                 <h1 className="text-center text-white mb-4 mt-5">Welcome to Our {data != null?data.name:'LAHF'}</h1>
                 <p className="text-center text-white mb-5">This is where we strive to create positive change and <br />support humanitarian causes around the globe.</p>
                 <div className="d-flex justify-content-center">
-                    <Button to="/signup" text="Contribute" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
+                    <Button to="/signup" text="Volunteer" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
                     <span className="mx-3"></span>
                     <Button to='/about' text='Learn More' icon={<BookFilled style={{ color: '#ec3237' }} />}></Button>
                 </div>

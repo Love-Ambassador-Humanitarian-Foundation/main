@@ -3,7 +3,6 @@ import { Layout, Breadcrumb, Form, Input, Button, Select, message } from 'antd';
 import { HomeOutlined, ProfileOutlined, SaveOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import currencyCodes from 'currency-codes';
 import CurrencySelect from '../components/CurrencySelect';
 import dayjs from 'dayjs';  // Import dayjs for date handling
 
@@ -115,13 +114,6 @@ const AddAdminScholarship = ({ API_URL }) => {
             ));
         }
     };
-
-    const currencyOptions = currencyCodes.codes().map(code => (
-        <Option key={code} value={code}>
-            {`${currencyCodes.code(code).currency} (${code})`}
-        </Option>
-    ));
-
     return (
         <Layout style={{ marginTop: '70px', height: '100vh' }}>
             <div className='d-flex justify-content-between align-items-center p-2 m-2' style={{ backgroundColor: '#d7d7e9', borderRadius: '4px' }}>
