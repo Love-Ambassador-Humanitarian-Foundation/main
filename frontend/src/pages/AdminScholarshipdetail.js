@@ -135,7 +135,7 @@ const AdminScholarship = ({ API_URL }) => {
             doc.text('FOUNDATION (LAHF)', doc.internal.pageSize.getWidth() / 2, 28, { align: 'center' });
             doc.setFont('Arial', 'normal');
             doc.setFontSize(titleFontSize);
-            doc.text('Scholarship Form', doc.internal.pageSize.getWidth() / 2, 38, { align: 'center' });
+            doc.text('Scholarship Details', doc.internal.pageSize.getWidth() / 2, 38, { align: 'center' });
             doc.text(`Name: ${formData.name}`, 20, 60);
             doc.text(`Year: ${formData.year}`, 20, 70);
             doc.text(`Amount Approved: ${formData.amount_approved} ${formData.currency}`, 20, 80);

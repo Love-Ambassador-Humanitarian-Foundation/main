@@ -10,7 +10,7 @@ const API_URL = isProduction
     ? 'https://loveahfoundation.org/api' 
     : 'http://127.0.0.1:8000';
 
-console.log(`API URL: ${API_URL}`);
+//console.log(`API URL: ${API_URL}`);
 
 root.render(
   <React.StrictMode>

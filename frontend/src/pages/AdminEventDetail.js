@@ -131,8 +131,8 @@ const AdminEvent = ({ API_URL }) => {
             doc.text(`Type: ${formData.eventtype}`, 20, 70);
             doc.text(`Description: ${formData.description}`, 20, 80);
             doc.text(`Participants: ${formData.participants.length}`, 20, 90);
-            doc.text(`Start Date: ${formData.start_date ? formData.start_date.format('YYYY-MM-DD HH:mm:ss') : ''}`, 20, 100);
-            doc.text(`End Date: ${formData.end_date ? formData.end_date.format('YYYY-MM-DD HH:mm:ss') : ''}`, 20, 110);
+            doc.text(`Start Date: ${formData.start_date ? formData.start_date : ''}`, 20, 100);
+            doc.text(`End Date: ${formData.end_date ? formData.end_date : ''}`, 20, 110);
             doc.text(`Ongoing: ${formData.ongoing ? 'Yes' : 'No'}`, 20, 120);
             doc.save(`event_${formData.title}.pdf`);
         } catch (error) {

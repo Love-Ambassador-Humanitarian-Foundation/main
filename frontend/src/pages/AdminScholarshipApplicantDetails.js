@@ -180,7 +180,8 @@ const AdminScholarshipApplicant = ({ API_URL }) => {
             const logoHeight = 30;
             const companyNameFontSize = 17;
             const titleFontSize = 14;
-
+    
+            // Add logo and text content
             doc.addImage(logo, 'PNG', 10, 10, logoWidth, logoHeight);
             doc.setFontSize(companyNameFontSize);
             doc.setFont('Helvetica', 'bold');
@@ -189,6 +190,8 @@ const AdminScholarshipApplicant = ({ API_URL }) => {
             doc.setFont('Arial', 'normal');
             doc.setFontSize(titleFontSize);
             doc.text('Scholarship Form', doc.internal.pageSize.getWidth() / 2, 38, { align: 'center' });
+    
+            // Add form details
             doc.text(`Name: ${formData.first_name} ${formData.middle_name ? formData.middle_name + ' ' : ''}${formData.last_name}`, 20, 60);
             doc.text(`Birthday: ${formData.birthday ? formData.birthday.format('YYYY-MM-DD') : ''}`, 20, 70);
             doc.text(`Home Address: ${formData.home_address}`, 20, 80);
@@ -198,14 +201,42 @@ const AdminScholarshipApplicant = ({ API_URL }) => {
             doc.text(`Guardian/Parent Address: ${formData.guardian_parent_home_address}`, 20, 120);
             doc.text(`Guardian/Parent Email: ${formData.guardian_parent_email}`, 20, 130);
             doc.text(`Guardian/Parent Phone: ${formData.guardian_parent_phone_number}`, 20, 140);
-            doc.text(`Educational Background: Nursery: ${formData.nursery ? 'Yes' : 'No'}, Primary: ${formData.primary ? 'Yes' : 'No'}, Secondary: ${formData.secondary ? 'Yes' : 'No'}, Tertiary: ${formData.tertiary ? 'Yes' : 'No'}`, 20, 150);
-            doc.text(`Institution: ${formData.name_of_institution}`, 20, 160);
-            doc.text(`Institution Address: ${formData.address_of_institution}`, 20, 170);
-            doc.text(`Class Level: ${formData.class_level}`, 20, 180);
-            doc.text(`QR Code: ${formData.qrcode}`, 20, 190);
+    
+            // Educational Background Section (Bold label)
+            doc.setFont('Helvetica', 'bold');
+            doc.text('Educational Background:', 20, 150);
+            doc.setFont('Arial', 'normal');
+            doc.text(`Nursery: ${formData.nursery ? 'Yes' : 'No'}, Primary: ${formData.primary ? 'Yes' : 'No'}, Secondary: ${formData.secondary ? 'Yes' : 'No'}, Tertiary: ${formData.tertiary ? 'Yes' : 'No'}`, 20, 160);
+    
+            doc.text(`Institution: ${formData.name_of_institution}`, 20, 170);
+            doc.text(`Institution Address: ${formData.address_of_institution}`, 20, 180);
+            doc.text(`Class Level: ${formData.class_level}`, 20, 190);
             doc.text(`Organisation Approved: ${formData.organisation_approved ? 'Yes' : 'No'}`, 20, 200);
             doc.text(`Organisation Signature Date: ${formData.organisation_signature_date ? formData.organisation_signature_date.format('YYYY-MM-DD') : ''}`, 20, 210);
             doc.text(`Candidate Signature Date: ${formData.candidate_signature_date ? formData.candidate_signature_date.format('YYYY-MM-DD') : ''}`, 20, 220);
+    
+            // Generate the QR code base64 image
+            let qrCodeBase64 = formData.qrcode;
+    
+            // Ensure the base64 string contains the appropriate prefix
+            if (!qrCodeBase64.startsWith('data:image/png;base64,')) {
+                qrCodeBase64 = `data:image/png;base64,${qrCodeBase64}`;
+            }
+    
+            // Position the QR code at the bottom-right corner
+            const qrCodeWidth = 40; // Set QR code size
+            const qrCodeHeight = 40;
+    
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+    
+            const qrCodeX = pageWidth - qrCodeWidth - 10; // 10 units from the right edge
+            const qrCodeY = pageHeight - qrCodeHeight - 10; // 10 units from the bottom edge
+    
+            // Add the QR code image
+            doc.addImage(qrCodeBase64, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
+    
+            // Save the PDF
             doc.save(`scholarship_${formData.first_name}_${formData.last_name}.pdf`);
         } catch (error) {
             console.error('Error generating PDF:', error);
@@ -213,6 +244,8 @@ const AdminScholarshipApplicant = ({ API_URL }) => {
             setPdfLoading(false);
         }
     };
+    
+    
 
     const fetchDetails = useCallback(async () => {
         try {
