@@ -28,7 +28,7 @@ import { getAbout, getEvents, getPartners, getScholarships, getUsers } from '../
 const LandingPage = ({API_URL,Companyname}) => {
     const {isLoggedIn,userDetails} = useUpdateLoginStatus(API_URL);
 
-    const [data, setData] = useState({});
+    const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     // Modal state
@@ -44,9 +44,9 @@ const LandingPage = ({API_URL,Companyname}) => {
         { title: 'Scholarships', description: scholarships.length, color: '#044a18' },
         { title: 'Partners', description: partners.length, color: 'green' },
         { title: 'Volunteers', description: users.length, color: 'orange' },
-        { title: 'Socials', description: data.socials?.length || 0, color: '#04364a' },
+        { title: 'Socials', description: data?.socials?.length || 0, color: '#04364a' },
         { title: 'Events', description: events.length, color: 'red' },
-        { title: 'Branches', description: data.branches?.length || 0, color: 'orangered' }
+        { title: 'Branches', description: data?.branches?.length || 0, color: 'orangered' }
     ]);
     const slide_inner_item_style = {
         background: '#fff',
@@ -287,7 +287,7 @@ const LandingPage = ({API_URL,Companyname}) => {
             
             <Container className="py-5" style={{ zIndex: '1', position: 'absolute', top: '200px', left: '50%', transform: 'translate(-50%, -50%)' }}>
                 <div className="mt-5 mb-5"></div>
-                <h1 className="text-center text-white mb-4 mt-5">Welcome to Our {data?data?.name:'LAHF'}</h1>
+                <h1 className="text-center text-white mb-4 mt-5">Welcome to Our {data ? data.name:'LAHF'}</h1>
                 <p className="text-center text-white mb-5">This is where we strive to create positive change and <br />support humanitarian causes around the globe.</p>
                 <div className="d-flex justify-content-center">
                     <Button to="/signup" text="Volunteer" icon={<HeartFilled style={{ color: '#ec3237' }} />} />
@@ -418,10 +418,10 @@ const LandingPage = ({API_URL,Companyname}) => {
                         <CustomAccordion
                             onClick={(e) => switchImage(e)}
                             items={[
-                                { title: 'History', content: data.story, hash:'story' },
-                                { title: 'Mission', content: data.mission,hash:'mission' },
-                                { title: 'Policies', content: data.policies,hash:'policies' },
-                                { title: 'Values', content: data.values,hash:'values' },
+                                { title: 'History', content: data?.story, hash:'story' },
+                                { title: 'Mission', content: data?.mission,hash:'mission' },
+                                { title: 'Policies', content: data?.policies,hash:'policies' },
+                                { title: 'Values', content: data?.values,hash:'values' },
                             ]}
                         />
 
