@@ -15,7 +15,6 @@ import {
 } from 'antd';
 import { useParams } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
-import axios from 'axios';
 import dayjs from 'dayjs';  // Import dayjs for date formatting
 import { getPartnerbyId, updatePartnerbyId } from '../services/api';
 

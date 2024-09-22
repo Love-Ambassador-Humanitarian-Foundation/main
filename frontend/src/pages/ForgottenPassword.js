@@ -18,7 +18,7 @@ const ForgottenPasswordPage = ({ API_URL }) => {
             const domain = window.location.host; // e.g., 'example.com' or 'localhost:3000'
             const url = `${protocol}//${domain}`;
 
-            const response = await axios.post(`${API_URL}/api/password/reset`, {
+            await axios.post(`${API_URL}/api/password/reset`, {
                 email: values.email,
                 url: url
             });

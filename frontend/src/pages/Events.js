@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Row, Col, Card,Layout, message, Radio } from 'antd';
+import { Row, Col, Card,Layout, Radio } from 'antd';
 import { UnorderedListOutlined, AppstoreOutlined } from '@ant-design/icons';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';

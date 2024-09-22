@@ -15,7 +15,7 @@ import { countryCodes, fetchUserDetails, convertImageToBase64, OFFICER_ROLES } f
 import { useParams } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import DateTimeInput from '../components/DateTimeSetter';
-import axios from 'axios';
+// import axios from 'axios';
 import dayjs from 'dayjs';
 import buddhistEra from 'dayjs/plugin/buddhistEra';
 import { updateUserbyId } from '../services/api';
@@ -28,14 +28,12 @@ const { Content } = Layout;
 
 const AdminUser = ({ API_URL }) => {
     const { id: userId } = useParams();
-    const [userDetails, setUserDetails] = useState(null);
     const [editProfile, setEditProfile] = useState(false);
     const [profileImage, setProfileImage] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [loading, setLoading] = useState(false);
     const [firstname, setFirstName] = useState('');
     const [lastname, setLastName] = useState('');
-    const [status, setStatus] = useState('');
     const [email, setEmail] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [address, setAddress] = useState('');
@@ -50,16 +48,14 @@ const AdminUser = ({ API_URL }) => {
     const [joinedDate, setJoinedDate] = useState(null);
     const [lastLogin, setLastLogin] = useState(null);
     const [position, setPosition] = useState('');
-    const [events, setEvents] = useState([]);
 
     useEffect(() => {
         const fetchDetails = async () => {
             try {
                 const user = await fetchUserDetails(API_URL, userId);
-                setUserDetails(user);
+                
                 setFirstName(user.firstname);
                 setLastName(user.lastname);
-                setStatus(user.is_active ? 'Active' : 'Inactive');
                 setEmail(user.email);
                 setPhoneNumberPre(user.numberpre);
                 setPhoneNumber(user.number);
@@ -88,17 +84,17 @@ const AdminUser = ({ API_URL }) => {
     useEffect(() => {
         if (userId) {
             const fetchEvents = async () => {
-                try {
-                    const token = localStorage.getItem('lahf_access_token');
-                    const response = await axios.get(`${API_URL}/api/events/participant/${userId}`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    setEvents(response.data.data);
-                } catch (error) {
-                    console.error('Error fetching event details:', error);
-                }
+                // try {
+                //     const token = localStorage.getItem('lahf_access_token');
+                //     const response = await axios.get(`${API_URL}/api/events/participant/${userId}`, {
+                //         headers: {
+                //             'Authorization': `Bearer ${token}`
+                //         }
+                //     });
+                //     setEvents(response.data.data);
+                // } catch (error) {
+                //     console.error('Error fetching event details:', error);
+                // }
             };
 
             fetchEvents();
@@ -195,10 +191,8 @@ const AdminUser = ({ API_URL }) => {
 
         try {
             const user = updateUserbyId(API_URL, userId,formData);
-            setUserDetails(user);
             setFirstName(user.firstname);
             setLastName(user.lastname);
-            setStatus(user.is_active ? 'Active' : 'Inactive');
             setEmail(user.email);
             setPhoneNumberPre(user.numberpre);
             setPhoneNumber(user.number);

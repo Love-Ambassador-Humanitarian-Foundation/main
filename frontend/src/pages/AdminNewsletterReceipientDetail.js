@@ -1,13 +1,13 @@
 import React, { useState, useEffect} from 'react';
-import { Row, Col, Typography, Input, Button, theme, message, Layout, Breadcrumb, Tooltip, Form, DatePicker, Checkbox, Image } from 'antd';
-import { SaveOutlined, EditOutlined, HomeOutlined, MailOutlined, SendOutlined, UserOutlined, EyeOutlined } from '@ant-design/icons';
+import { Row, Col, Typography, Input, Button, theme, message, Layout, Breadcrumb, Tooltip, Form, DatePicker } from 'antd';
+import { SaveOutlined, EditOutlined, HomeOutlined, MailOutlined, UserOutlined, EyeOutlined } from '@ant-design/icons';
 
 import {useParams,useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import LoadingSpinner from '../components/LoadingSpinner';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 const { Content } = Layout;
 
 const AdminNewsletterReceipientDetail = ({ API_URL }) => {

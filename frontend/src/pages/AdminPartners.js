@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import axios from 'axios';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { DeleteOutlined, HomeOutlined, TeamOutlined, PlusOutlined } from '@ant-design/icons';
 import { Card, Table, Row, Col, theme, message, Layout, Breadcrumb, Button, Tooltip, Avatar } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
-import debounce from 'lodash/debounce';  // Import debounce from lodash
 import { getPartners } from '../services/api';
 
 const { Content } = Layout;
@@ -52,24 +50,26 @@ const Partners = ({ API_URL }) => {
         }
     }, [API_URL]);
 
-    const filterPartners = useCallback(debounce(({ itemName, dateRange }) => {
+    const filterPartners = useCallback(({ itemName, dateRange }) => {
         let filtered = partners;
-
+    
         if (itemName) {
             filtered = filtered.filter(partner => 
                 partner.title.toLowerCase().includes(itemName.toLowerCase())
             );
         }
-
+    
         if (dateRange && dateRange.length === 2) {
+            const [startDate, endDate] = dateRange;
             filtered = filtered.filter(partner => {
                 const partnerCreatedDate = new Date(partner.created_date);
-                return partnerCreatedDate >= dateRange[0] && partnerCreatedDate <= dateRange[1];
+                return partnerCreatedDate >= startDate && partnerCreatedDate <= endDate;
             });
         }
-
+    
         setFilteredPartners(filtered);
-    }, 300), [partners]);
+    }, [partners]); // Removed the debounce duration since useCallback doesn't support it directly
+    
 
     const columns = useMemo(() => [
         {

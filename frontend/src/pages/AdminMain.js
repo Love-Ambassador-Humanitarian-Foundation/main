@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import HeaderComponent from '../components/AdminHeader';
-import { DashboardOutlined, UsergroupAddOutlined,MailOutlined, InfoCircleOutlined,CalendarOutlined,TeamOutlined, DollarOutlined, BankOutlined, UserOutlined, BellOutlined, SolutionOutlined } from '@ant-design/icons';
+import { DashboardOutlined, UsergroupAddOutlined,MailOutlined, InfoCircleOutlined,CalendarOutlined,TeamOutlined, BankOutlined, UserOutlined, SolutionOutlined } from '@ant-design/icons';
 import { Layout, Menu, Badge } from 'antd';
 import {useUpdateLoginStatus} from '../hooks/hooks'
 import { Nav } from 'react-bootstrap';
-import { Link, useLocation, useNavigate} from 'react-router-dom';
-import LoginPage from './Login';
+import { Link, useLocation} from 'react-router-dom';
+
 const { Sider } = Layout;
 
 const AdminMain = ({ API_URL,Companyname, screen }) => {
     const {isLoggedIn,userDetails} = useUpdateLoginStatus(API_URL);
     const location = useLocation();
     const currentUrl = location.pathname + location.search;
-    const navigate = useNavigate();
+
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     
     

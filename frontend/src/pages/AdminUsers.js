@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DeleteOutlined, HomeOutlined, PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import { Layout, Breadcrumb, Card, Row, Col, Table, Avatar, Button, message } from 'antd';
-import axios from 'axios';
 import { Link, useNavigate} from 'react-router-dom';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';

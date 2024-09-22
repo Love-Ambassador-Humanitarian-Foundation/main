@@ -11,9 +11,7 @@ import {
     LinkedinOutlined,
     PhoneOutlined,
     MailOutlined,
-    GlobalOutlined,
-    CalendarOutlined,
-    PoweroffOutlined,
+    GlobalOutlined
     
 } from '@ant-design/icons';
 import { DatePicker, Layout, Typography, theme, Input, Button, message,Tooltip, Breadcrumb, Select, Avatar, Row } from 'antd';
@@ -37,7 +35,6 @@ const AdminProfilePage = ({ API_URL }) => {
     const [loading, setLoading] = useState(false);
     const [firstname, setFirstName] = useState('');
     const [lastname, setLastName] = useState('');
-    const [status, setStatus] = useState('');
     const [email, setEmail] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [address, setAddress] = useState('');
@@ -52,12 +49,7 @@ const AdminProfilePage = ({ API_URL }) => {
     const [joined_at, setJoinedAt] = useState(null);
     const [last_login, setLastLogin] = useState(null);
     const [position, setPosition] = useState(null);
-    const [events, setEvents] = useState([
-        { title: "Fundraiser", content: [{ name: 'Event 1', date: '2023-01-01' }, { name: 'Event 2', date: '2023-01-01' }] },
-        { title: "Donations", content: [{ name: 'Event 2', date: '2023-02-01' }] },
-        { title: "Seminars", content: [{ name: 'Event 3', date: '2023-03-01' }] }
-    ]);
-
+    
     const joined_atonChange = (dateString) => {
         try {
             let dateobj = new Date(dateString);
@@ -83,7 +75,6 @@ const AdminProfilePage = ({ API_URL }) => {
                 setUserDetails(user);
                 setFirstName(user.firstname);
                 setLastName(user.lastname);
-                setStatus(user.is_active ? 'Active' : 'Inactive');
                 setEmail(user.email);
                 setPhoneNumberPre(user.numberpre);
                 setPhoneNumber(user.number);
@@ -103,18 +94,17 @@ const AdminProfilePage = ({ API_URL }) => {
                 console.error('Error fetching user details:', error);
             }
 
-            try {
-                const token = localStorage.getItem('lahf_access_token');
-                const id = userId || localStorage.getItem('lahf_user_id');
-                const response = await axios.get(`${API_URL}/api/events/participant/${id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                setEvents(response.data.data);
-            } catch (error) {
-                console.error('Error fetching event details:', error);
-            } finally {
+            // try {
+            //     const token = localStorage.getItem('lahf_access_token');
+            //     const id = userId || localStorage.getItem('lahf_user_id');
+            //     const response = await axios.get(`${API_URL}/api/events/participant/${id}`, {
+            //         headers: {
+            //             'Authorization': `Bearer ${token}`
+            //         }
+            //     });
+            // } catch (error) {
+            //     console.error('Error fetching event details:', error);} 
+            finally {
                 setIsLoading(false);
             }
         };
@@ -212,7 +202,6 @@ const AdminProfilePage = ({ API_URL }) => {
             setUserDetails(user);
             setFirstName(user.firstname);
             setLastName(user.lastname);
-            setStatus(user.is_active ? 'Active' : 'Inactive');
             setEmail(user.email);
             setPhoneNumberPre(user.numberpre);
             setPhoneNumber(user.number);
@@ -303,10 +292,6 @@ const AdminProfilePage = ({ API_URL }) => {
                                 
         />
     );
-
-    const handleBack = () => {
-        window.history.back();
-    };
 
     if (isLoading) {
         return <LoadingSpinner />;

@@ -10,7 +10,7 @@ import {
 } from '@ant-design/icons';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { Link } from 'react-router-dom';
-import { Card, Row, Col, theme, Layout, Breadcrumb, Button, Spin } from 'antd';
+import { Card, Row, Col, theme, Layout, Breadcrumb, Spin } from 'antd';
 import axios from 'axios';
 
 const { Content } = Layout;

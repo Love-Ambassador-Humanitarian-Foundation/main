@@ -6,7 +6,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import axios from 'axios';
 import { SaveOutlined, HomeOutlined, EditOutlined, EnvironmentOutlined, BankOutlined } from '@ant-design/icons';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const { Content } = Layout;
 
 const AdminBranch = ({ API_URL }) => {

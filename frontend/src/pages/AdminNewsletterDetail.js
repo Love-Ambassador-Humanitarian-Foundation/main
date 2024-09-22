@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react';
-import { Row, Col, Typography, Input, Button, theme, message, Layout, Breadcrumb, Tooltip, Form, DatePicker, Checkbox, Image } from 'antd';
+import { Row, Col, Typography, Input, Button, theme, message, Layout, Breadcrumb, Tooltip, Form, DatePicker } from 'antd';
 import { SaveOutlined, EditOutlined, HomeOutlined, MailOutlined, SendOutlined } from '@ant-design/icons';
 
 import {useParams } from 'react-router-dom';
