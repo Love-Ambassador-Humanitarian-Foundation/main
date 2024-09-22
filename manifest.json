@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "LAHF",
+  "name": "Love Ambassadors Humanitarian Foundation",
+  "description":"Love Ambassadors Humanitarian Foundation (LAHF) is committed to transforming lives by providing access to education, healthcare, and essential resources for underserved communities.Our mission is to empower individuals through scholarships, healthcare services, and community-driven programs aimed at fostering sustainable development and humanitarian values.",
   "icons": [
     {
       "src": "favicon.ico",
