@@ -27,7 +27,6 @@ const EventPage = ({ Companyname, API_URL }) => {
             setFilteredEvents(fetchedEvents);
         } catch (error) {
             console.error("Error fetching events", error);
-            message.error("There was an error fetching the events!", 5);
         } finally {
             setIsLoading(false);
         }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Row, Col } from 'react-bootstrap';
-import { Modal, message, Card as AntCard} from 'antd';
+import { Modal, Card as AntCard} from 'antd';
 import LandingPageImg from '../assets/landingimg.jpg';
 import VolunteerImg from '../assets/volunteerimg.jpg';
 import { HeartFilled, BookFilled, ArrowRightOutlined,CalendarOutlined, DollarOutlined, UserAddOutlined, ProfileOutlined, BuildOutlined, PictureOutlined} from '@ant-design/icons';
@@ -158,10 +158,10 @@ const LandingPage = ({API_URL,Companyname}) => {
                 setScholarships(fetchedScholarships)
             }catch(error){
                 if (error.response){
-                    message.error(error.response.data.message);
+                    console.error(error.response.data.message);
                 }
                 else{
-                    message.error(error.message);
+                    console.error(error.message);
                 }  
             }
             try {
@@ -172,10 +172,10 @@ const LandingPage = ({API_URL,Companyname}) => {
                 setData(response);
             } catch (error) {
                 if (error.response){
-                    message.error(error.response.data.message);
+                    console.error(error.response.data.message);
                 }
                 else{
-                    message.error(error.message);
+                    console.error(error.message);
                 }   
             }
             try{
@@ -185,10 +185,10 @@ const LandingPage = ({API_URL,Companyname}) => {
                 setPartners(fetchedPartners)
             }catch(error){
                 if (error.response){
-                    message.error(error.response.data.message);
+                    console.error(error.response.data.message);
                 }
                 else{
-                    message.error(error.message);
+                    console.error(error.message);
                 }  
             }
             try{
@@ -198,10 +198,10 @@ const LandingPage = ({API_URL,Companyname}) => {
                 setUsers(fetchedUsers)
             }catch(error){
                 if (error.response){
-                    message.error(error.response.data.message);
+                    console.error(error.response.data.message);
                 }
                 else{
-                    message.error(error.message);
+                    console.error(error.message);
                 }  
             }
             try{
@@ -211,10 +211,10 @@ const LandingPage = ({API_URL,Companyname}) => {
                 setEvents(fetchedEvents)
             }catch(error){
                 if (error.response){
-                    message.error(error.response.data.message);
+                    console.error(error.response.data.message);
                 }
                 else{
-                    message.error(error.message);
+                    console.error(error.message);
                 }  
             }
             setActivities(activitylist);

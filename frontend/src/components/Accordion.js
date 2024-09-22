@@ -42,7 +42,7 @@ const CustomAccordion = ({ items, onClick, isLoggedIn }) => {
             className={activeIndex === index ? 'show' : 'collapse'}
             aria-expanded={activeIndex === index}
           >
-            <p style={{ textAlign: 'justify', textIndent: '40px' }}>{item.content.slice(0, 500)}</p>{' '}
+            <p style={{ textAlign: 'justify', textIndent: '40px' }}>{item?.content?.slice(0, 500)}</p>{' '}
             {activeIndex === index ? (
               <span
                 className="text-primary"

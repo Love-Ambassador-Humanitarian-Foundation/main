@@ -16,7 +16,6 @@ const AboutPage = ({ API_URL, Companyname }) => {
   const { isLoggedIn, userDetails } = useUpdateLoginStatus(API_URL);
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [teamMembers, setTeamMembers] = useState([]);
   const [partners, setPartners] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -43,7 +42,7 @@ const AboutPage = ({ API_URL, Companyname }) => {
         const partnersResponse = await getPartners(API_URL);
         setPartners(partnersResponse);
       } catch (error) {
-        setError(error.message);
+        console.error(error.message);
       } finally {
         setIsLoading(false);
       }
@@ -75,10 +74,6 @@ const AboutPage = ({ API_URL, Companyname }) => {
     return <LoadingSpinner />;
   }
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
   return (
     <div id="about">
       <HeaderComponent Companyname={Companyname} isloggedIn={isLoggedIn} userDetails={userDetails} />
@@ -90,7 +85,7 @@ const AboutPage = ({ API_URL, Companyname }) => {
           <div className="col-xs-12 col-md-6">
             <div className="text-center text-md-start">
               <h2 className="mb-4">Our Story</h2>
-              <p style={{ textAlign: 'justify', textIndent: '60px' }}>{data.story}</p>
+              <p style={{ textAlign: 'justify', textIndent: '60px' }}>{data?.story}</p>
             </div>
           </div>
         </div>
@@ -99,14 +94,14 @@ const AboutPage = ({ API_URL, Companyname }) => {
         <div className="row mt-5" id="mission">
           <div className="col">
             <h2 className="mb-4 text-center">Our Mission</h2>
-            <p style={{ textAlign: 'justify', textIndent: '60px' }}>{data.mission}</p>
+            <p style={{ textAlign: 'justify', textIndent: '60px' }}>{data?.mission}</p>
           </div>
         </div>
         <hr />
         <div className="row mt-5" id="policies">
           <div className="col">
             <h2 className="mb-4 text-center">Our Policies</h2>
-            <p style={{ textAlign: 'justify', textIndent: '60px' }}>{data.policies}</p>
+            <p style={{ textAlign: 'justify', textIndent: '60px' }}>{data?.policies}</p>
           </div>
         </div>
 
@@ -114,7 +109,7 @@ const AboutPage = ({ API_URL, Companyname }) => {
         <div className="row mt-5" id="values">
           <div className="col">
             <h2 className="mb-4 text-center">Our Values</h2>
-            <p style={{ textAlign: 'justify', textIndent: '60px' }}>{data.values}</p>
+            <p style={{ textAlign: 'justify', textIndent: '60px' }}>{data?.values}</p>
           </div>
         </div>
 
@@ -257,11 +252,11 @@ const AboutPage = ({ API_URL, Companyname }) => {
 
         <hr />
         <div className="row mt-5" id="accountdetails">
-          {data.account_details.length > 0 ? (
+          {data?.account_details.length > 0 ? (
             <div className="col">
               <h2 className="mb-4 text-center">Bank Accounts</h2>
               <Row gutter={[16, 16]}>
-                {data.account_details.map((account, index) => (
+                {data?.account_details.map((account, index) => (
                   <Col key={index} xs={24} sm={12} md={8} lg={6}>
                     <Card hoverable bodyStyle={{ padding: '12px' }} style={{ borderRadius: '0px' }}>
                       <Meta

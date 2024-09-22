@@ -12,7 +12,6 @@ const Footer = ({ Companyname, API_URL }) => {
     const currentYear = new Date().getFullYear(); // Get the current year
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -21,7 +20,7 @@ const Footer = ({ Companyname, API_URL }) => {
             setData(aboutResponse);
     
           } catch (error) {
-            setError(error.message);
+            console.error(error.message);
           } finally {
             setIsLoading(false);
           }
@@ -84,10 +83,6 @@ const Footer = ({ Companyname, API_URL }) => {
     };
     if (isLoading) {
         return <LoadingSpinner />;
-      }
-    
-      if (error) {
-        return <div>Error: {error}</div>;
       }
 
     return (

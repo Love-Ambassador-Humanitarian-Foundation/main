@@ -147,19 +147,13 @@
   border-color: #34356b !important;
 }
 
-
-/* .ant-btn-icon .anticon {
-  color: white !important;
-}
 /* Styles for the button icon on hover */
 
 .ant-btn-icon .anticon :hover,
 .ant-btn-icon .anticon :focus,
 .ant-btn-icon .anticon :active {
   color: black !important;
-} */
-
-
+}
 
 .ant-pagination-item:hover,
 .ant-pagination-next:hover,
@@ -206,7 +200,7 @@
   animation: spin 1s linear infinite;
   margin: 20px auto; /* Center the spinner */
 }
-/* Loading spinner */
+/* Loading spinner small */
 .spinnersmall {
   border: 1.5px solid #f3f3f3; /* Light grey */
   border-top: 1.5px solid #34356b; /* Blue */

@@ -24,7 +24,7 @@ def get_old_license_header_pattern():
     return r"\"\"\"Copyright \(c\) [0-9]{4} .*?\"\"\""
 
 def add_or_update_license_header(file_path, current_year):
-    with open(file_path, 'r') as file:
+    with open(file_path, 'r',encoding='ISO-8859-1') as file:
         content = file.read()
 
     # Create the current license header

@@ -11,7 +11,6 @@ import LoadingSpinner from '../components/LoadingSpinner';
 const ContactUsPage = ({ Companyname, API_URL }) => {
     const { isLoggedIn, userDetails } = useUpdateLoginStatus(API_URL);
     const [data, setData] = useState(null);
-    const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false); // New state for form submission
 
@@ -57,7 +56,7 @@ const ContactUsPage = ({ Companyname, API_URL }) => {
                 const aboutResponse = await getAbout(API_URL);
                 setData(aboutResponse);
             } catch (error) {
-                setError(error.message);
+                console.error(error.message);
             } finally {
                 setIsLoading(false);
             }
@@ -67,10 +66,6 @@ const ContactUsPage = ({ Companyname, API_URL }) => {
 
     if (isLoading) {
         return <LoadingSpinner />;
-    }
-
-    if (error) {
-        return <div>Error: {error}</div>;
     }
 
     return (
@@ -134,12 +129,12 @@ const ContactUsPage = ({ Companyname, API_URL }) => {
                     <Col md={6}>
                         <h4 className='mt-4'>Contact Information</h4>
                         <p>
-                            <strong>Address:</strong> {data.address}<br />
-                            <strong>Email:</strong> {data.emailone}<br />
-                            <strong>Phone:</strong>({data.phonenumberpre}) {data.phonenumber}<br />
+                            <strong>Address:</strong> {data?.address}<br />
+                            <strong>Email:</strong> {data?.emailone}<br />
+                            <strong>Phone:</strong>({data?.phonenumberpre}) {data?.phonenumber}<br />
                         </p>
                         <p style={{ display: 'flex', alignItems: 'center' }}>
-                            {data.socials.map((social, index) => (
+                            {data?.socials.map((social, index) => (
                                 <a key={index} href={social.link} target="_blank" rel="noopener noreferrer">
                                     {social.name.includes('twitter') && (
                                         <TwitterOutlined style={{ cursor: 'pointer', fontSize: '24px', marginRight: '10px', color: '#1DA1F2' }} />

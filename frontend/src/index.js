@@ -7,7 +7,7 @@ import reportWebVitals from './reportWebVitals';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const isProduction = window.location.hostname !== '127.0.0.1' && window.location.hostname !== 'localhost';
 const API_URL = isProduction 
-    ? 'https://loveahfoundation.org/api' 
+    ? 'https://loveahfoundation.org/backend' 
     : 'http://127.0.0.1:8000';
 
 //console.log(`API URL: ${API_URL}`);
