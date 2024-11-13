@@ -33,9 +33,21 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # Create user with hashed password
         user = User.objects.create_user(**validated_data)
-        print(user)
         return user
+class SuperUserRegistrationSerializer(serializers.ModelSerializer):
+    """
+    Serializer for User registration.
+    """
+    password = serializers.CharField(write_only=True)
 
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'password', 'firstname', 'lastname', 'profileImage','numberpre',  'number', 'address', 'facebook', 'instagram', 'twitter', 'linkedIn', 'whatsapp', 'is_active', 'is_staff', 'position')
+
+    def create(self, validated_data):
+        # Create user with hashed password
+        user = User.objects.create_superuser(**validated_data)
+        return user
 class UserLoginSerializer(serializers.Serializer):
     """
     Serializer for user login.

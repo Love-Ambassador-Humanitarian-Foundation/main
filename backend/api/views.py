@@ -17,6 +17,7 @@ from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import User, About, Event, Partners, Payments, Logs,Scholarship, ScholarshipApplicant, Newsletter, NewsletterReceipients
 from .serializers import (
+    SuperUserRegistrationSerializer,
     UserSerializer, AboutSerializer, EventSerializer,NewsletterSerializer, NewsletterReceipientsSerializer,
     PartnersSerializer, PaymentsSerializer, LogsSerializer,UserRegistrationSerializer, UserLoginSerializer, ScholarshipSerializer, ScholarshipApplicantSerializer
 )
@@ -202,11 +203,10 @@ class AdminUserCreateView(generics.CreateAPIView):
     def post(self, request):
         data = request.data
         data['is_active']= True
-        serializer = UserRegistrationSerializer(data=data)
+        serializer = SuperUserRegistrationSerializer(data=data)
         
         if serializer.is_valid():
             user = serializer.save()
-            print(user,'--------')
             # Define the email subject and create the HTML content using the template
             subject = "User Registration"
             html = Html()  # Assume Html class is properly defined elsewhere

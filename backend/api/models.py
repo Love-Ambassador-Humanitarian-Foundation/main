@@ -108,8 +108,11 @@ class CustomUserManager(BaseUserManager):
 
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_active', True)
         extra_fields.setdefault('is_superuser', True)
 
+        if extra_fields.get('is_active') is not True:
+            raise ValueError('Superuser must have is_active=True.')
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
         if extra_fields.get('is_superuser') is not True:
@@ -117,7 +120,7 @@ class CustomUserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(max_length=MAX_LENGTH, unique=True)
     firstname = models.CharField(max_length=MAX_LENGTH)
@@ -138,9 +141,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     joined_at = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
     position = models.CharField(max_length=MAX_LENGTH, blank=True, choices=OFFICER_ROLES,default='Volunteer')  # Provide a default value if blank=True)
-    groups = models.ManyToManyField(Group, related_name='custom_user_set')
-    user_permissions = models.ManyToManyField(Permission, related_name='custom_user_set')
-
+    
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
