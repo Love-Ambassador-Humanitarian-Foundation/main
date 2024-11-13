@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Pagination, Tooltip, Avatar, Tag } from 'antd';
 import storyimg from '../assets/storyimg.jpeg';
 import HeaderComponent from '../components/Header';
@@ -22,12 +22,6 @@ const AboutPage = ({ API_URL, Companyname }) => {
 
   const pageSize = 4; // Number of team members per page
 
-  // Memoized paginated members
-  const paginatedMembers = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
-    return teamMembers.slice(startIndex, startIndex + pageSize);
-  }, [teamMembers, currentPage]);
-
   const totalMembers = teamMembers.length;
 
   useEffect(() => {
@@ -35,10 +29,18 @@ const AboutPage = ({ API_URL, Companyname }) => {
       try {
         const aboutResponse = await getAbout(API_URL);
         setData(aboutResponse);
-
+      } catch (error) {
+        console.error(error.message);
+      }
+      try {
         const membersResponse = await getUsers(API_URL);
-        setTeamMembers(membersResponse);
+        const startIndex = (currentPage - 1) * pageSize;
+        setTeamMembers(membersResponse.slice(startIndex, startIndex + pageSize));
 
+      } catch (error) {
+        console.error(error.message);
+      } 
+      try {
         const partnersResponse = await getPartners(API_URL);
         setPartners(partnersResponse);
       } catch (error) {
@@ -48,7 +50,7 @@ const AboutPage = ({ API_URL, Companyname }) => {
       }
     };
     fetchData();
-  }, [API_URL]);
+  }, [API_URL,currentPage,pageSize]);
 
   useEffect(() => {
     const scrollToHashElement = (hash) => {
@@ -118,7 +120,7 @@ const AboutPage = ({ API_URL, Companyname }) => {
           <div className="col">
             <h2 className="mb-4 text-center">Our Team</h2>
             <Row gutter={[16, 16]}>
-              {paginatedMembers.map((member, index) => (
+              {teamMembers.map((member, index) => (
                 <Col key={index} xs={24} sm={12} md={8} lg={6}>
                   <Card
                     hoverable
