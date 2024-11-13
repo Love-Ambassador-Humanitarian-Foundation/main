@@ -66,6 +66,7 @@ const AdminEventParticipants = ({ API_URL }) => {
                 ...event,
                 participants: updatedParticipants,
             });
+            navigate(`/admin/events/${eventid}/participants`)
             message.success('Participant removed successfully');
             // Optionally refetch participants if needed
             const responses = await Promise.all(updatedParticipants.map(id => axios.get(`${API_URL}/api/users/${id}`)));
@@ -77,7 +78,7 @@ const AdminEventParticipants = ({ API_URL }) => {
             message.error('Error updating event details');
         } finally {
             setIsLoading(false);
-            navigate(`/admin/events/${eventid}/participants`)
+            
         }
     };
 

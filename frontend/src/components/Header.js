@@ -112,7 +112,7 @@ const HeaderComponent = ({ Companyname,isloggedIn,userDetails }) => {
 
                 </Container>
             ) : (
-                <Container>
+                <Container fluid>
                     <Navbar.Brand href="#home" className="">
                         <img src={Logo} width="70" height="60" className="navbar-logo" alt="Lahf Logo" />{' '}
                         <span className="navbar-title"> {Companyname}</span>

@@ -34,7 +34,7 @@ const AdminScholarship = ({ API_URL }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [loading, setLoading] = useState(false);
     const [pdfLoading, setPdfLoading] = useState(false);
-    const currentDate = dayjs();  // Use dayjs for current date formatting
+    
     const [formData, setFormData] = useState({
         id: "",
         name: '',
@@ -51,7 +51,8 @@ const AdminScholarship = ({ API_URL }) => {
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-
+                const currentDate = dayjs();  // Use dayjs for current date formatting
+    
                 const response = await getScholarshipbyId(API_URL,id,currentDate);
                 const data = response;
 
@@ -75,7 +76,7 @@ const AdminScholarship = ({ API_URL }) => {
         };
 
         fetchDetails();
-    }, [API_URL, id, currentDate]);
+    }, [API_URL, id]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -86,10 +87,12 @@ const AdminScholarship = ({ API_URL }) => {
     };
 
     const handleSelectChange = (name, value) => {
+        console.log(value,'============')
         setFormData(prevData => ({
             ...prevData,
             [name]: value
         }));
+        console.log(formData);
     };
 
     const handleDateChange = (date) => {
@@ -102,11 +105,12 @@ const AdminScholarship = ({ API_URL }) => {
     const saveEdit = async () => {
         setLoading(true);
         try {
+            const currentDate = dayjs();  // Use dayjs for current date formatting
             await updateScholarshipbyId(API_URL,id, {
                 ...formData,
                 duration: formData.duration + ' ' + formData.durationUnit,
                 created_date: formData.created_date ? formData.created_date.format('YYYY-MM-DD') : null,
-                current_date: currentDate.format('YYYY-MM-DD')
+                current_date: currentDate.format('YYYY-MM-DD HH:mm:ss')
             });
             message.success('Scholarship details updated');
             setEditScholarship(false);
@@ -261,6 +265,10 @@ const AdminScholarship = ({ API_URL }) => {
                                 value={formData.currency}
                                 onChange={value => handleSelectChange('currency', value)}
                                 disabled={!editScholarship}
+                                showSearch // This makes the select searchable
+                                filterOption={(input, option) => 
+                                    option.children.toLowerCase().includes(input.toLowerCase()) // Filters options based on input text
+                                }
                             >
                                 {currencyOptions}
                             </Select>

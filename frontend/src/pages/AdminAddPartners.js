@@ -101,7 +101,7 @@ const AddAdminPartner = ({ API_URL }) => {
                             label="Link"
                             name="link"
                         >
-                            <Input placeholder="Enter Partner Link" />
+                            <Input placeholder="Enter Partner Link eg https://www.loveworld.com" />
                         </Form.Item>
 
                         <Form.Item

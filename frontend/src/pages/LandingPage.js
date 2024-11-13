@@ -15,7 +15,9 @@ import {useUpdateLoginStatus} from '../hooks/hooks';
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
 import img1 from '../assets/landing.jpg';
-
+import valuesimg from '../assets/values.jpg';
+import policyimg from '../assets/policyimg.jpg';
+import missionimg from '../assets/missionimg.jpg';
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -116,9 +118,9 @@ const LandingPage = ({API_URL,Companyname}) => {
     
     const images = [
         { img: img1 },
-        { img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80' },
-        { img: img1 },
-        { img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80' }
+        { img: missionimg },
+        { img: policyimg },
+        { img: valuesimg }
     ];
     
 
@@ -277,17 +279,19 @@ const LandingPage = ({API_URL,Companyname}) => {
             <div style={{
                 backgroundImage: `url(${LandingPageImg})`,
                 backgroundSize: 'cover',
+                backgroundPosition: 'center', // Corrected centering of the background
                 height: imgHeight,
                 zIndex: '-1',
-                filter: 'brightness(30%)',
+                filter: 'brightness(55%)',
                 width: '100%',
+                center:'50%',
             }}>
 
             </div>
             
-            <Container className="py-5" style={{ zIndex: '1', position: 'absolute', top: '200px', left: '50%', transform: 'translate(-50%, -50%)' }}>
+            <Container className="py-5" style={{ zIndex: '1', position: 'absolute', top: '230px', left: '50%', transform: 'translate(-50%, -50%)' }}>
                 <div className="mt-5 mb-5"></div>
-                <h1 className="text-center text-white mb-4 mt-5">Welcome to Our {data ? data.name:'LAHF'}</h1>
+                <h1 className="text-center text-white mb-4 mt-5">Welcome to {data ? data?.name:'LAHF'}</h1>
                 <p className="text-center text-white mb-5">This is where we strive to create positive change and <br />support humanitarian causes around the globe.</p>
                 <div className="d-flex justify-content-center">
                     <Button to="/signup" text="Volunteer" icon={<HeartFilled style={{ color: '#ec3237' }} />} />

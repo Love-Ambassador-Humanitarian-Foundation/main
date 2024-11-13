@@ -19,7 +19,8 @@ const pluralUnits = [
 
 const AddAdminScholarship = ({ API_URL }) => {
     const [loading, setLoading] = useState(false);
-    const currentDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
+    const currentDate = new Date().toISOString().split('T').join(' ').split('.')[0]; // Format as datetime.datetime
+    //console.log(currentDate,'==========')
     const [formData, setFormData] = useState({
         name: '',
         year: dayjs().year(), // Default to current year using dayjs
@@ -67,11 +68,14 @@ const AddAdminScholarship = ({ API_URL }) => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+        
         setFormData({
             ...formData,
             [name]: value,
         });
+        
     };
+    
 
     // const handleDateChange = (date, dateString) => {
     //     if (date) {
@@ -182,7 +186,7 @@ const AddAdminScholarship = ({ API_URL }) => {
                         <Form.Item
                             label="Amount Approved"
                             name="amount_approved"
-                            rules={[{ required: true, message: 'Please enter the approved amount' }]}
+                            rules={[{ required: true, message: 'Please enter the correct approved amount' }]}
                         >
                             <Input 
                                 name="amount_approved"
@@ -204,23 +208,27 @@ const AddAdminScholarship = ({ API_URL }) => {
                         <Form.Item
                             label="Duration"
                             name="duration"
-                            rules={[{ required: true, message: 'Please enter the duration' }]}
+                            rules={[{ required: true, message: 'Please enter the correct duration' }]}
                         >
-                            <Input 
-                                name="duration"
-                                type="number"
-                                value={formData.duration}
-                                onChange={handleInputChange}
-                                placeholder="Enter Duration" 
-                                suffix={<Select
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <Input 
+                                    name="duration"
+                                    type="number"
+                                    value={formData.duration}
+                                    onChange={handleInputChange}
+                                    placeholder="Enter Duration"
+                                    style={{ flex: 1 }} // Takes up remaining space
+                                />
+                                <Select
                                     name="durationUnit"
                                     value={formData.durationUnit}
                                     onChange={handleDurationChange}
-                                    style={{ width: '100px', marginLeft: '8px' }}
+                                    style={{ width: '20%', marginLeft: '8px' }} // 20% width
                                 >
                                     {getDurationUnitOptions()}
-                                </Select>}
-                            />
+                                </Select>
+                            </div>
+
                         </Form.Item>
 
                         {/* <Form.Item label="Created Date">

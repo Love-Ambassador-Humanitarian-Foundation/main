@@ -4,7 +4,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import { DeleteOutlined, HomeOutlined, TeamOutlined, PlusOutlined } from '@ant-design/icons';
 import { Card, Table, Row, Col, theme, message, Layout, Breadcrumb, Button, Tooltip, Avatar } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
-import { getPartners } from '../services/api';
+import { deletePartner, getPartners } from '../services/api';
 
 const { Content } = Layout;
 
@@ -38,17 +38,18 @@ const Partners = ({ API_URL }) => {
         fetchPartners();
     }, [API_URL]);
 
-    const deletePartner = useCallback(async (id) => {
+    const deletepartner = useCallback(async (id) => {
         try {
             await deletePartner(API_URL, id);
             setPartners(prev => prev.filter(partner => partner.id !== id));
             setFilteredPartners(prev => prev.filter(partner => partner.id !== id));
+            navigate(`/admin/partners`);
             message.success("Partner deleted successfully!", 5);
         } catch (error) {
             console.error("There was an error deleting the partner!", error);
             message.error("There was an error deleting the partner!", 5);
         }
-    }, [API_URL]);
+    }, [API_URL,navigate]);
 
     const filterPartners = useCallback(({ itemName, dateRange }) => {
         let filtered = partners;
@@ -91,14 +92,14 @@ const Partners = ({ API_URL }) => {
         {
             key: 'action',
             render: (text, record) => (
-                <Button type="primary" icon={<DeleteOutlined className='text-danger' />} onClick={() => deletePartner(record.id)} />
+                <Button type="primary" icon={<DeleteOutlined className='text-danger' />} onClick={() => deletepartner(record.id)} />
             ),
         },
-    ], [deletePartner]);
+    ], [deletepartner]);
 
-    const handleRowClick = useCallback((record) => {
+    const handleRowClick = (record) => {
         navigate(`/admin/partners/${record.id}`);
-    }, [navigate]);
+    };
 
     if (isLoading) {
         return <LoadingSpinner />;

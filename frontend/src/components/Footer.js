@@ -111,7 +111,7 @@ const Footer = ({ Companyname, API_URL }) => {
                     <Col className="col-md-5 offset-md-1 mb-3">
                         <form onSubmit={handleSubmit}>
                             <h5 className="text-dark">Subscribe to our newsletter</h5>
-                            <p className="text-dark">Monthly digest of what's new and exciting from us.</p>
+                            <p className="text-dark">Regular digest of what's new and exciting from us.</p>
                             <div className="d-flex flex-column w-100 gap-2">
                                 <label htmlFor="newsletter1" className="visually-hidden text-dark">
                                     Email address

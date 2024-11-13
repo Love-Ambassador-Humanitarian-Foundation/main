@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { DeleteOutlined, HomeOutlined, PlusOutlined, ProfileOutlined } from '@ant-design/icons';
 import { Card, Row, Col, Table, theme, Button, message, Layout, Breadcrumb, Tooltip } from 'antd';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { getScholarships } from '../services/api';
+import { deleteScholarship, getScholarships } from '../services/api';
 
 const { Content } = Layout;
 
@@ -16,36 +16,45 @@ const AdminScholarships = ({ API_URL }) => {
     const [filteredScholarships, setFilteredScholarships] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Fetch scholarships from the API
-    const fetchScholarships = useCallback(async () => {
-        try {
-            const currentDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
-            const fetchedScholarships = await getScholarships(API_URL,currentDate);
-            setScholarships(fetchedScholarships);
-            setFilteredScholarships(fetchedScholarships);
-        } catch (error) {
-            console.error("Error fetching scholarships", error);
-            message.error("There was an error fetching the scholarships!", 5);
-        } finally {
-            setIsLoading(false);
-        }
+    useEffect(() => {
+        // Fetch scholarships from the API
+    
+        const fetchScholarships = async () => {
+            try {
+                const currentDate = new Date().toISOString().split('T').join(' ').split('.')[0]; // Format as datetime.datetime
+                //console.log(currentDate,'==========')
+                const fetchedScholarships = await getScholarships(API_URL, currentDate);
+    
+                setScholarships(fetchedScholarships.map((item) => ({
+                    key: item.id, // Unique key for each row
+                    ...item,
+                })));
+                setFilteredScholarships(fetchedScholarships.map((item) => ({
+                    key: item.id, // Unique key for each row
+                    ...item,
+                })));
+            } catch (error) {
+                console.error("Error fetching scholarships", error);
+                message.error("There was an error fetching the scholarships!", 5);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchScholarships();
     }, [API_URL]);
 
-    useEffect(() => {
-        fetchScholarships();
-    }, [fetchScholarships]);
-
     // Handle deletion of a scholarship
-    const deleteScholarship = async (id) => {
+    const deletescholarship = async (id) => {
         try {
-            deleteScholarship(API_URL,id);
+            await deleteScholarship(API_URL, id);
             const updatedScholarships = scholarships.filter(scholarship => scholarship.id !== id);
+            // console.log(updatedScholarships,'=========')
             setScholarships(updatedScholarships);
             setFilteredScholarships(updatedScholarships);
             navigate(`/admin/scholarships`);
             message.success("Scholarship deleted successfully!", 5);
         } catch (error) {
-            console.error("Error deleting scholarship", error.response);
+            console.error("Error deleting scholarship", error, error.response);
             message.error("There was an error deleting the scholarship!", 5);
         }
     };
@@ -56,7 +65,7 @@ const AdminScholarships = ({ API_URL }) => {
     };
 
     // Filter scholarships based on search criteria
-    const filterScholarships = useCallback(({ itemName, dateRange }) => {
+    const filterScholarships = ({ itemName, dateRange }) => {
         let filtered = scholarships;
 
         if (itemName) {
@@ -79,7 +88,7 @@ const AdminScholarships = ({ API_URL }) => {
         }
 
         setFilteredScholarships(filtered);
-    }, [scholarships]);
+    };
 
     const columns = [
         {
@@ -127,11 +136,15 @@ const AdminScholarships = ({ API_URL }) => {
                     icon={<DeleteOutlined className="text-danger" />}
                     onClick={(e) => {
                         e.stopPropagation();
-                        deleteScholarship(record.id);
+                        deletescholarship(record.id);
                     }}
                 />
             ),
         },
+    ];
+    const breadcrumbItems = [
+        { title: <HomeOutlined />, href: '/' },
+        { title: <><ProfileOutlined /><span>Scholarships</span></>, href: '/scholarships' },
     ];
 
     if (isLoading) {
@@ -141,15 +154,9 @@ const AdminScholarships = ({ API_URL }) => {
     return (
         <Layout style={{ marginTop: '70px', height: '100vh' }}>
             <div className="d-flex justify-content-between align-items-center p-2 m-2" style={{ backgroundColor: '#d7d7e9', borderRadius: '4px' }}>
-                <Breadcrumb>
-                    <Breadcrumb.Item href="/">
-                        <HomeOutlined />
-                    </Breadcrumb.Item>
-                    <Breadcrumb.Item>
-                        <ProfileOutlined />
-                        <span>Scholarships</span>
-                    </Breadcrumb.Item>
-                </Breadcrumb>
+                
+                <Breadcrumb items={breadcrumbItems} />
+                
                 <Tooltip title='Add Scholarship'>
                     <Link to='/admin/scholarships/add' style={{textDecoration:'none'}}>
                         <PlusOutlined style={{ fontSize: '20px', color: 'black', cursor: 'pointer' }} />

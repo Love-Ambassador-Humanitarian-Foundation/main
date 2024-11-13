@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Row, Col, Card, Pagination, Tooltip, Avatar, Tag } from 'antd';
-import img1 from '../assets/landing.jpg';
+import storyimg from '../assets/storyimg.jpeg';
 import HeaderComponent from '../components/Header';
 import Footer from '../components/Footer';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -80,7 +80,7 @@ const AboutPage = ({ API_URL, Companyname }) => {
       <div className="container py-5">
         <div className="row d-flex align-items-start mt-5" id="story">
           <div className="col-xs-12 col-md-6">
-            <img src={img1} alt="About Us" className="img-fluid" style={{ width: '100%' }} />
+            <img src={storyimg} alt="About Us" className="img-fluid" style={{ width: '100%' }} />
           </div>
           <div className="col-xs-12 col-md-6">
             <div className="text-center text-md-start">
@@ -244,7 +244,7 @@ const AboutPage = ({ API_URL, Companyname }) => {
                   </Col>
                 ))
               ) : (
-                <Tag color="orange">No Partners</Tag>
+                <Tag color="orange">No Partners Yet</Tag>
               )}
             </Row>
           </div>

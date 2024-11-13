@@ -5,7 +5,7 @@ import { Link, useNavigate} from 'react-router-dom';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
 import {getRandomBgColorClass} from '../utils/helper';
-import { getUsers } from '../services/api';
+import { deleteUser, getUsers } from '../services/api';
 const { Content } = Layout;
 
 const AdminUsers = ({ API_URL }) => {
@@ -40,7 +40,7 @@ const AdminUsers = ({ API_URL }) => {
         return () => clearInterval(interval);
     }, [API_URL]);
 
-    const deleteUser = async (id) => {
+    const deleteuser = async (id) => {
         try {
             await deleteUser(API_URL, id);
             const newUsers = users.filter(user => user.id !== id);
@@ -110,7 +110,7 @@ const AdminUsers = ({ API_URL }) => {
         },
         {
             render: (text, record) => (
-                <Button type="primary" icon={<DeleteOutlined className='text-danger' />} onClick={() => deleteUser(record.id)} />
+                <Button type="primary" icon={<DeleteOutlined className='text-danger' />} onClick={() => deleteuser(record.id)} />
             ),
         },
     ];
