@@ -215,7 +215,7 @@ const AboutPage = ({ API_URL, Companyname }) => {
             <Row gutter={[16, 16]}>
               {partners.length > 0 ? (
                 partners.map((partner, index) => (
-                  <Col key={index} xs={24} sm={12} md={8} lg={6}>
+                  <Col key={index} xs={12} sm={8} md={6} lg={4}>
                     <Card
                       hoverable
                       cover={

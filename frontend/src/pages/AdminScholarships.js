@@ -23,7 +23,7 @@ const AdminScholarships = ({ API_URL }) => {
             try {
                 const currentDate = dayjs();  // Use dayjs for current date formatting
     
-                console.log(currentDate,'==========')
+                console.log(currentDate,'==========',currentDate.format('YYYY-MM-DD HH:mm:ss'))
                 const fetchedScholarships = await getScholarships(API_URL, currentDate.format('YYYY-MM-DD HH:mm:ss'));
                 //console.log(fetchedScholarships)
                 setScholarships(fetchedScholarships.map((item) => ({
@@ -37,6 +37,7 @@ const AdminScholarships = ({ API_URL }) => {
             } catch (error) {
                 console.error("Error fetching scholarships", error);
                 message.error("There was an error fetching the scholarships!", 5);
+                message.error("error", 5);
             } finally {
                 setIsLoading(false);
             }

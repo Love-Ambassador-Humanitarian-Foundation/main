@@ -19,8 +19,8 @@ const pluralUnits = [
 
 const AddAdminScholarship = ({ API_URL }) => {
     const [loading, setLoading] = useState(false);
-    const currentDate = new Date().toISOString().split('T').join(' ').split('.')[0]; // Format as datetime.datetime
-    //console.log(currentDate,'==========')
+    const currentDate = dayjs(); // Format as datetime.datetime
+    //console.log(currentDate,)
     const [formData, setFormData] = useState({
         name: '',
         year: dayjs().year(), // Default to current year using dayjs
@@ -29,7 +29,7 @@ const AddAdminScholarship = ({ API_URL }) => {
         currency: 'USD',
         duration: '',
         durationUnit: 'months', // Default to months
-        created_date: currentDate, // Default to current date using dayjs
+        created_date: currentDate.format('YYYY-MM-DD'), // Default to current date using dayjs
         
     });
     const navigate = useNavigate();
@@ -42,7 +42,7 @@ const AddAdminScholarship = ({ API_URL }) => {
                 ...formData,
                 amount_approved: parseFloat(formData.amount_approved).toFixed(2), // Ensure the amount is formatted correctly
                 duration: `${formData.duration} ${formData.durationUnit}`, // Combine value and unit
-                current_date:currentDate
+                current_date:currentDate.format('YYYY-MM-DD HH:mm:ss')
             };
             await axios.post(`${API_URL}/api/scholarships`, payload);
             message.success('Scholarship added successfully!');
@@ -50,6 +50,7 @@ const AddAdminScholarship = ({ API_URL }) => {
         } catch (error) {
             console.error('There was an error adding the scholarship!', error.response?.data || error.message);
             message.error('Failed to add scholarship. Please try again.');
+            message.error(error.response?.data || error.message);
 
             if (error.response && error.response.data && error.response.data.errors) {
                 Object.keys(error.response.data.errors).forEach((key) => {

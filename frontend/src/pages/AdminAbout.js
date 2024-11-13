@@ -55,7 +55,7 @@ const AdminAbout = ({ API_URL }) => {
                 account_details: data.account_details
             });
         } catch (error) {
-            console.error('Error fetching the about data:', error);
+            console.error('Error fetching the about data:', error?.message);
             message.error('Error fetching the about data.');
         } finally {
             setIsLoading(false);
