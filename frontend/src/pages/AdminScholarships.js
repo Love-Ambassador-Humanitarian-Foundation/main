@@ -5,7 +5,7 @@ import { Card, Row, Col, Table, theme, Button, message, Layout, Breadcrumb, Tool
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { deleteScholarship, getScholarships } from '../services/api';
-
+import dayjs from 'dayjs';
 const { Content } = Layout;
 
 const AdminScholarships = ({ API_URL }) => {
@@ -21,10 +21,11 @@ const AdminScholarships = ({ API_URL }) => {
     
         const fetchScholarships = async () => {
             try {
-                const currentDate = new Date().toISOString().split('T').join(' ').split('.')[0]; // Format as datetime.datetime
-                //console.log(currentDate,'==========')
-                const fetchedScholarships = await getScholarships(API_URL, currentDate);
+                const currentDate = dayjs();  // Use dayjs for current date formatting
     
+                console.log(currentDate,'==========')
+                const fetchedScholarships = await getScholarships(API_URL, currentDate.format('YYYY-MM-DD HH:mm:ss'));
+                //console.log(fetchedScholarships)
                 setScholarships(fetchedScholarships.map((item) => ({
                     key: item.id, // Unique key for each row
                     ...item,

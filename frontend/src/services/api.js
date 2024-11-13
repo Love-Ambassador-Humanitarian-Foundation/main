@@ -86,7 +86,7 @@ export const getScholarships = async(API_URL,currentDate) => {
 };
 
 export const getScholarshipbyId = async(API_URL, id,currentDate) => {
-    const response = await axios.get(`${API_URL}/api/scholarships/${id}?current_date=${currentDate.format('YYYY-MM-DD HH:mm:ss')}`);
+    const response = await axios.get(`${API_URL}/api/scholarships/${id}?current_date=${currentDate}`);
     return response.data.data;
 };
 export const updateScholarshipbyId = async(API_URL, id,payload) => {

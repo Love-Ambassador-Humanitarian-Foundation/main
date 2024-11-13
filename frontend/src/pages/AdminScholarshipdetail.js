@@ -53,7 +53,7 @@ const AdminScholarship = ({ API_URL }) => {
             try {
                 const currentDate = dayjs();  // Use dayjs for current date formatting
     
-                const response = await getScholarshipbyId(API_URL,id,currentDate);
+                const response = await getScholarshipbyId(API_URL,id,currentDate.format('YYYY-MM-DD HH:mm:ss'));
                 const data = response;
 
                 setFormData({
