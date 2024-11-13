@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
     last_login = serializers.DateTimeField(format=DATETIME_FORMAT, input_formats=[DATETIME_FORMAT])
     class Meta:
         model = User
-        fields = ('id', 'email', 'firstname', 'lastname', 'profileImage','numberpre', 'number', 'address', 'facebook', 'instagram', 'twitter', 'linkedIn', 'whatsapp', 'is_active', 'is_staff','is_superuser', 'joined_at', 'last_login', 'position')
+        fields = ('id','password', 'email', 'firstname', 'lastname', 'profileImage','numberpre', 'number', 'address', 'facebook', 'instagram', 'twitter', 'linkedIn', 'whatsapp', 'is_active', 'is_staff','is_superuser', 'joined_at', 'last_login', 'position')
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """
@@ -33,6 +33,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # Create user with hashed password
         user = User.objects.create_user(**validated_data)
+        print(user)
         return user
 
 class UserLoginSerializer(serializers.Serializer):
@@ -213,20 +214,20 @@ class ScholarshipSerializer(serializers.ModelSerializer):
         The current date is fetched from the request context, falling back to date.today() if not provided.
         """
         request = self.context.get('request')
-        current_date = date.today()  # Default to today's date
-
+        current_date = date.today().strftime(DATETIME_FORMAT)  # Default to today's date
         # Check request data for a date
         if request and 'current_date' in request.data:
             current_date_str = request.data.get('current_date')
             if current_date_str:
-                current_date = parse_date(current_date_str) or current_date
+                current_date = datetime.strptime(current_date_str, DATETIME_FORMAT)
+           
 
         # Check query parameters for a date
         if request and 'current_date' in request.query_params:
             current_date_str = request.query_params.get('current_date')
             if current_date_str:
-                current_date = parse_date(current_date_str) or current_date
-
+                current_date = datetime.strptime(current_date_str, DATETIME_FORMAT)
+        # print(current_date,'|||', type(current_date))
         return obj.is_expired(current_date=current_date)
 
 class ScholarshipApplicantSerializer(serializers.ModelSerializer):

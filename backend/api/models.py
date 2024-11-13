@@ -299,7 +299,8 @@ class Scholarship(models.Model):
         Check if the scholarship has expired based on its duration and created_date.
         Optionally accept a current_date parameter to test against a specific date.
         """
-        current_date = current_date or date.today()
+        if not current_date:
+            current_date = date.today().strftime(DATETIME_FORMAT)
         if not self.duration or not self.created_date:
             return False
 
@@ -331,8 +332,9 @@ class Scholarship(models.Model):
         elif unit == 'second':
             expiration_date = self.created_date + relativedelta(seconds=amount)
         else:
-            return False
-
+            return current_date
+        # print('current_date: ',current_date)
+        # print('expiration_date: ',expiration_date)
         return current_date > expiration_date
     
 class ScholarshipApplicant(models.Model):

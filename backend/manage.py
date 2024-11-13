@@ -16,7 +16,7 @@ def main():
     current_year = update_license_year.datetime.now().year
     
     # Call the function to update or add license headers
-    update_license_year.process_directory('.', current_year)
+    # update_license_year.process_directory('.', current_year)
 
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')

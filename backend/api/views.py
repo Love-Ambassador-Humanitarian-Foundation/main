@@ -203,9 +203,10 @@ class AdminUserCreateView(generics.CreateAPIView):
         data = request.data
         data['is_active']= True
         serializer = UserRegistrationSerializer(data=data)
+        
         if serializer.is_valid():
             user = serializer.save()
-            
+            print(user,'--------')
             # Define the email subject and create the HTML content using the template
             subject = "User Registration"
             html = Html()  # Assume Html class is properly defined elsewhere
@@ -215,13 +216,13 @@ class AdminUserCreateView(generics.CreateAPIView):
             )
 
             # Send the email to all recipients
-            Utils().send_email_message(
-                subject='Lahf '+subject,
-                message='',  # Optional plain-text message
-                from_email=settings.EMAIL_HOST_USER,  # Sender's email address
-                recipient_list=[data['email']],  # All recipient emails
-                html_message=registration_complete_html  # The HTML content of the email
-            )
+            # Utils().send_email_message(
+            #     subject='Lahf '+subject,
+            #     message='',  # Optional plain-text message
+            #     from_email=settings.EMAIL_HOST_USER,  # Sender's email address
+            #     recipient_list=[data['email']],  # All recipient emails
+            #     html_message=registration_complete_html  # The HTML content of the email
+            # )
             refresh = RefreshToken.for_user(user)
             return Response({
                 'success': True,
