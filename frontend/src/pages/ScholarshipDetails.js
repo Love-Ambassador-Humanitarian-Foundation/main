@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Row, Descriptions, Timeline, Tag, message, Affix, Layout, Typography } from 'antd';
+import { Button, Card, Col, Row,Timeline, Tag, message, Affix, Layout, Typography } from 'antd';
 import { CalendarOutlined, CopyOutlined, PlusOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -57,7 +57,7 @@ const ScholarshipDetail = ({ API_URL, Companyname }) => {
         const fetchDetails = async () => {
             try {
                 const today = dayjs(); 
-                const response = await getScholarshipbyId(API_URL, id, today);
+                const response = await getScholarshipbyId(API_URL, id, today.format('YYYY-MM-DD HH:mm:ss'));
                 setScholarship(response);
             } catch (error) {
                 console.error('Error fetching scholarship details:', error);
@@ -85,7 +85,20 @@ const ScholarshipDetail = ({ API_URL, Companyname }) => {
             });
     };
     
-
+    const renderTextWithBold = (text) => {
+        // Split text based on asterisks
+        const parts = text.split('**');
+    
+        return parts.map((part, index) => {
+          // If the part is at an odd index, it was inside an asterisk and should be bold
+          if (index % 2 !== 0) {
+            return <strong key={index}>{part}</strong>;
+          }
+          return part;
+        });
+      };
+    // Format the event dates
+    const formatDate = (date) => dayjs(date).format('YYYY-MM-DD');
     if (isLoading) {
         return <LoadingSpinner />;
     }
@@ -97,32 +110,45 @@ const ScholarshipDetail = ({ API_URL, Companyname }) => {
     return (
         <Layout id='scholarships'>
             <HeaderComponent Companyname={Companyname} isloggedIn={isLoggedIn} userDetails={userDetails} /> {/* Header component */}
-            <Content style={{ padding: '24px', background: '#fff', marginTop: '60px' }}>
-                <div style={{ padding: '24px', backgroundColor: '#f0f2f5' }}>
+            <Content style={{ padding: '2px', background: '#fff', marginTop: '70px' }}>
+                <div style={{ padding: 8, backgroundColor: '#f0f2f5' }}>
                     {/* Main Layout */}
                     <Row gutter={24}>
                         {/* Scholarship Details */}
                         <Col xs={24} md={16}>
                             <Title level={3} className="text-left">Scholarship - {scholarship.name}</Title>
                             <Card title={scholarship.name} bordered={false}>
-                                <Descriptions column={1} bordered>
-                                    <Descriptions.Item label="Name">{scholarship.name}</Descriptions.Item>
-                                    <Descriptions.Item label="Description">{scholarship.description}</Descriptions.Item>
-                                    <Descriptions.Item label="Year">{scholarship.year}</Descriptions.Item>
-                                    <Descriptions.Item label="Amount">
-                                        <span className='text-dark'>{scholarship.currency} {scholarship.amount_approved}</span>
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="Duration">{scholarship.duration}</Descriptions.Item>
-                                    <Descriptions.Item label="Created Date">
-                                        <span className='text-success'><CalendarOutlined /> {dayjs(scholarship.created_date).format('YYYY-MM-DD')}</span>
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="Deadline">
-                                        <span className='text-danger'><CalendarOutlined /> {deadline}</span>
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="Status">
-                                        {expired ? <Tag color="red">Expired</Tag> : <Tag color="green">Ongoing</Tag>}
-                                    </Descriptions.Item>
-                                </Descriptions>
+                                <div>
+                                    Name:
+                                    <strong>
+                                    {scholarship.name}
+                                    </strong>
+                                </div>
+                                <div
+                                    style={{ textAlign: 'justify' }}
+                                    className="description-item">Description: <p>{renderTextWithBold(scholarship.description)}</p>
+                                </div>
+                                <div>
+                                    Year:<p>{scholarship.year}</p>
+                                </div>
+                                <div>
+                                    Amount:<p><span className='text-dark'>{scholarship.currency} {scholarship.amount_approved}</span></p>
+                                </div>
+                                <div>
+                                    Duration:<p>{scholarship.duration}</p>
+                                </div>
+                                <div>
+                                    Created Date:<p><span className='text-success'><CalendarOutlined /> {dayjs(scholarship.created_date).format('YYYY-MM-DD')}</span></p>
+                                </div>
+                                <div>
+                                    Deadline:<p>
+                                    <span className='text-danger'><CalendarOutlined /> {formatDate(deadline)}</span>
+                                    </p>
+                                </div>
+                                <div>
+                                    Status:{expired ? <Tag color="red">Expired</Tag> : <Tag color="green">Ongoing</Tag>}
+                                </div>
+                                
                             </Card>
 
                             {/* Application Process Section */}

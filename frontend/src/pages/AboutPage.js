@@ -71,6 +71,18 @@ const AboutPage = ({ API_URL, Companyname }) => {
       scrollToHashElement(location.hash);
     }
   }, [location]);
+  const renderTextWithBold = (text) => {
+    // Split text based on asterisks
+    const parts = text.split('**');
+
+    return parts.map((part, index) => {
+      // If the part is at an odd index, it was inside an asterisk and should be bold
+      if (index % 2 !== 0) {
+        return <strong key={index}>{part}</strong>;
+      }
+      return part;
+    });
+  };
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -87,7 +99,7 @@ const AboutPage = ({ API_URL, Companyname }) => {
           <div className="col-xs-12 col-md-6">
             <div className="text-center text-md-start">
               <h2 className="mb-4">Our Story</h2>
-              <p style={{ textAlign: 'justify', textIndent: '60px' }}>{data?.story}</p>
+              <p style={{ textAlign: 'justify', textIndent: '60px' }}>{renderTextWithBold(data?.story)}</p>
             </div>
           </div>
         </div>
@@ -96,14 +108,14 @@ const AboutPage = ({ API_URL, Companyname }) => {
         <div className="row mt-5" id="mission">
           <div className="col">
             <h2 className="mb-4 text-center">Our Mission</h2>
-            <p style={{ textAlign: 'justify', textIndent: '60px' }}>{data?.mission}</p>
+            <p style={{ textAlign: 'justify', textIndent: '60px' }}>{renderTextWithBold(data?.mission)}</p>
           </div>
         </div>
         <hr />
         <div className="row mt-5" id="policies">
           <div className="col">
             <h2 className="mb-4 text-center">Our Policies</h2>
-            <p style={{ textAlign: 'justify', textIndent: '60px' }}>{data?.policies}</p>
+            <p style={{ textAlign: 'justify', textIndent: '60px' }}>{renderTextWithBold(data?.policies)}</p>
           </div>
         </div>
 
@@ -111,7 +123,7 @@ const AboutPage = ({ API_URL, Companyname }) => {
         <div className="row mt-5" id="values">
           <div className="col">
             <h2 className="mb-4 text-center">Our Values</h2>
-            <p style={{ textAlign: 'justify', textIndent: '60px' }}>{data?.values}</p>
+            <p style={{ textAlign: 'justify', textIndent: '60px' }}>{renderTextWithBold(data?.values)}</p>
           </div>
         </div>
 

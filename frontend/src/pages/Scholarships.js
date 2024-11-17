@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UnorderedListOutlined, AppstoreOutlined } from '@ant-design/icons';
-import { Card, Row, Col, message, Layout, Radio } from 'antd';
+import { Card, Row, Col, message, Layout, Pagination } from 'antd';
 import FilterComponent from '../components/Filter';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useUpdateLoginStatus } from '../hooks/hooks';
@@ -18,7 +17,8 @@ const Scholarships = ({ API_URL, Companyname }) => {
     const [scholarships, setScholarships] = useState([]);
     const [filteredScholarships, setFilteredScholarships] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(8); // Number of items per page
 
     // Fetch scholarships from the API
     const fetchScholarships = useCallback(async () => {
@@ -38,8 +38,6 @@ const Scholarships = ({ API_URL, Companyname }) => {
     useEffect(() => {
         fetchScholarships();
     }, [fetchScholarships]);
-
-    
 
     // Filter scholarships based on search criteria
     const filterScholarships = useCallback(({ itemName, dateRange }) => {
@@ -65,6 +63,7 @@ const Scholarships = ({ API_URL, Companyname }) => {
         }
 
         setFilteredScholarships(filtered);
+        setCurrentPage(1); // Reset to the first page after filtering
     }, [scholarships]);
 
     // Handle row click to navigate to scholarship details
@@ -74,8 +73,8 @@ const Scholarships = ({ API_URL, Companyname }) => {
 
     // Render scholarships in grid layout
     const renderGridLayout = () => (
-        <Row gutter={[16, 16]}>
-            {filteredScholarships.map(scholarship => (
+        <Row gutter={[16, 16]} className='mt-2'>
+            {currentScholarships.map(scholarship => (
                 <Col xs={24} sm={12} md={8} lg={6} key={scholarship.id}>
                     <Card
                         title={scholarship.name}
@@ -92,37 +91,46 @@ const Scholarships = ({ API_URL, Companyname }) => {
         </Row>
     );
 
-    // Render scholarships in list layout
-    const renderListLayout = () => (
-        <Row gutter={[16, 16]}>
-            {filteredScholarships.map(scholarship => (
-                <Col xs={24} key={scholarship.id}>
-                    <Card
-                        hoverable
-                        onClick={() => handleRowClick(scholarship)}
-                    >
-                        <Row>
-                            <Col span={8}>
-                                <strong>{scholarship.name}</strong>
-                            </Col>
-                            <Col span={4}>
-                                {scholarship.year}
-                            </Col>
-                            <Col span={4}>
-                                {scholarship.currency} {scholarship.amount_approved}
-                            </Col>
-                            <Col span={4}>
-                                {scholarship.duration} {scholarship.is_expired ? <span className="text-danger">(Expired)</span> : <span className="text-success">(Ongoing)</span>}
-                            </Col>
-                            <Col span={4}>
-                                {scholarship.created_date}
-                            </Col>
-                        </Row>
-                    </Card>
-                </Col>
-            ))}
-        </Row>
-    );
+    // // Render scholarships in list layout
+    // const renderListLayout = () => (
+    //     <Row gutter={[16, 16]}>
+    //         {currentScholarships.map(scholarship => (
+    //             <Col xs={24} key={scholarship.id}>
+    //                 <Card
+    //                     hoverable
+    //                     onClick={() => handleRowClick(scholarship)}
+    //                 >
+    //                     <Row>
+    //                         <Col span={8}>
+    //                             <strong>{scholarship.name}</strong>
+    //                         </Col>
+    //                         <Col span={4}>
+    //                             {scholarship.year}
+    //                         </Col>
+    //                         <Col span={4}>
+    //                             {scholarship.currency} {scholarship.amount_approved}
+    //                         </Col>
+    //                         <Col span={4}>
+    //                             {scholarship.duration} {scholarship.is_expired ? <span className="text-danger">(Expired)</span> : <span className="text-success">(Ongoing)</span>}
+    //                         </Col>
+    //                         <Col span={4}>
+    //                             {scholarship.created_date}
+    //                         </Col>
+    //                     </Row>
+    //                 </Card>
+    //             </Col>
+    //         ))}
+    //     </Row>
+    // );
+
+    // Pagination Logic
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentScholarships = filteredScholarships.slice(indexOfFirstItem, indexOfLastItem);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
 
     if (isLoading) {
         return <LoadingSpinner />;
@@ -130,32 +138,23 @@ const Scholarships = ({ API_URL, Companyname }) => {
 
     return (
         <Layout id='scholarships'>
-            <HeaderComponent Companyname={Companyname} isloggedIn={isLoggedIn} userDetails={userDetails} /> {/* Header component */}
-            <Content style={{ padding: '24px', background: '#fff', marginTop:'60px' }}>
-                <div
-                    style={{
-                        padding: 24,
-                        minHeight: 360,
-                        borderRadius: 8,
-
-                    }}
-                >
+            <HeaderComponent Companyname={Companyname} isloggedIn={isLoggedIn} userDetails={userDetails} />
+            <Content style={{ padding: '2px', background: '#fff', marginTop: '70px' }}>
+                <div style={{ padding: 8, minHeight: 360, borderRadius: 8 }}>
                     <FilterComponent onSearch={filterScholarships} name date />
-                    <div style={{ marginBottom: 16, textAlign: 'right' }}>
-                        <Radio.Group value={viewMode} onChange={(e) => setViewMode(e.target.value)}>
-                            <Radio.Button value="grid">
-                                <AppstoreOutlined /> Grid
-                            </Radio.Button>
-                            <Radio.Button value="list">
-                                <UnorderedListOutlined /> List
-                            </Radio.Button>
-                        </Radio.Group>
-                    </div>
-
-                    {viewMode === 'grid' ? renderGridLayout() : renderListLayout()}
+                    
+                    {/* {viewMode === 'grid' ? renderGridLayout() : renderListLayout()} */}
+                    {renderGridLayout()}
+                    <Pagination
+                        current={currentPage}
+                        pageSize={itemsPerPage}
+                        total={filteredScholarships.length}
+                        onChange={handlePageChange}
+                        style={{ textAlign: 'center', marginTop: '20px' }}
+                    />
                 </div>
             </Content>
-            <Footer Companyname={Companyname} API_URL={API_URL} /> {/* Footer component */}
+            <Footer Companyname={Companyname} API_URL={API_URL} />
         </Layout>
     );
 };

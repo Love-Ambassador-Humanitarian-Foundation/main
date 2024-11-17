@@ -34,7 +34,7 @@ const ScholarshipApplication = ({ API_URL, Companyname }) => {
         const fetchScholarship = async () => {
             try {
                 setIsLoading(true);
-                const response = await getScholarshipbyId(API_URL, id,today);
+                const response = await getScholarshipbyId(API_URL, id,today.format('YYYY-MM-DD HH:mm:ss'));
                 setScholarship(response);
             } catch (error) {
                 console.error('Error fetching scholarship details:', error);
@@ -105,8 +105,8 @@ const ScholarshipApplication = ({ API_URL, Companyname }) => {
     return (
         <Layout id='application'>
             <HeaderComponent Companyname={Companyname} isloggedIn={isLoggedIn} userDetails={userDetails} />
-            <Content style={{ padding: '24px', background: '#fff', marginTop: '60px' }}>
-                <div style={{ padding: '24px', backgroundColor: '#f0f2f5' }}>
+            <Content style={{ padding: '2px', background: '#fff', marginTop: '70px' }}>
+                <div style={{ padding: 8, backgroundColor: '#f0f2f5' }}>
                     <Title level={3}>Scholarship Application - {scholarship?.name}</Title>
                     <Card>
                         <Form
@@ -282,7 +282,7 @@ const ScholarshipApplication = ({ API_URL, Companyname }) => {
                                 </Button>,
                             ]}
                         >
-                            <p>{scholarship.termsandconditions}</p>
+                            <p>{scholarship?.termsandconditions}</p>
                         </Modal>
                     </Card>
                 </div>

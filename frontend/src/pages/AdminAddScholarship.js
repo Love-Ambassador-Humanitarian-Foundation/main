@@ -50,7 +50,7 @@ const AddAdminScholarship = ({ API_URL }) => {
         } catch (error) {
             console.error('There was an error adding the scholarship!', error.response?.data || error.message);
             message.error('Failed to add scholarship. Please try again.');
-            message.error(error.response?.data || error.message);
+            message.error(error?.message);
 
             if (error.response && error.response.data && error.response.data.errors) {
                 Object.keys(error.response.data.errors).forEach((key) => {
