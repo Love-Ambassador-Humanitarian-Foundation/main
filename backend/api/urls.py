@@ -26,6 +26,11 @@ urlpatterns = [
     path('events', views.EventAPIView.as_view(), name='event_list_create'),
     path('events/<uuid:id>', views.EventDetailAPIView.as_view(), name='event_detail'),
     path('events/participant/<str:participant_id>/', views.EventDetailAPIView.as_view(), name='event-detail-by-participant'),
+    
+    # Projects URLs
+    path('projects', views.ProjectAPIView.as_view(), name='project_list_create'),
+    path('projects/<uuid:id>', views.ProjectDetailAPIView.as_view(), name='project_detail'),
+    path('projects/participant/<str:participant_id>/', views.ProjectDetailAPIView.as_view(), name='project-detail-by-participant'),
 
     # Partner URLs
     path('partners', views.PartnerListCreateView.as_view(), name='partner_list_create'),
@@ -69,6 +74,7 @@ urlpatterns = [
     
     # ReportURLs
     path('reports/<str:rtype>', views.ReportView.as_view(), name='report-view'),
+    path('reports', views.GetReports.as_view(), name='report-view'),
 
     # ContactUsURLs
     path('contactus', views.ContactUs.as_view(), name='contact-us')

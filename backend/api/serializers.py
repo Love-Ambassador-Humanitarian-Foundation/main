@@ -7,7 +7,7 @@ For more details, see the LICENSE file in the root of the repository."""
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth import authenticate
-from .models import date, datetime, DATE_FORMAT,DATETIME_FORMAT,VALID_UNITS, User, About, Partners, Event, Payments, Logs, Scholarship, ScholarshipApplicant, Newsletter,NewsletterReceipients
+from .models import date, datetime, DATE_FORMAT,DATETIME_FORMAT,VALID_UNITS, User, About, Partners, Event, Payments, Logs, Scholarship, ScholarshipApplicant, Newsletter,NewsletterReceipients,Project
 from django.utils.dateparse import parse_date, parse_datetime
 
 class UserSerializer(serializers.ModelSerializer):
@@ -273,3 +273,54 @@ class ScholarshipApplicantSerializer(serializers.ModelSerializer):
         applicant = ScholarshipApplicant(**validated_data)
         applicant.save()
         return applicant
+
+class ProjectSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Event model.
+    """
+    start_date = serializers.DateTimeField(format=DATETIME_FORMAT, input_formats=[DATETIME_FORMAT])
+    end_date = serializers.DateTimeField(format=DATETIME_FORMAT, input_formats=[DATETIME_FORMAT])
+    ongoing = serializers.SerializerMethodField()  # Adding the is_ongoing field
+
+    
+    class Meta:
+        model = Project
+        fields = [
+            'id', 'title', 'description', 'participants',
+            'start_date', 'end_date', 'ongoing', 'media'
+        ]
+
+    def validate(self, attrs):
+
+        if attrs['start_date'] > attrs['end_date']:
+            raise serializers.ValidationError('The start date cannot be later than the end date.')
+        
+        return attrs
+
+    def get_ongoing(self, obj):
+        """
+        Determine if the event is ongoing based on the current date.
+        The current date is fetched from the request context, falling back to date.today() if not provided.
+        """
+        request = self.context.get('request')
+        current_date = datetime.today()  # Default to today's date
+
+        # Check request data for a date
+        
+        if request and 'current_date' in request.data:
+            current_date_str = request.data.get('current_date')
+            if current_date_str:
+                parsedatetime = parse_datetime(current_date_str)
+                if parsedatetime:
+                    current_date = parsedatetime
+
+        # Check query parameters for a date
+        if request and 'current_date' in request.query_params:
+            current_date_str = request.query_params.get('current_date')
+            if current_date_str:
+                parsedatetime = parse_datetime(current_date_str)
+                if parsedatetime:
+                    current_date = parsedatetime
+
+        # Ensure `ongoing` is a callable method
+        return obj.ongoing(current_date=current_date)

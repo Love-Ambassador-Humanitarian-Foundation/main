@@ -12,6 +12,7 @@ import AdminMain from './pages/AdminMain';
 import Dashboard from './pages/AdminDashboard';
 import Partners from './pages/AdminPartners';
 import AdminEvents from './pages/AdminEvents';
+import AdminProjects from './pages/AdminProject';
 import Payments from './pages/AdminPayments';
 import Branches from './pages/AdminBranches';
 import AdminScholarships from './pages/AdminScholarships';
@@ -27,6 +28,7 @@ import AdminPartner from './pages/AdminPartnerDetail';
 import AdminPayment from './pages/AdminPaymentDetail';
 import AdminBranch from './pages/AdminBranchDetail';
 import AdminEvent from './pages/AdminEventDetail';
+import AdminProject from './pages/AdminProjectDetail.js';
 import PrivateRoute from './routes/PrivateRoute.js';
 import LogoutPage from './pages/Logout.js';
 import EmailVerificationPage from './pages/EmailVerificationPage.js';
@@ -37,6 +39,9 @@ import AddAdminPartner from './pages/AdminAddPartners.js';
 import AddAdminEvent from './pages/AdminAddEvents.js';
 import AdminEventParticipants from './pages/AdminEventParticipants.js';
 import AddAdminEventParticipant from './pages/AdminAddEventParticipant.js';
+import AddAdminProject from './pages/AdminAddProject.js';
+import AdminProjectParticipants from './pages/AdminProjectParticipants.js';
+import AddAdminProjectParticipant from './pages/AdminAddProjectParticipant.js';
 import AdminProfilePage from './pages/AdminProfile.js';
 import AdminNewsletters from './pages/AdminNewsletters.js';
 import AdminNewsletterDetail from './pages/AdminNewsletterDetail.js';
@@ -51,8 +56,11 @@ import Scholarships from './pages/Scholarships.js';
 import Scholarship from './pages/ScholarshipDetails.js';
 import ScholarshipApplication from './pages/ScholarshipApplication.js';
 import EventDetail from './pages/EventDetails.js';
+import ProjectPage from './pages/Projects.js';
+import ProjectDetail from './pages/ProjectDetails.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
+
 
 
 
@@ -67,6 +75,8 @@ const App = ({API_URL}) => {
             <Route path="/about" element={<AboutPage API_URL={API_URL} Companyname={Companyname} />} exact ></Route>
             <Route path="/events" element={<EventsPage API_URL={API_URL} Companyname={Companyname} />} exact ></Route>
             <Route path="/events/:id" element={<EventDetail API_URL={API_URL} Companyname={Companyname} />} exact ></Route>
+            <Route path="/projects" element={<ProjectPage API_URL={API_URL} Companyname={Companyname} />} exact ></Route>
+            <Route path="/projects/:id" element={<ProjectDetail API_URL={API_URL} Companyname={Companyname} />} exact ></Route>
             <Route path="/contribute" element={<PrivateRoute redirectUrl={"/admin/contribute"} API_URL={API_URL} ><ContributePage API_URL={API_URL} Companyname={Companyname} /></PrivateRoute>} exact ></Route>
             <Route path="/scholarships" element={<Scholarships API_URL={API_URL} Companyname={Companyname} />} exact ></Route>
             <Route path="/scholarships/:id" element={<Scholarship API_URL={API_URL} Companyname={Companyname} />} exact ></Route>
@@ -101,6 +111,11 @@ const App = ({API_URL}) => {
             <Route path="/admin/events/:id" element={<PrivateRoute redirectUrl={"/admin/events/:id"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname}  screen={<AdminEvent API_URL={API_URL} />} /></PrivateRoute>} />
             <Route path="/admin/events/:id/participants" element={<PrivateRoute redirectUrl={"/admin/events/:id/participants"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname}  screen={<AdminEventParticipants API_URL={API_URL} />} /></PrivateRoute>} />
             <Route path="/admin/events/:id/participants/add" element={<PrivateRoute redirectUrl={"/admin/events/:id/participants/add"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname}  screen={<AddAdminEventParticipant API_URL={API_URL} />} /></PrivateRoute>} />
+            <Route path="/admin/projects" element={<PrivateRoute redirectUrl={"/admin/projects"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<AdminProjects API_URL={API_URL} />} /></PrivateRoute>} />
+            <Route path="/admin/projects/add" element={<PrivateRoute redirectUrl={"/admin/projects/add"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<AddAdminProject API_URL={API_URL} />} /></PrivateRoute>} />
+            <Route path="/admin/projects/:id" element={<PrivateRoute redirectUrl={"/admin/projects/:id"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname}  screen={<AdminProject API_URL={API_URL} />} /></PrivateRoute>} />
+            <Route path="/admin/projects/:id/participants" element={<PrivateRoute redirectUrl={"/admin/projects/:id/participants"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname}  screen={<AdminProjectParticipants API_URL={API_URL} />} /></PrivateRoute>} />
+            <Route path="/admin/projects/:id/participants/add" element={<PrivateRoute redirectUrl={"/admin/projects/:id/participants/add"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname}  screen={<AddAdminProjectParticipant API_URL={API_URL} />} /></PrivateRoute>} />
             <Route path="/admin/payments" element={<PrivateRoute redirectUrl={"/admin/payments"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<Payments API_URL={API_URL} />} /></PrivateRoute>} />
             <Route path="/admin/payments/:id" element={<PrivateRoute redirectUrl={"/admin/payments/:id"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname} screen={<AdminPayment API_URL={API_URL} />} /></PrivateRoute>} />
             <Route path="/admin/branches" element={<PrivateRoute redirectUrl={"/admin/branches"} API_URL={API_URL} ><AdminMain API_URL={API_URL} Companyname={Companyname}  screen={<Branches API_URL={API_URL} />} /></PrivateRoute>} />

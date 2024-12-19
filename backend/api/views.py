@@ -18,7 +18,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import User, About, Event, Partners, Payments, Logs,Scholarship, ScholarshipApplicant, Newsletter, NewsletterReceipients
 from .serializers import (
     SuperUserRegistrationSerializer,
-    UserSerializer, AboutSerializer, EventSerializer,NewsletterSerializer, NewsletterReceipientsSerializer,
+    UserSerializer, AboutSerializer,Project,ProjectSerializer, EventSerializer,NewsletterSerializer, NewsletterReceipientsSerializer,
     PartnersSerializer, PaymentsSerializer, LogsSerializer,UserRegistrationSerializer, UserLoginSerializer, ScholarshipSerializer, ScholarshipApplicantSerializer
 )
 from .templates import Html
@@ -1164,3 +1164,92 @@ class ContactUs(APIView):
             return Response({'success': True, 'message': 'Your message is being sent.'}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'success': False, 'message': 'Failed to initiate email sending.', 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class ProjectAPIView(APIView):
+    def get(self, request):
+        projects = Project.objects.all()
+        serializer = ProjectSerializer(projects, many=True,  context={'request': request})
+        return Response({'success': 'true', 'message': 'Retrieved all Projects', 'data': serializer.data}, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = ProjectSerializer(data=request.data,  context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'success': 'true', 'message': 'Project created successfully', 'data': serializer.data}, status=status.HTTP_201_CREATED)
+        return Response({'success': 'false', 'message': 'Failed to create Project', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    
+class ProjectDetailAPIView(APIView):
+    def get_object(self, id):
+        try:
+            return Project.objects.get(id=id)
+        except Project.DoesNotExist:
+            return None
+
+    def get_objects_by_participant(self, participant_id):
+        if connection.vendor == 'postgresql':
+            return Project.objects.filter(participants__contains=participant_id)
+        else:
+            # Use alternative approach for SQLite or other backends
+            return Project.objects.filter(participants__icontains=f'"{participant_id}"')
+
+    def get(self, request, id=None, participant_id=None):
+        if id:
+            project = self.get_object(id)
+            if project:
+                serializer = ProjectSerializer(project,  context={'request': request})
+                return Response({'success': 'true', 'message': 'Project retrieved successfully', 'data': serializer.data}, status=status.HTTP_200_OK)
+        elif participant_id:
+            projects = self.get_objects_by_participant(participant_id)
+            if projects.exists():
+                serializer = ProjectSerializer(projects, many=True,  context={'request': request})
+                return Response({'success': 'true', 'message': 'Projects retrieved successfully', 'data': serializer.data}, status=status.HTTP_200_OK)
+        return Response({'success': 'false', 'message': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, id):
+        project = self.get_object(id)
+        if project:
+            serializer = ProjectSerializer(project, data=request.data, partial=True, context={'request': request})
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'success': 'true', 'message': 'Project updated successfully', 'data': serializer.data}, status=status.HTTP_200_OK)
+            return Response({'success': 'false', 'message': 'Failed to update project', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'success': 'false', 'message': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, id):
+        project = self.get_object(id)
+        if project:
+            project.delete()
+            return Response({'success': 'true', 'message': 'Project deleted successfully'}, status=status.HTTP_200_OK)
+        return Response({'success': 'false', 'message': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
+
+class GetReports(APIView):
+    def get(self, request):
+        # Fetch counts for each entity
+        scholarship_count = Scholarship.objects.count()
+        volunteer_count = User.objects.count()
+        partner_count = Partners.objects.count()
+        event_count = Event.objects.count()
+        about = About.objects.first()
+
+        # If 'about' exists, count socials and branches
+        # If 'about' exists, count socials and branches using len() for lists
+        socials_count = len(about.socials) if about and isinstance(about.socials, list) else 0
+        branches_count = len(about.branches) if about and isinstance(about.branches, list) else 0
+
+        # Create the response data
+        response_data = {
+            'success': 'true',
+            'message': 'Retrieved all counts',
+            'data': [
+                    { 'title': 'Scholarships', 'description': scholarship_count, 'color': '#044a18' },
+                    { 'title': 'Partners', 'description': partner_count, 'color': 'green' },
+                    { 'title': 'Volunteers', 'description': volunteer_count, 'color': 'orange' },
+                    { 'title': 'Socials', 'description': socials_count, 'color': '#04364a' },
+                    { 'title': 'Events', 'description': event_count, 'color': 'red' },
+                    { 'title': 'Branches', 'description': branches_count, 'color': 'orangered' }
+                ]
+            }
+        
+
+        # Return the response
+        return Response(response_data, status=status.HTTP_200_OK)

@@ -664,3 +664,47 @@ export const getLoggedInUsersReport = async (API_URL, limit = 10) => {
     }
 };
 
+//--------------Projects------------------------
+export const createProject = async (API_URL, payload) => {
+    try {
+        const response = await axios.post(`${API_URL}/api/projects`, payload, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        console.log(response.data.data); // Log response data
+        return response.data.data; // Return the data from the response
+    } catch (error) {
+        console.error('Error creating Project:', error.response ? error.response.data : error.message);
+        throw new Error('Failed to create Project');
+    }
+};
+
+export const getProjects = async(API_URL,currentDate) => {
+    const response = await axios.get(`${API_URL}/api/projects?current_date=${currentDate}`);
+    //console.log(response)
+    return response.data.data;
+};
+export const getProjectbyId = async(API_URL, id) => {
+    const response = await axios.get(`${API_URL}/api/projects/${id}`);
+    return response.data.data;
+};
+export const updateProjectbyId = async(API_URL, id,payload) => {
+    const response = await axios.put(`${API_URL}/api/projects/${id}`,payload,{
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    return response;
+};
+export const deleteProject = async(API_URL,id) => {
+    await axios.delete(`${API_URL}/api/projects/${id}`);
+    return null;
+};
+
+// ------------reports---------
+export const getReports = async(API_URL) => {
+    const response = await axios.get(`${API_URL}/api/reports`);
+    //console.log(response)
+    return response.data.data;
+}

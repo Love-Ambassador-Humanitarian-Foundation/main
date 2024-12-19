@@ -103,7 +103,13 @@ const AboutPage = ({ API_URL, Companyname }) => {
             </div>
           </div>
         </div>
-
+        <hr />
+        <div className="row mt-5" id="vision">
+          <div className="col">
+            <h2 className="mb-4 text-center">Our Vision</h2>
+            <p style={{ textAlign: 'justify', textIndent: '60px' }}>{renderTextWithBold(data?.vision)}</p>
+          </div>
+        </div>
         <hr />
         <div className="row mt-5" id="mission">
           <div className="col">

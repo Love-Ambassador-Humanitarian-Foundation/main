@@ -165,6 +165,7 @@ class About(models.Model):
     emailthree = models.EmailField(max_length=MAX_LENGTH, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     mission = models.TextField(blank=True, null=True)
+    vision = models.TextField(blank=True, null=True)
     values = models.TextField(blank=True, null=True)
     # achievements = models.JSONField(blank=True, null=True)
     created_date = models.DateTimeField(auto_now_add=True)  # Set on creation
@@ -442,3 +443,37 @@ class ScholarshipApplicant(models.Model):
 
     def __str__(self):
         return f'{self.first_name} {self.last_name} - {self.scholarship}'
+
+class Project(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=MAX_LENGTH)
+    description = models.TextField()
+    participants = models.JSONField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    media = models.JSONField(default=None)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        ordering = ['-end_date', 'start_date', 'title']
+
+    def ongoing(self, current_date=None):
+        """
+        Check if the event is ongoing based on its start_date and end_date.
+        Optionally accept a current_date parameter to test against a specific date.
+        """
+        # Use datetime.now() to get the current date and time if not provided
+        current_date = current_date or datetime.strptime(datetime.now().strftime(DATETIME_FORMAT), DATETIME_FORMAT)
+
+        # Ensure start_date and end_date are datetime objects
+        start_date = datetime.strptime(self.start_date.strftime(DATETIME_FORMAT), DATETIME_FORMAT)
+        end_date = datetime.strptime(self.end_date.strftime(DATETIME_FORMAT), DATETIME_FORMAT)
+
+        # Check if the current_date is within the range of start_date and end_date
+        if current_date > end_date or current_date < start_date:
+            return False
+
+        return True
+        

@@ -25,7 +25,7 @@ import 'swiper/css/pagination';
 
 // import required modules
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
-import { getAbout, getEvents, getPartners, getScholarships, getUsers } from '../services/api';
+import { getAbout, getReports } from '../services/api';
 
 const LandingPage = ({API_URL,Companyname}) => {
     const {isLoggedIn,userDetails} = useUpdateLoginStatus(API_URL);
@@ -37,18 +37,13 @@ const LandingPage = ({API_URL,Companyname}) => {
     const [visible, setVisible] = useState(false);
     const [currentActivity, setCurrentActivity] = useState(null);
     
-    const [scholarships, setScholarships] = useState([]);
-    const [partners, setPartners] = useState([]);
-    const [users, setUsers] = useState([]);
-    const [events, setEvents] = useState([]);
-
     const [activities, setActivities] = useState([
-        { title: 'Scholarships', description: scholarships.length, color: '#044a18' },
-        { title: 'Partners', description: partners.length, color: 'green' },
-        { title: 'Volunteers', description: users.length, color: 'orange' },
-        { title: 'Socials', description: data?.socials?.length || 0, color: '#04364a' },
-        { title: 'Events', description: events.length, color: 'red' },
-        { title: 'Branches', description: data?.branches?.length || 0, color: 'orangered' }
+        { title: 'Scholarships', description: 0, color: '#044a18' },
+        { title: 'Partners', description: 0, color: 'green' },
+        { title: 'Volunteers', description: 0, color: 'orange' },
+        { title: 'Socials', description: 0, color: '#04364a' },
+        { title: 'Events', description: 0, color: 'red' },
+        { title: 'Branches', description: 0, color: 'orangered' }
     ]);
     const slide_inner_item_style = {
         background: '#fff',
@@ -152,12 +147,10 @@ const LandingPage = ({API_URL,Companyname}) => {
         window.addEventListener('load', setHeights);
         
         const fetchData = async () => {
-            const activitylist = []
-            const currentDate = new Date().toISOString().split('T')[0]; // Format as YYYY-MM-DD
             try{
-                const fetchedScholarships = await getScholarships(API_URL,currentDate);
-                activitylist.push({ title: 'Scholarships', description: fetchedScholarships.length, color: '#044a18' },)
-                setScholarships(fetchedScholarships)
+                const fetchedReports = await getReports(API_URL);
+                // console.log(fetchedReports,'=====')
+                setActivities(fetchedReports)
             }catch(error){
                 if (error.response){
                     console.error(error.response.data.message);
@@ -168,8 +161,6 @@ const LandingPage = ({API_URL,Companyname}) => {
             }
             try {
                 const response = await getAbout(API_URL);
-                activitylist.push({ title: 'Socials', description: response.socials?.length || 0, color: '#04364a' })
-                activitylist.push({ title: 'Branches', description: response.branches?.length || 0, color: 'orangered' })
                 
                 setData(response);
             } catch (error) {
@@ -180,46 +171,7 @@ const LandingPage = ({API_URL,Companyname}) => {
                     console.error(error.message);
                 }   
             }
-            try{
-                const fetchedPartners = await getPartners(API_URL);
-                activitylist.push({ title: 'Partners', description: fetchedPartners.length, color: 'green' })
-                
-                setPartners(fetchedPartners)
-            }catch(error){
-                if (error.response){
-                    console.error(error.response.data.message);
-                }
-                else{
-                    console.error(error.message);
-                }  
-            }
-            try{
-                const fetchedUsers = await getUsers(API_URL);
-                activitylist.push({ title: 'Volunteers', description: fetchedUsers.length, color: 'orange' })
-                
-                setUsers(fetchedUsers)
-            }catch(error){
-                if (error.response){
-                    console.error(error.response.data.message);
-                }
-                else{
-                    console.error(error.message);
-                }  
-            }
-            try{
-                const fetchedEvents = await getEvents(API_URL);
-                activitylist.push({ title: 'Events', description: fetchedEvents.length, color: 'red' })
-                
-                setEvents(fetchedEvents)
-            }catch(error){
-                if (error.response){
-                    console.error(error.response.data.message);
-                }
-                else{
-                    console.error(error.message);
-                }  
-            }
-            setActivities(activitylist);
+            
             
             setIsLoading(false);
         };
@@ -234,6 +186,8 @@ const LandingPage = ({API_URL,Companyname}) => {
         };
 
     }, [API_URL]);
+    
+    
     const help_act = [
         {
             title: { name: 'Socials', icon: <PictureOutlined style={{ color: 'green' }}  /> },
