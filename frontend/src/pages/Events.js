@@ -7,7 +7,12 @@ import { useUpdateLoginStatus } from '../hooks/hooks';
 import { getEvents } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
 import FilterComponent from '../components/Filter';
-
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import durationPlugin from 'dayjs/plugin/duration';
+// Extend dayjs with required plugins
+dayjs.extend(relativeTime);
+dayjs.extend(durationPlugin);
 const { Content } = Layout;
 
 const EventPage = ({ Companyname, API_URL }) => {
@@ -18,6 +23,7 @@ const EventPage = ({ Companyname, API_URL }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(8); // Number of items per page
+    const currentDate = dayjs();  // Use dayjs for current date formatting
 
     const fetchEvents = useCallback(async () => {
         try {
@@ -113,7 +119,23 @@ const EventPage = ({ Companyname, API_URL }) => {
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentEvents = filteredEvents.slice(indexOfFirstItem, indexOfLastItem);
-
+    // Check if the scholarship is expired based on created_date and duration
+    const eventstatus = (start,end) => {
+        if (!start) return 'upcoming';
+        if (!end) return 'ongoing';
+        
+        const startDate = dayjs(start);
+        const endDate = dayjs(end);
+        if (currentDate.isBefore(startDate)){
+            return 'orange';
+        }
+        if (currentDate.isAfter(endDate)){
+            return 'red';
+        }
+        if (currentDate.isAfter(startDate) && currentDate.isBefore(endDate)){
+            return 'green';
+        }
+    };
     const renderGridLayout = () => (
         <Row gutter={[16, 16]} className='mt-2'>
             {currentEvents.map(event => (
@@ -125,8 +147,8 @@ const EventPage = ({ Companyname, API_URL }) => {
                     >
                         <p><Tag color="orange">{event.eventtype}</Tag></p>
                         <p style={{ textAlign: 'justify' }}>{renderTextWithBold(event.description)}</p>
-                        <p><Tag color="grey">Start Date: {new Date(event.start_date).toLocaleDateString()}</Tag></p>
-                        <p><Tag color="grey">End Date: {new Date(event.end_date).toLocaleDateString()}</Tag></p>
+                        <p><Tag color={`${eventstatus(event.start_date,event.end_date)}`}>Start Date: {new Date(event.start_date).toLocaleDateString()}</Tag></p>
+                        <p><Tag color={`${eventstatus(event.start_date,event.end_date)}`}>End Date: {new Date(event.end_date).toLocaleDateString()}</Tag></p>
                     </Card>
                 </Col>
             ))}
@@ -136,6 +158,7 @@ const EventPage = ({ Companyname, API_URL }) => {
     const handleRowClick = (record) => {
         navigate(`/events/${record.id}`);
     };
+    
 
     if (isLoading) {
         return <LoadingSpinner />;

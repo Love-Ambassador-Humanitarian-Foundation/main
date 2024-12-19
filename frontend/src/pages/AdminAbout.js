@@ -30,6 +30,7 @@ const AdminAbout = ({ API_URL }) => {
         emailtwo: '',
         emailthree: '',
         address: '',
+        vision: '',
         mission: '',
         values: '',
         achievements: [],
@@ -209,6 +210,13 @@ const AdminAbout = ({ API_URL }) => {
                                 rules={[{ required: true, message: 'Please enter the address' }]}
                             >
                                 <Input placeholder="Enter Address" disabled={!editAbout} />
+                            </Form.Item>
+                            <Form.Item
+                                label="Vision"
+                                name="vision"
+                                rules={[{ required: true, message: 'Please enter the vision statement' }]}
+                            >
+                                <Input.TextArea rows={7} placeholder="Enter Vision Statement" disabled={!editAbout} />
                             </Form.Item>
                             <Form.Item
                                 label="Mission"

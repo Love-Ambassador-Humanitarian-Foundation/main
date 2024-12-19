@@ -97,8 +97,8 @@ const AdminEvent = ({ API_URL }) => {
         try {
             await updateEventbyId(API_URL, id,{
                 ...formData,
-                start_date: formData.start_date ? formData.start_date : null,
-                end_date: formData.end_date ? formData.end_date : null,
+                start_date: formData.start_date ? formData.start_date.format("YYYY-MM-DD HH:mm:ss") : null,
+                end_date: formData.end_date ? formData.end_date.format("YYYY-MM-DD HH:mm:ss") : null,
             })
             message.success('Event details updated');
             setEditEvent(false);

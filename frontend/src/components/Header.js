@@ -79,6 +79,7 @@ const HeaderComponent = ({ Companyname,isloggedIn,userDetails }) => {
                         
                         <NavLink to="/about" text="About" className="m-2"/>
                         <NavLink to="/events" text="Events" className="m-2" />
+                        <NavLink to="/projects" text="Projects" className="m-2" />
                         <NavLink to="/scholarships" text="Scholarships" className="m-2" />
                         <NavLink to="/contact" text="Contact" className="m-2" />
                         <Nav.Item className='nav-link'>
