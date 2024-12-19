@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import HeaderComponent from '../components/AdminHeader';
-import { DashboardOutlined, UsergroupAddOutlined,MailOutlined, InfoCircleOutlined,CalendarOutlined,TeamOutlined, BankOutlined, UserOutlined, SolutionOutlined } from '@ant-design/icons';
+import { DashboardOutlined, UsergroupAddOutlined,MailOutlined, InfoCircleOutlined,CalendarOutlined,TeamOutlined, BankOutlined, UserOutlined, SolutionOutlined, ProjectOutlined } from '@ant-design/icons';
 import { Layout, Menu, Badge } from 'antd';
 import {useUpdateLoginStatus} from '../hooks/hooks'
 import { Nav } from 'react-bootstrap';
@@ -22,6 +22,7 @@ const AdminMain = ({ API_URL,Companyname, screen }) => {
         { url: '/admin/about', icon: <InfoCircleOutlined />, label: 'About',badge:false },
         { url: '/admin/scholarships', icon: <SolutionOutlined />, label: 'Scholarships',badge:false },
         { url: '/admin/partners', icon: <TeamOutlined />, label: 'Partners',badge:false },
+        { url: '/admin/projects', icon: <ProjectOutlined />, label: 'Projects',badge:false },
         { url: '/admin/events', icon: <CalendarOutlined />, label: 'Events',badge:false },
         //{ url: '/admin/payments', icon: <DollarOutlined />, label: 'Payments',badge:false },
         { url: '/admin/branches', icon: <BankOutlined />, label: 'Branches',badge:false },

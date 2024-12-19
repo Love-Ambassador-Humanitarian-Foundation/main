@@ -72,6 +72,9 @@ const AboutPage = ({ API_URL, Companyname }) => {
     }
   }, [location]);
   const renderTextWithBold = (text) => {
+    if (text === null) {
+      return ''
+    }
     // Split text based on asterisks
     const parts = text.split('**');
 
